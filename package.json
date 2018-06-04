@@ -4,7 +4,14 @@
   "description": "Functional Programming for EcmaScript(Javascript)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "babel src -d .",
+    "clean": "find src -name '*.js' | sed 's/^src\\///' | xargs rm -f",
+    "prepublish": "npm run build",
+    "postpublish": "npm run clean"
+  },
+  "directories": {
+    "test": "test"
   },
   "repository": {
     "type": "git",
@@ -24,5 +31,10 @@
   "bugs": {
     "url": "https://github.com/TeaEntityLab/fpEs/issues"
   },
-  "homepage": "https://github.com/TeaEntityLab/fpEs#readme"
+  "homepage": "https://github.com/TeaEntityLab/fpEs#readme",
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "mocha": "^5.2.0",
+    "should": "^13.2.1"
+  }
 }
