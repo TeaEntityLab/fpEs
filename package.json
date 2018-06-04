@@ -1,0 +1,28 @@
+{
+  "name": "fpes",
+  "version": "1.0.0",
+  "description": "Functional Programming for EcmaScript(Javascript)",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TeaEntityLab/fpEs.git"
+  },
+  "keywords": [
+    "functional-programming",
+    "fp",
+    "js",
+    "es",
+    "es6",
+    "es7",
+    "javascript"
+  ],
+  "author": "John Lee",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/TeaEntityLab/fpEs/issues"
+  },
+  "homepage": "https://github.com/TeaEntityLab/fpEs#readme"
+}
