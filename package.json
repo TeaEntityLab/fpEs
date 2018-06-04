@@ -4,8 +4,8 @@
   "description": "Functional Programming for EcmaScript(Javascript)",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "babel src -d .",
+    "test": "mocha --require should test/**/*.js",
+    "build": "babel src -d ./dist",
     "clean": "find src -name '*.js' | sed 's/^src\\///' | xargs rm -f",
     "prepublish": "npm run build",
     "postpublish": "npm run clean"
