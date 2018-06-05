@@ -4,8 +4,8 @@ describe('Monad', () => {
   it('New', () => {
 			var m = Monad.just(1);
 	});
-  it('then', () => {
-			var m = Monad.just(1).then((a)=>a+2).then((a)=>a+3);
+  it('flatMap', () => {
+			var m = Monad.just(1).flatMap((a)=>a+2).flatMap((a)=>a+3);
       m.unwrap().should.equal(6)
 	});
   it('isPresent', () => {
