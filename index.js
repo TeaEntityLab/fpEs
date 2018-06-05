@@ -1,3 +1,3 @@
 module.exports = {
-  Monad: require('monad'),
+  Monad: require('./src/monad'),
 };
