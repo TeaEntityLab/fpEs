@@ -30,6 +30,4 @@ Monad.just = function (ref) {
   return m;
 };
 
-module.exports = {
-	Monad,
-};
+module.exports = Monad;
