@@ -19,6 +19,10 @@ class MonadDef {
     }
   }
 
+  then(fn) {
+    return new MonadDef(fn(this.ref));
+  }
+
   unwrap() {
     return this.ref;
   }
