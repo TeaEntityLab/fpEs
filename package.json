@@ -4,7 +4,7 @@
   "description": "Functional Programming for EcmaScript(Javascript)",
   "main": "index.js",
   "scripts": {
-    "test": "mocha --require should test/**/*.js",
+    "test": "mocha --compilers js:babel-core/register --require should test/**/*.js",
     "build": "babel src -d ./dist",
     "clean": "find src -name '*.js' | sed 's/^src\\///' | xargs rm -f",
     "prepublish": "npm run build",
@@ -34,6 +34,9 @@
   "homepage": "https://github.com/TeaEntityLab/fpEs#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-stage-0": "^6.24.1",
     "mocha": "^5.2.0",
     "should": "^13.2.1"
   }

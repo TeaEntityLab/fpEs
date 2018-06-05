@@ -1,0 +1,11 @@
+{
+  "presets": [
+    "stage-0",
+    ["env", {
+      "targets": {
+        "node": "current"
+      }
+    }]
+  ],
+  "plugins": ["transform-object-rest-spread"]
+}
