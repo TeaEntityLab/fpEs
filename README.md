@@ -1,21 +1,63 @@
 # fpEs
 Functional Programming for EcmaScript(Javascript)
 
-## Common FP (Compose, Curry)
+## Common FP (Compose, Curry, PatternMatching)
 
 Example:
 
 ```javascript
 
-import {compose, curry} from "fpEs";
+import {
+  compose, curry,
+  either,
+  inCaseOfObject, inCaseOfClass,
+} from "fpEs";
+
+// compose
 
 console.log(compose((x)=>x-8, (x)=>x+10, (x)=>x*10)(4)) // 42
 console.log(compose((x)=>x+2, (x,y)=>x*y)(4,10)) // 42
+
+// curry
 
 console.log(curry((x, y, z) => x + y + z)(1,2,3)) // 6
 console.log(curry((x, y, z) => x + y + z)(1)(2,3)) // 6
 console.log(curry((x, y, z) => x + y + z)(1,2)(3)) // 6
 console.log(curry((x, y, z) => x + y + z)(1)(2)(3)) // 6
+
+// PatternMatching
+
+console.log(either({}, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)));
+console.log(either([], inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
+console.log(either(null, inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
+console.log(either(undefined, inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
+console.log(either("", inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
+
+// otherwise
+
+var err = undefined;
+
+err = undefined;
+either(1, inCaseOfEqual(1, (x)=>x+1)).should.equal(2);
+(err === undefined).should.equal(true);
+
+err = undefined;
+try {
+  either(1, inCaseOfEqual(2, (x)=>x+1));
+} catch (e) {
+  err = e;
+}
+(err === undefined).should.equal(false);
+
+err = undefined;
+try {
+  either(1, inCaseOfEqual(2, (x)=>x+1), otherwise((x)=>x+2)).should.equal(3);
+} catch (e) {
+  err = e;
+  console.log(e);
+}
+(err === undefined).should.equal(true);
+
 
 ```
 

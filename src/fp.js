@@ -10,9 +10,60 @@ function curry(fn) {
   };
 }
 
+class Pattern {
+  constructor(matches, effect) {
+    this.matches = matches;
+    this.effect = effect;
+  }
+}
+
+function either(value, ...patterns) {
+  for (let pattern of patterns) {
+    // console.log(pattern.matches(value));
+
+		if (pattern.matches(value)) {
+			return pattern.effect(value);
+		}
+	}
+
+  throw new Error(`Cannot match ${JSON.stringify(value)}`);
+}
+
+class PatternMatching {
+  constructor(...patterns) {
+    this.patterns = patterns;
+  }
+
+  matchFor(value) {
+    return either(value, ...this.patterns);
+  }
+}
+
 module.exports = {
   compose: function (...fns) {
     return fns.reduce((f, g) => (...args) => f(g(...args)))
   },
   curry,
+
+  either,
+  Pattern,
+  PatternMatching,
+  inCaseOfEqual: function (value, effect) {
+    return new Pattern((v)=>value === v, effect);
+  },
+  inCaseOfNumber: function (effect) {
+    return new Pattern((v)=> !(isNaN(v) || v.toString() === ''), (v)=>effect(+v));
+  },
+  inCaseOfObject: function (effect) {
+    return new Pattern((v)=> v && typeof v === "object" && (!Array.isArray(v)), effect);
+  },
+  inCaseOfArray: function (effect) {
+    return new Pattern((v)=> v && Array.isArray(v), effect);
+  },
+  inCaseOfClass: function (theClass, effect) {
+    return new Pattern((v)=> v instanceof theClass, effect);
+  },
+  otherwise: function (effect) {
+    return new Pattern(()=>true, effect);
+  },
 };

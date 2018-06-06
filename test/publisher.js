@@ -24,7 +24,7 @@ describe('Publisher', function () {
       setTimeout(()=>{
         v.should.equal(1)
         done();
-      },10);
+      },100);
 	});
   it('unsubscribe', function () {
       var p = new Publisher();
@@ -47,7 +47,7 @@ describe('Publisher', function () {
       v = 0;
       p.flatMap((x)=>x+2).flatMap((x)=>x+3).subscribe((i)=>v=i);
       p.publish(1, true);
-      v.should.equal(0)
+      v.should.equal(0);
 
       this.timeout(500);
       setTimeout(()=>{
