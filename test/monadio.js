@@ -1,6 +1,6 @@
 import Monad from '../monad';
 import MonadIO from '../monadio';
-var {asof, doM} = MonadIO;
+var {promiseof, doM} = MonadIO;
 
 describe('MonadIO', function () {
   it('sync', function () {
@@ -36,13 +36,14 @@ describe('MonadIO', function () {
 
       v = 0;
       p = doM(function *() {
-        var value = yield asof(5);
-        var value2 = yield asof(11);
+        var value = yield promiseof(5);
+        var value2 = yield promiseof(11);
         var value3 = yield Monad.just(3);
         var value4 = yield MonadIO.just(3);
-        return value + value2 + value3 + value4;
+        var value5 = yield MonadIO.fromPromise(Promise.resolve(3));
+        return value + value2 + value3 + value4 + value5;
       });
 
-      return p.then((v)=>v.should.equal(22));
+      return p.then((v)=>v.should.equal(25));
 	});
 })

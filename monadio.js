@@ -29,7 +29,15 @@ MonadIO.just = function (ref) {
   return m;
 };
 MonadIO.of = MonadIO.just;
-MonadIO.asof = function (ref) {
+MonadIO.fromPromise = function (p) {
+  var m = new MonadIODef(function () {
+    return MonadIO.doM(function *() {
+      return yield p;
+    });
+  });
+  return m;
+};
+MonadIO.promiseof = function (ref) {
   return Promise.resolve(ref);
 };
 MonadIO.doM = function (genDef) {
