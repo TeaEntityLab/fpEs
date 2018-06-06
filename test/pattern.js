@@ -1,9 +1,31 @@
 var {
   either, PatternMatching,
-  inCaseOfEqual, inCaseOfRegex, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfObject, inCaseOfArray,
+  inCaseOfEqual, inCaseOfRegex, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfNaN, inCaseOfString, inCaseOfObject, inCaseOfArray,
   otherwise,
+
+  SumType, ProductType, CompType,
+  TypeNumber,
+  TypeString,
+  TypeNaN,
+  TypeObject,
+  TypeArray,
+  TypeNull,
+  TypeEqualTo,
+  TypeClassOf,
+  TypeRegexMatches,
 } = require('../src/pattern');
 
+describe('SumType', function () {
+  it('Common', function () {
+    var s;
+    s = new SumType(new ProductType(TypeString, TypeNumber), new ProductType(TypeRegexMatches('c+')));
+    (s.apply("1", "2asdf") === undefined).should.equal(true);
+    (s.apply("1", 2) === undefined).should.equal(false);
+
+    (s.apply("1") === undefined).should.equal(true);
+    (s.apply("ccc") === undefined).should.equal(false);
+	});
+});
 describe('pattern', function () {
   it('PatternMatching', function () {
       new PatternMatching(inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).matchFor({}).should.equal("{}");
@@ -44,6 +66,17 @@ describe('pattern', function () {
       either(1, inCaseOfNumber((x)=>x+1), otherwise((x)=>x+2)).should.equal(2);
       either("1", inCaseOfNumber((x)=>x+1), otherwise((x)=>x+2)).should.equal(2);
       either('', inCaseOfNumber((x)=>x+1), otherwise((x)=>3)).should.equal(3);
+      either(' ', inCaseOfNumber((x)=>x+1), otherwise((x)=>3)).should.equal(3);
+      either(NaN, inCaseOfNumber((x)=>x+1), otherwise((x)=>3)).should.equal(3);
+	});
+  it('inCaseOfString', function () {
+      either("1", inCaseOfString((x)=>true), otherwise((x)=>false)).should.equal(true);
+      either(1, inCaseOfString((x)=>true), otherwise((x)=>false)).should.equal(false);
+	});
+  it('inCaseOfNaN', function () {
+      either(1, inCaseOfNaN((x)=>true), otherwise((x)=>false)).should.equal(false);
+      either("1", inCaseOfNaN((x)=>true), otherwise((x)=>false)).should.equal(false);
+      either(NaN, inCaseOfNaN((x)=>true), otherwise((x)=>false)).should.equal(true);
 	});
   it('otherwise', function () {
       var err = undefined;

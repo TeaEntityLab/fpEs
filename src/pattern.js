@@ -5,11 +5,21 @@ class Pattern {
   }
 }
 
+function isNotNumber(v) {
+  return isNaN(v) || v.toString().trim() === '';
+}
+
 function inCaseOfEqual (value, effect) {
   return new Pattern((v)=>value === v, effect);
 }
 function inCaseOfNumber (effect) {
-  return new Pattern((v)=> !(isNaN(v) || v.toString() === ''), (v)=>effect(+v));
+  return new Pattern((v)=>!isNotNumber(v), (v)=>effect(+v));
+}
+function inCaseOfNaN (effect) {
+  return new Pattern(isNotNumber, (v)=>effect(+v));
+}
+function inCaseOfString (effect) {
+  return new Pattern((v)=> typeof v === 'string', (v)=>effect(+v));
 }
 function inCaseOfObject (effect) {
   return new Pattern((v)=> v && typeof v === "object" && (!Array.isArray(v)), effect);
@@ -58,15 +68,28 @@ class PatternMatching {
   }
 }
 
-class CompType extends Pattern {
-  apply(...value) {
-    return this.effect(...value);
+class CompData {
+  constructor(type, ...values) {
+    this.type = type;
+    this.values = values;
+  }
+}
+
+class CompType {
+  effect(...values) {
+    if (this.matches(...values)) {
+      return new CompData(this, values);
+    }
+  }
+
+  apply(...values) {
+    return this.effect(...values);
   }
 }
 
 class SumType extends CompType {
   constructor(...types) {
-    super(null, null);
+    super();
     this.types = types;
   }
 
@@ -93,7 +116,42 @@ class SumType extends CompType {
   }
 }
 
-var TypeObject = new CompType();
+class ProductType extends CompType {
+  constructor(...types) {
+    super();
+    this.types = types;
+  }
+
+  matches(...values) {
+    if (values.length != this.types.length) {
+      return false;
+    }
+
+    for (var i = 0; i < values.length; i++) {
+      if (! this.types[i].matches(values[i])) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+}
+
+var TypeNumber = inCaseOfNumber(()=>true);
+var TypeString = inCaseOfString(()=>true);
+var TypeNaN = inCaseOfNaN(()=>true);
+var TypeObject = inCaseOfObject(()=>true);
+var TypeArray = inCaseOfArray(()=>true);
+var TypeNull = inCaseOfNull(()=>true);
+function TypeEqualTo(value) {
+  return inCaseOfEqual(value, ()=>true);
+}
+function TypeClassOf(theClass) {
+  return inCaseOfClass(theClass, ()=>true);
+}
+function TypeRegexMatches(regex) {
+  return inCaseOfRegex(regex, ()=>true);
+}
 
 module.exports = {
   either,
@@ -101,6 +159,8 @@ module.exports = {
   PatternMatching,
   inCaseOfEqual,
   inCaseOfNumber,
+  inCaseOfString,
+  inCaseOfNaN,
   inCaseOfObject,
   inCaseOfArray,
   inCaseOfClass,
@@ -109,6 +169,16 @@ module.exports = {
   otherwise,
 
   SumType,
+  ProductType,
   CompType,
+
+  TypeNumber,
+  TypeString,
+  TypeNaN,
   TypeObject,
+  TypeArray,
+  TypeNull,
+  TypeEqualTo,
+  TypeClassOf,
+  TypeRegexMatches,
 };

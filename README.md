@@ -47,6 +47,17 @@ Example:
 import {
   either,
   inCaseOfObject, inCaseOfEqual, inCaseOfClass, otherwise,
+
+  SumType, ProductType, CompType,
+  TypeNumber,
+  TypeString,
+  TypeNaN,
+  TypeObject,
+  TypeArray,
+  TypeNull,
+  TypeEqualTo,
+  TypeClassOf,
+  TypeRegexMatches,
 } from "fpEs";
 
 // PatternMatching
@@ -82,6 +93,15 @@ try {
 }
 (err === undefined).should.equal(true);
 
+// SumType
+
+var s;
+s = new SumType(new ProductType(TypeString, TypeNumber), new ProductType(TypeRegexMatches('c+')));
+console.log(s.apply("1", "2asdf") === undefined); // true
+console.log(s.apply("1", 2) === undefined); // false
+
+console.log(s.apply("1") === undefined); // true
+console.log(s.apply("ccc") === undefined); // false
 
 ```
 
