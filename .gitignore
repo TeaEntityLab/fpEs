@@ -1,6 +1,7 @@
 # Custom
 
-dist
+dist/*.js
+!/dist/bundle.min.js
 
 
 
