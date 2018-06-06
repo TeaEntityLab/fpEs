@@ -39,6 +39,25 @@ class PatternMatching {
   }
 }
 
+class CompType {}
+
+class SumType extends CompType {
+  constructor(...types) {
+    super(...types);
+    this.types = types;
+  }
+
+  matches(...values) {
+    for (let type of this.types) {
+      if (type.matches(...values)) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+}
+
 module.exports = {
   compose: function (...fns) {
     return fns.reduce((f, g) => (...args) => f(g(...args)))
@@ -62,6 +81,9 @@ module.exports = {
   },
   inCaseOfClass: function (theClass, effect) {
     return new Pattern((v)=> v instanceof theClass, effect);
+  },
+  inCaseOfNull: function (effect) {
+    return new Pattern((v)=> v === null || v === undefined, effect);
   },
   otherwise: function (effect) {
     return new Pattern(()=>true, effect);

@@ -27,11 +27,11 @@ console.log(curry((x, y, z) => x + y + z)(1)(2)(3)) // 6
 
 // PatternMatching
 
-console.log(either({}, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)));
-console.log(either([], inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
-console.log(either(null, inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
-console.log(either(undefined, inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
-console.log(either("", inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)));
+console.log(either({}, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false))); // "{}"
+console.log(either([], inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false))); // false
+console.log(either(null, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false))); // false
+console.log(either(undefined, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false))); // false
+console.log(either("", inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false))); // false
 
 // otherwise
 

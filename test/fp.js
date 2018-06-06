@@ -1,7 +1,7 @@
 var {
   compose, curry,
   either,
-  inCaseOfEqual, inCaseOfClass, inCaseOfNumber, inCaseOfObject, inCaseOfArray,
+  inCaseOfEqual, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfObject, inCaseOfArray,
   otherwise,
 } = require('../src/fp');
 
@@ -18,10 +18,17 @@ describe('Fp', function () {
 	});
   it('inCaseOfObject', function () {
       either({}, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal("{}");
-      either([], inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
-      either(null, inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
-      either(undefined, inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
-      either("", inCaseOfClass((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
+      either([], inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
+      either(null, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
+      either(undefined, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
+      either('', inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
+      either(0, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
+	});
+  it('inCaseOfNull', function () {
+      either(null, inCaseOfNull((x)=>true), otherwise((x)=>false)).should.equal(true);
+      either(undefined, inCaseOfNull((x)=>true), otherwise((x)=>false)).should.equal(true);
+      either('', inCaseOfNull((x)=>true), otherwise((x)=>false)).should.equal(false);
+      either(0, inCaseOfNull((x)=>true), otherwise((x)=>false)).should.equal(false);
 	});
   it('inCaseOfArray', function () {
       either([], inCaseOfArray((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal("[]");
