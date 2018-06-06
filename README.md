@@ -21,6 +21,51 @@ bundled files for web/browser usages:
 
 # Usage
 
+## Import
+
+* You can include the entire library:
+
+```javascript
+import fpEs from 'fpEs';
+```
+
+* There are 5 modules in this library, you can include them individually:
+  * Facades:
+    * monad
+    * monadio
+    * publisher
+  * FP functions:
+    * fp
+    * pattern
+
+Just include things you need:
+
+```javascript
+import Monad from "fpEs";
+// or this one:
+/*
+import Monad from "fpEs/Monad";
+*/
+
+var m = Monad.just(1); // It works
+```
+
+or
+
+```javascript
+import {
+  compose, curry,
+} from "fpEs";
+```
+
+or
+
+```javascript
+import {
+  compose, curry,
+} from "fpEs/fp";
+```
+
 ## Common FP (Compose, Curry)
 
 Example:
@@ -29,7 +74,7 @@ Example:
 
 import {
   compose, curry,
-} from "fpEs";
+} from "fpEs/fp";
 
 // compose
 
@@ -65,7 +110,7 @@ import {
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
-} from "fpEs";
+} from "fpEs/pattern";
 
 // PatternMatching
 
@@ -118,7 +163,7 @@ Example:
 
 ```javascript
 
-import Monad from "fpEs";
+import Monad from "fpEs/Monad";
 
 var m;
 
@@ -233,7 +278,7 @@ Example:
 
 ```javascript
 
-import Publisher from "fpEs";
+import Publisher from "fpEs/publisher";
 
 var p = new Publisher();
 var v = 0;

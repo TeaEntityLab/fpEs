@@ -13,7 +13,7 @@ var {
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
-} = require('../src/pattern');
+} = require('../pattern');
 
 describe('SumType', function () {
   it('Common', function () {

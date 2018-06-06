@@ -1,5 +1,12 @@
-for fullpath in src/*.js
+for fullpath in ./*.js
 do
+
+  if [[ $fullpath = *"index"* ]]; then
+    continue
+  fi
+  if [[ $fullpath = *"config.js"* ]]; then
+    continue
+  fi
 
   npm run build-custom -- --env.filename=./$fullpath
 

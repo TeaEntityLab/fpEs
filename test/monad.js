@@ -1,4 +1,4 @@
-var Monad = require('../src/monad');
+var Monad = require('../monad');
 
 describe('Monad', function () {
   it('New', function () {

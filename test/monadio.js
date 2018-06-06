@@ -1,5 +1,5 @@
-import Monad from "../src/monad";
-import MonadIO from "../src/monadio";
+import Monad from '../monad';
+import MonadIO from '../monadio';
 var {asof, doM} = MonadIO;
 
 describe('MonadIO', function () {

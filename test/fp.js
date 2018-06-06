@@ -1,6 +1,6 @@
 var {
   compose, curry,
-} = require('../src/fp');
+} = require('../fp');
 
 describe('Fp', function () {
   it('compose', function () {

@@ -1,4 +1,4 @@
-var Publisher = require('../src/publisher');
+var Publisher = require('../publisher');
 
 describe('Publisher', function () {
   it('sync', function () {
