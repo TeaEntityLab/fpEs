@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --require should test/**/*.js",
-    "build": "babel src -d ./dist",
+    "dev": "webpack -d --watch",
+    "build": "webpack",
     "clean": "find src -name '*.js' | sed 's/^src\\///' | xargs rm -f",
     "prepublish": "npm run build",
     "postpublish": "npm run clean"
@@ -47,6 +48,7 @@
   "homepage": "https://github.com/TeaEntityLab/fpEs#readme",
   "devDependencies": {
     "babel-cli": "^6.26.0",
+    "babel-loader": "^7.1.4",
     "babel-plugin-dynamic-import-node": "^1.2.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
@@ -59,7 +61,9 @@
     "babel-preset-stage-2": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
     "mocha": "^5.2.0",
-    "should": "^13.2.1"
+    "should": "^13.2.1",
+    "webpack": "^4.11.0",
+    "webpack-cli": "^3.0.2"
   },
   "dependencies": {}
 }
