@@ -7,6 +7,7 @@ module.exports = (env, argv) => {
     entry: './' + filename,
     output: {
         filename: './' + targetFilename + (argv.mode === 'production' ? '.min' : '') + '.js',
+        library: targetFilename,
     },
     mode: argv.mode === 'production' ? 'production' : 'development',
     module: {

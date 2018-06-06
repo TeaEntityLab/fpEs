@@ -5,6 +5,37 @@ class Pattern {
   }
 }
 
+function inCaseOfEqual (value, effect) {
+  return new Pattern((v)=>value === v, effect);
+}
+function inCaseOfNumber (effect) {
+  return new Pattern((v)=> !(isNaN(v) || v.toString() === ''), (v)=>effect(+v));
+}
+function inCaseOfObject (effect) {
+  return new Pattern((v)=> v && typeof v === "object" && (!Array.isArray(v)), effect);
+}
+function inCaseOfArray (effect) {
+  return new Pattern((v)=> v && Array.isArray(v), effect);
+}
+function inCaseOfClass (theClass, effect) {
+  return new Pattern((v)=> v instanceof theClass, effect);
+}
+function inCaseOfNull (effect) {
+  return new Pattern((v)=> v === null || v === undefined, effect);
+}
+function inCaseOfRegex (regex, effect) {
+  return new Pattern((v)=> {
+    if (typeof regex === 'string') {
+      regex = new RegExp(regex);
+    }
+
+    return regex.test(v);
+  }, effect);
+}
+function otherwise (effect) {
+  return new Pattern(()=>true, effect);
+}
+
 function either(value, ...patterns) {
   for (let pattern of patterns) {
     // console.log(pattern.matches(value));
@@ -27,57 +58,57 @@ class PatternMatching {
   }
 }
 
-class CompType {}
+class CompType extends Pattern {
+  apply(...value) {
+    return this.effect(...value);
+  }
+}
 
 class SumType extends CompType {
   constructor(...types) {
-    super(...types);
+    super(null, null);
     this.types = types;
   }
 
   matches(...values) {
-    for (let type of this.types) {
-      if (type.matches(...values)) {
-        return true;
-      }
+    var type = this.innerMatches(...values);
+    if (type) {
+      return true;
     }
 
     return false;
   }
+  effect(...values) {
+    var type = this.innerMatches(...values);
+    if (type) {
+      return type.effect(...values);
+    }
+  }
+  innerMatches(...values) {
+    for (let type of this.types) {
+      if (type.matches(...values)) {
+        return type;
+      }
+    }
+  }
 }
+
+var TypeObject = new CompType();
 
 module.exports = {
   either,
   Pattern,
   PatternMatching,
-  inCaseOfEqual: function (value, effect) {
-    return new Pattern((v)=>value === v, effect);
-  },
-  inCaseOfNumber: function (effect) {
-    return new Pattern((v)=> !(isNaN(v) || v.toString() === ''), (v)=>effect(+v));
-  },
-  inCaseOfObject: function (effect) {
-    return new Pattern((v)=> v && typeof v === "object" && (!Array.isArray(v)), effect);
-  },
-  inCaseOfArray: function (effect) {
-    return new Pattern((v)=> v && Array.isArray(v), effect);
-  },
-  inCaseOfClass: function (theClass, effect) {
-    return new Pattern((v)=> v instanceof theClass, effect);
-  },
-  inCaseOfRegex: function (regex, effect) {
-    return new Pattern((v)=> {
-      if (typeof regex === 'string') {
-        regex = new RegExp(regex);
-      }
+  inCaseOfEqual,
+  inCaseOfNumber,
+  inCaseOfObject,
+  inCaseOfArray,
+  inCaseOfClass,
+  inCaseOfNull,
+  inCaseOfRegex,
+  otherwise,
 
-      return regex.test(v);
-    }, effect);
-  },
-  inCaseOfNull: function (effect) {
-    return new Pattern((v)=> v === null || v === undefined, effect);
-  },
-  otherwise: function (effect) {
-    return new Pattern(()=>true, effect);
-  },
+  SumType,
+  CompType,
+  TypeObject,
 };

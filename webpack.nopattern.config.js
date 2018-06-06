@@ -1,8 +1,8 @@
 module.exports = (env, argv) => {
   return {
-    entry: './index.js',
+    entry: './index-nopattern.js',
     output: {
-        filename: argv.mode === 'production' ? './bundle.min.js' : './bundle.js',
+        filename: argv.mode === 'production' ? './bundle-nopattern.min.js' : './bundle-nopattern.js',
         library: 'fpEs',
     },
     mode: argv.mode === 'production' ? 'production' : 'development',

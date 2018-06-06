@@ -1,10 +1,14 @@
 var {
-  either,
+  either, PatternMatching,
   inCaseOfEqual, inCaseOfRegex, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfObject, inCaseOfArray,
   otherwise,
 } = require('../src/pattern');
 
 describe('pattern', function () {
+  it('PatternMatching', function () {
+      new PatternMatching(inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).matchFor({}).should.equal("{}");
+      new PatternMatching(inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).matchFor([]).should.equal(false);
+	});
   it('inCaseOfObject', function () {
       either({}, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal("{}");
       either([], inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
