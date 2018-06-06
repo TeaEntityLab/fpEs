@@ -82,6 +82,15 @@ module.exports = {
   inCaseOfClass: function (theClass, effect) {
     return new Pattern((v)=> v instanceof theClass, effect);
   },
+  inCaseOfRegex: function (regex, effect) {
+    return new Pattern((v)=> {
+      if (typeof regex === 'string') {
+        regex = new RegExp(regex);
+      }
+
+      return regex.test(v);
+    }, effect);
+  },
   inCaseOfNull: function (effect) {
     return new Pattern((v)=> v === null || v === undefined, effect);
   },

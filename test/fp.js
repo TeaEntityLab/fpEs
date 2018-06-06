@@ -1,7 +1,7 @@
 var {
   compose, curry,
   either,
-  inCaseOfEqual, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfObject, inCaseOfArray,
+  inCaseOfEqual, inCaseOfRegex, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfObject, inCaseOfArray,
   otherwise,
 } = require('../src/fp');
 
@@ -23,6 +23,11 @@ describe('Fp', function () {
       either(undefined, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
       either('', inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
       either(0, inCaseOfObject((x)=>JSON.stringify(x)), otherwise((x)=>false)).should.equal(false);
+	});
+  it('inCaseOfRegex', function () {
+      either('ccc', inCaseOfRegex('c+', (x)=>true), otherwise((x)=>false)).should.equal(true);
+      either('ccc', inCaseOfRegex(/c+/, (x)=>true), otherwise((x)=>false)).should.equal(true);
+      either('', inCaseOfRegex('c+', (x)=>true), otherwise((x)=>false)).should.equal(false);
 	});
   it('inCaseOfNull', function () {
       either(null, inCaseOfNull((x)=>true), otherwise((x)=>false)).should.equal(true);
