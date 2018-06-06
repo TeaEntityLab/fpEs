@@ -3,4 +3,5 @@ module.exports = {
   MonadIO: require('./src/monadio'),
   Publisher: require('./src/publisher'),
   ...require('./src/fp'),
+  ...require('./src/pattern'),
 };

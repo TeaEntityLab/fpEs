@@ -1,7 +1,7 @@
 # Custom
 
 dist/*.js
-!/dist/bundle.min.js
+!/dist/*.min.js
 
 
 

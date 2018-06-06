@@ -6,7 +6,8 @@
   "scripts": {
     "test": "mocha --compilers js:babel-core/register --require should test/**/*.js",
     "dev": "webpack -d --watch",
-    "build": "webpack --mode production",
+    "build": "webpack --mode production && bash build-custom.sh",
+    "build-custom": "webpack --mode production --config webpack.custom.config.js",
     "clean": "find src -name '*.js' | sed 's/^src\\///' | xargs rm -f",
     "prepublish": "npm run build",
     "postpublish": "npm run clean"

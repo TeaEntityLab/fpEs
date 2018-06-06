@@ -1,7 +1,19 @@
 # fpEs
 Functional Programming for EcmaScript(Javascript)
 
-## Common FP (Compose, Curry, PatternMatching)
+bundled files for web/browser usages:
+
+[https://unpkg.com/fpes/dist/bundle.min.js](all)
+
+[https://unpkg.com/fpes/dist/fp.min.js](fp)
+[https://unpkg.com/fpes/dist/monad.min.js](monad)
+[https://unpkg.com/fpes/dist/monadio.min.js](monadio)
+[https://unpkg.com/fpes/dist/pattern.min.js](pattern)
+[https://unpkg.com/fpes/dist/publisher.min.js](publisher)
+
+# Usage
+
+## Common FP (Compose, Curry)
 
 Example:
 
@@ -9,8 +21,6 @@ Example:
 
 import {
   compose, curry,
-  either,
-  inCaseOfObject, inCaseOfClass,
 } from "fpEs";
 
 // compose
@@ -24,6 +34,19 @@ console.log(curry((x, y, z) => x + y + z)(1,2,3)) // 6
 console.log(curry((x, y, z) => x + y + z)(1)(2,3)) // 6
 console.log(curry((x, y, z) => x + y + z)(1,2)(3)) // 6
 console.log(curry((x, y, z) => x + y + z)(1)(2)(3)) // 6
+
+```
+
+## PatternMatching
+
+Example:
+
+```javascript
+
+import {
+  either,
+  inCaseOfObject, inCaseOfEqual, inCaseOfClass, otherwise,
+} from "fpEs";
 
 // PatternMatching
 
