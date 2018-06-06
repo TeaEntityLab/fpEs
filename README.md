@@ -4,12 +4,19 @@ Functional Programming for EcmaScript(Javascript)
 bundled files for web/browser usages:
 
 [all](https://unpkg.com/fpes/dist/bundle.min.js)
+
 [all (without PatternMatching, much smaller](https://unpkg.com/fpes/dist/bundle-nopattern.min.js))
 
+---
+
 [fp](https://unpkg.com/fpes/dist/fp.min.js)
+
 [monad](https://unpkg.com/fpes/dist/monad.min.js)
+
 [monadio](https://unpkg.com/fpes/dist/monadio.min.js)
+
 [pattern](https://unpkg.com/fpes/dist/pattern.min.js)
+
 [publisher](https://unpkg.com/fpes/dist/publisher.min.js)
 
 # Usage
