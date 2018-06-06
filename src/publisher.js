@@ -7,12 +7,18 @@ class Publisher {
     var next = new Publisher();
     next.origin = this;
 
-    return this.subscribe((val) => {
+    this.subscribe((val) => {
       next.publish(fn(val));
     });
+    return next;
   }
   subscribe(fn) {
+    if (this.subscribers.includes(fn)) {
+      return;
+    }
+
     this.subscribers.push(fn);
+    return fn;
   }
   unsubscribe(fn) {
     this.subscribers = this.subscribers.filter((item)=>item!==fn);

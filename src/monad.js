@@ -36,5 +36,6 @@ Monad.just = function (ref) {
   var m = new MonadDef(ref);
   return m;
 };
+Monad.of = Monad.just;
 
 module.exports = Monad;

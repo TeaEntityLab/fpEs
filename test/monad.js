@@ -1,14 +1,14 @@
 var Monad = require('../src/monad');
 
-describe('Monad', () => {
-  it('New', () => {
+describe('Monad', function () {
+  it('New', function () {
 			var m = Monad.just(1);
 	});
-  it('flatMap', () => {
+  it('flatMap', function () {
 			var m = Monad.just(1).flatMap((a)=>a+2).flatMap((a)=>a+3);
       m.unwrap().should.equal(6)
 	});
-  it('isPresent', () => {
+  it('isPresent', function () {
 			var m;
 
       m = Monad.just(1);
@@ -21,7 +21,7 @@ describe('Monad', () => {
       m.isPresent().should.equal(false)
       m.isNull().should.equal(true)
 	});
-  it('or', () => {
+  it('or', function () {
 			var m;
 
       m = Monad.just(1);
@@ -34,7 +34,7 @@ describe('Monad', () => {
       m.or(3).unwrap().should.equal(3)
       m.or(4).unwrap().should.equal(4)
 	});
-  it('letDo', () => {
+  it('letDo', function () {
 			var m;
       var v;
 

@@ -1,18 +1,50 @@
+class MonadIODef {
+  constructor(effect) {
+    this.effect = effect;
+  }
 
+  then(fn) {
+    var self = this;
+    return new MonadIODef(function () {
+      return fn(self.effect());
+    });
+  }
+  flatMap(fn) {
+    return this.then(fn);
+  }
 
-module.exports = {
-  asof: function (ref) {
-    return Promise.resolve(ref);
-  },
-  doM: function (genDef) {
-    var gen = genDef();
-    function step(value) {
-        var result = gen.next(value);
-        if (result.done) {
-            return result.value;
-        }
-        return result.value.then(step);
+  subscribe(fn, asynchronized) {
+    if (asynchronized) {
+      return Promise.resolve(0).then(this.effect).then(fn);
     }
-    return step();
-  },
+
+    fn(this.effect())
+    return fn;
+  }
+}
+
+var MonadIO = {};
+MonadIO.just = function (ref) {
+  var m = new MonadIODef(()=>ref);
+  return m;
 };
+MonadIO.of = MonadIO.just;
+MonadIO.asof = function (ref) {
+  return Promise.resolve(ref);
+};
+MonadIO.doM = function (genDef) {
+  var gen = genDef();
+  function step(value) {
+      var result = gen.next(value);
+      if (result.done) {
+          return result.value;
+      }
+      if (result.value instanceof MonadIODef) {
+          return result.value.subscribe((x)=>x, true).then(step);
+      }
+      return result.value.then(step);
+  }
+  return step();
+};
+
+module.exports = MonadIO;
