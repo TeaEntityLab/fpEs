@@ -15,4 +15,25 @@ module.exports = {
     return fns.reduce((f, g) => (...args) => f(g(...args)))
   },
   curry,
+  chunk: (array, chunk_size) => Array(Math.ceil(array.length / chunk_size)).fill().map((_, index) => index * chunk_size).map(begin => array.slice(begin, begin + chunk_size)),
+  range: function(n) {
+    return Array.apply(null,Array(n)).map((x,i) => i)
+  },
+  debounce: function(fn, timeout) {
+    var ref = setTimeout(fn, timeout)
+    return {
+      ref,
+      cancel: ()=>clearTimeout(ref),
+    }
+  },
+  schedule: function(fn, interval) {
+    var ref = setInterval(fn, interval)
+    return {
+      ref,
+      cancel: ()=>clearInterval(ref),
+    }
+  },
+  clone: function (obj) {
+    return JSON.parse(JSON.stringify(obj))
+  }
 };
