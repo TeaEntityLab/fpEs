@@ -1,20 +1,18 @@
-function curry(fn) {
-  return (...xs) => {
-    if (xs.length === 0) {
-      throw Error('EMPTY INVOCATION');
-    }
-    if (xs.length >= fn.length) {
-      return fn(...xs);
-    }
-    return curry(fn.bind(null, ...xs));
-  };
-}
-
 module.exports = {
   compose: function (...fns) {
     return fns.reduce((f, g) => (...args) => f(g(...args)))
   },
-  curry,
+  curry: function curry(fn) {
+    return (...xs) => {
+      if (xs.length === 0) {
+        throw Error('EMPTY INVOCATION');
+      }
+      if (xs.length >= fn.length) {
+        return fn(...xs);
+      }
+      return curry(fn.bind(null, ...xs));
+    };
+  },
   chunk: (array, chunk_size) => Array(Math.ceil(array.length / chunk_size)).fill().map((_, index) => index * chunk_size).map(begin => array.slice(begin, begin + chunk_size)),
   range: function(n) {
     return Array.apply(null,Array(n)).map((x,i) => i)
@@ -34,6 +32,9 @@ module.exports = {
     }
   },
   clone: function (obj) {
+    if (! obj) {
+      return obj;
+    }
     return JSON.parse(JSON.stringify(obj))
-  }
+  },
 };
