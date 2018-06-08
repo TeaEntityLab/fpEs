@@ -1,7 +1,7 @@
 var {
   compose, curry,
-  chunk, range, tail, shift,
-  clone,
+  chunk, range, tail, shift, unique,
+  clone, propEq,
   flatten, reverse, map, reduce, filter,
 } = require('../fp');
 
@@ -19,9 +19,16 @@ describe('Fp', function () {
   it('chunk', function () {
 			JSON.stringify(chunk(range(7),3)).should.equal('[[0,1,2],[3,4,5],[6]]')
 	});
+  it('unique', function () {
+			JSON.stringify(unique([0,0,1,2,3,3,4,5,3,4,5,6])).should.equal('[0,1,2,3,4,5,6]')
+	});
   it('tail shift', function () {
 			JSON.stringify(tail(range(3))).should.equal('[1,2]')
 			JSON.stringify(shift(range(3))).should.equal('0')
+	});
+  it('propEq', function () {
+			(propEq(1)('a')({a:1})).should.equal(true);
+			(propEq(1)('a')({b:1})).should.equal(false);
 	});
   it('clone', function () {
 			(clone(null) === null).should.equal(true);

@@ -9,6 +9,7 @@ function curry(fn) {
     return curry(fn.bind(null, ...xs));
   };
 }
+var prop = curry(function (prop, obj) {return obj[prop]});
 
 module.exports = {
   compose: function (...fns) {
@@ -45,11 +46,13 @@ module.exports = {
       return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
     }, []);
   },
+  unique: function (list) {return list.filter(function (v, i, a) {return a.indexOf(v) === i})},
   tail: function (list) {return list.length > 0 ? list.slice(1) : list},
   reverse: function (list) {return list.reverse()},
   shift: function (list) {return list.shift()},
 
-  prop: curry(function (prop, obj) {return obj[prop]}),
+  prop,
+  propEq: curry(function (val, p, obj) {return prop(p)(obj) === val}),
   clone: function (obj) {
     if (! obj) {
       return obj;
