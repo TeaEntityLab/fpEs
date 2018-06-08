@@ -40,4 +40,13 @@ module.exports = {
   reverse: function (arr) {
     return arr.reverse();
   },
+  map: function (arr, fn) {
+    return arr.map(fn);
+  },
+  reduce: function (arr, fn) {
+    return arr.reduce(fn);
+  },
+  filter: function (arr, fn) {
+    return arr.filter(fn);
+  },
 };

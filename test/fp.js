@@ -2,7 +2,7 @@ var {
   compose, curry,
   chunk, range,
   clone,
-  reverse,
+  reverse, map, reduce, filter,
 } = require('../fp');
 
 describe('Fp', function () {
@@ -26,7 +26,10 @@ describe('Fp', function () {
 			JSON.stringify(clone(chunk(range(7),3))).should.equal('[[0,1,2],[3,4,5],[6]]')
 			JSON.stringify(clone({a:3,b:4,c:{d:5}})).should.equal('{"a":3,"b":4,"c":{"d":5}}')
 	});
-  it('reverse', function () {
+  it('reverse, map, reduce, filter', function () {
 			JSON.stringify(reverse([6,5,4,3,2,1,0])).should.equal('[0,1,2,3,4,5,6]')
+			JSON.stringify(map([1,2,3],(x)=>x*x)).should.equal('[1,4,9]')
+			JSON.stringify(reduce([1,2,3],(x,y)=>x+y)).should.equal('6')
+			JSON.stringify(filter([1,2,3],(x)=>x>2)).should.equal('[3]')
 	});
 })
