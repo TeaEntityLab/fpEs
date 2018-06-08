@@ -37,4 +37,7 @@ module.exports = {
     }
     return JSON.parse(JSON.stringify(obj))
   },
+  reverse: function (arr) {
+    return arr.reverse();
+  },
 };

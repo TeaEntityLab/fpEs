@@ -2,6 +2,7 @@ var {
   compose, curry,
   chunk, range,
   clone,
+  reverse,
 } = require('../fp');
 
 describe('Fp', function () {
@@ -24,5 +25,8 @@ describe('Fp', function () {
 
 			JSON.stringify(clone(chunk(range(7),3))).should.equal('[[0,1,2],[3,4,5],[6]]')
 			JSON.stringify(clone({a:3,b:4,c:{d:5}})).should.equal('{"a":3,"b":4,"c":{"d":5}}')
+	});
+  it('reverse', function () {
+			JSON.stringify(reverse([6,5,4,3,2,1,0])).should.equal('[0,1,2,3,4,5,6]')
 	});
 })
