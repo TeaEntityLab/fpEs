@@ -2,7 +2,7 @@ var {
   compose, curry,
   chunk, range, tail, shift, unique,
   clone, propEq, get, matches, memoize,
-  flatten, reverse, map, reduce, filter,
+  flatten, flattenMap, unary, reverse, map, reduce, filter,
 } = require('../fp');
 
 describe('Fp', function () {
@@ -32,12 +32,6 @@ describe('Fp', function () {
 			(matches({a:1})({a:1})).should.equal(true);
 			(matches({b:1})({a:1})).should.equal(false);
 			(get({b:1})('b')).should.equal(1);
-
-      var count = 0;
-      const square = x => {
-        count = count + 1;
-        return x * x;
-      };
 	});
   it('clone', function () {
 			(clone(null) === null).should.equal(true);
@@ -46,11 +40,13 @@ describe('Fp', function () {
 			JSON.stringify(clone(chunk(range(7),3))).should.equal('[[0,1,2],[3,4,5],[6]]')
 			JSON.stringify(clone({a:3,b:4,c:{d:5}})).should.equal('{"a":3,"b":4,"c":{"d":5}}')
 	});
-  it('flatten, reverse, map, reduce, filter', function () {
+  it('flatten, flattenMap, reverse, map, reduce, filter', function () {
       // console.log(map((x)=>x*x)([1,2,3]));
 
 
       JSON.stringify(flatten([[[[[[[0],1],2],3],4],5],6])).should.equal('[0,1,2,3,4,5,6]')
+      JSON.stringify(flattenMap((x)=>[x*x,x*x])([1,2,3])).should.equal('[1,1,4,4,9,9]')
+      JSON.stringify(flattenMap(unary(parseInt))(["+1","+2","+3"])).should.equal('[1,2,3]')
 
       JSON.stringify(reverse([6,5,4,3,2,1,0])).should.equal('[0,1,2,3,4,5,6]')
 			JSON.stringify(map((x)=>x*x)([1,2,3])).should.equal('[1,4,9]')

@@ -1,3 +1,6 @@
+function compose(...fns) {
+  return fns.reduce(function (f, g) {return function (...args) {return f(g(...args))}})
+};
 function curry(fn) {
   return function (...xs) {
     if (xs.length === 0) {
@@ -9,12 +12,16 @@ function curry(fn) {
     return curry(fn.bind(null, ...xs));
   };
 }
+function flatten(list) {
+  return list.reduce(function (flat, toFlatten) {
+    return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+  }, []);
+}
+var map = curry(function (f, list) {return list.map(f)});
 var prop = curry(function (prop, obj) {return obj[prop]});
 
 module.exports = {
-  compose: function (...fns) {
-    return fns.reduce(function (f, g) {return function (...args) {return f(g(...args))}})
-  },
+  compose,
   pipe: function (...fns) {return compose(...fns.reverse())},
 
   curry,
@@ -37,15 +44,14 @@ module.exports = {
     }
   }),
 
-  map: curry(function (f, list) {return list.map(f)}),
+  map,
   reduce: curry(function (f, list) {return list.length > 0 ? list.reduce(f) : undefined}),
   filter: curry(function (f, list) {return list.filter(f)}),
+  filter: curry(function (f, list) {return list.filter(f)}),
+  flattenMap: curry(function (f, list) {return compose(flatten, map)(f, list)}),
+  unary: curry(function (f, arg) {return f(arg)}),
 
-  flatten: function flatten(list) {
-    return list.reduce(function (flat, toFlatten) {
-      return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-    }, []);
-  },
+  flatten,
   unique: function (list) {return list.filter(function (v, i, a) {return a.indexOf(v) === i})},
   tail: function (list) {return list.length > 0 ? list.slice(1) : list},
   reverse: function (list) {return list.reverse()},
