@@ -1,3 +1,5 @@
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+
 module.exports = (env, argv) => {
   let filename = env.filename;
   let targetFilename = encodeURIComponent(filename.substring(filename.lastIndexOf('/')+1));
@@ -20,6 +22,21 @@ module.exports = (env, argv) => {
                 ],
             },
         ]
+    },
+    optimization: {
+      minimizer: [
+        // we specify a custom UglifyJsPlugin here to get source maps in production
+        new UglifyJsPlugin({
+          cache: true,
+          parallel: true,
+          uglifyOptions: {
+            compress: true,
+            ecma: 5,
+            mangle: true
+          },
+          sourceMap: true
+        }),
+      ]
     },
   };
 };

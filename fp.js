@@ -1,52 +1,59 @@
+function curry(fn) {
+  return function (...xs) {
+    if (xs.length === 0) {
+      throw Error('EMPTY INVOCATION');
+    }
+    if (xs.length >= fn.length) {
+      return fn(...xs);
+    }
+    return curry(fn.bind(null, ...xs));
+  };
+}
+
 module.exports = {
   compose: function (...fns) {
-    return fns.reduce((f, g) => (...args) => f(g(...args)))
+    return fns.reduce(function (f, g) {return function (...args) {return f(g(...args))}})
   },
-  curry: function curry(fn) {
-    return (...xs) => {
-      if (xs.length === 0) {
-        throw Error('EMPTY INVOCATION');
-      }
-      if (xs.length >= fn.length) {
-        return fn(...xs);
-      }
-      return curry(fn.bind(null, ...xs));
-    };
-  },
-  chunk: (array, chunk_size) => Array(Math.ceil(array.length / chunk_size)).fill().map((_, index) => index * chunk_size).map(begin => array.slice(begin, begin + chunk_size)),
+  pipe: function (...fns) {return compose(...fns.reverse())},
+
+  curry,
+  chunk: curry(function (array, chunk_size) {return Array(Math.ceil(array.length / chunk_size)).fill().map(function (_, index) {return index * chunk_size}).map(function (begin) {return array.slice(begin, begin + chunk_size)})}),
   range: function(n) {
-    return Array.apply(null,Array(n)).map((x,i) => i)
+    return Array.apply(null,Array(n)).map(function (x,i) {return i})
   },
-  debounce: function(fn, timeout) {
+  debounce: curry(function (fn, timeout) {
     var ref = setTimeout(fn, timeout)
     return {
       ref,
-      cancel: ()=>clearTimeout(ref),
+      cancel: function () {return clearTimeout(ref)},
     }
-  },
-  schedule: function(fn, interval) {
+  }),
+  schedule: curry(function (fn, interval) {
     var ref = setInterval(fn, interval)
     return {
       ref,
-      cancel: ()=>clearInterval(ref),
+      cancel: function () {return clearInterval(ref)},
     }
+  }),
+
+  map: curry(function (f, list) {return list.map(f)}),
+  reduce: curry(function (f, list) {return list.length > 0 ? list.reduce(f) : undefined}),
+  filter: curry(function (f, list) {return list.filter(f)}),
+
+  flatten: function flatten(list) {
+    return list.reduce(function (flat, toFlatten) {
+      return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
+    }, []);
   },
+  tail: function (list) {return list.length > 0 ? list.slice(1) : list},
+  reverse: function (list) {return list.reverse()},
+  shift: function (list) {return list.shift()},
+
+  prop: curry(function (prop, obj) {return obj[prop]}),
   clone: function (obj) {
     if (! obj) {
       return obj;
     }
     return JSON.parse(JSON.stringify(obj))
-  },
-  reverse: function (arr) {
-    return arr.reverse();
-  },
-  map: function (arr, fn) {
-    return arr.map(fn);
-  },
-  reduce: function (arr, fn) {
-    return arr.reduce(fn);
-  },
-  filter: function (arr, fn) {
-    return arr.filter(fn);
   },
 };
