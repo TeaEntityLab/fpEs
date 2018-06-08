@@ -53,6 +53,26 @@ module.exports = {
 
   prop,
   propEq: curry(function (val, p, obj) {return prop(p)(obj) === val}),
+  get: curry(function (obj, p) {return prop(p, obj)}),
+  matches: curry(function (rule, obj) {
+    for(var k in rule) {
+      if ((!obj.hasOwnProperty(k))||obj[k]!==rule[k]) {return false}
+    }
+    return true;
+  }),
+  memoize: function (fn) {
+    var memo = {};
+    var slice = Array.prototype.slice;
+
+    return function() {
+      var args = slice.call(arguments);
+
+      if (args in memo) {
+        return memo[args];
+      }
+      return (memo[args] = fn.apply(this, args));
+    };
+  },
   clone: function (obj) {
     if (! obj) {
       return obj;

@@ -1,7 +1,7 @@
 var {
   compose, curry,
   chunk, range, tail, shift, unique,
-  clone, propEq,
+  clone, propEq, get, matches, memoize,
   flatten, reverse, map, reduce, filter,
 } = require('../fp');
 
@@ -26,9 +26,18 @@ describe('Fp', function () {
 			JSON.stringify(tail(range(3))).should.equal('[1,2]')
 			JSON.stringify(shift(range(3))).should.equal('0')
 	});
-  it('propEq', function () {
+  it('propEq get matches', function () {
 			(propEq(1)('a')({a:1})).should.equal(true);
 			(propEq(1)('a')({b:1})).should.equal(false);
+			(matches({a:1})({a:1})).should.equal(true);
+			(matches({b:1})({a:1})).should.equal(false);
+			(get({b:1})('b')).should.equal(1);
+
+      var count = 0;
+      const square = x => {
+        count = count + 1;
+        return x * x;
+      };
 	});
   it('clone', function () {
 			(clone(null) === null).should.equal(true);
