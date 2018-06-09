@@ -64,6 +64,15 @@ module.exports = {
   partialRight: curry(function (f, ...presetArgs) {return function (...laterArgs) {return f(...laterArgs, ...presetArgs)}}),
   partialProps: curry(function(f,presetArgsObj, laterArgsObj) {return f(Object.assign( {}, presetArgsObj, laterArgsObj))}),
   when: curry(function(test, f) {return ifelse(test, function(){return undefined}, f)}),
+  trampoline: function (f) {
+    return function (...args){
+        var result = f( ...args )
+        while (typeof result === "function") {
+            result = result()
+        }
+        return result
+    }
+  },
 
   flatten,
   unique: function (list) {return list.filter(function (v, i, a) {return a.indexOf(v) === i})},
