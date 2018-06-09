@@ -122,7 +122,8 @@ module.exports = {
   compact: function (arr,typ) {
     if(arguments.length === 1) {
       return arr.filter(x=>x);
-    } return arr.filter(x=> typeof x === typeof typ);
+    }
+    return arr.filter(x=> typeof x === typeof typ);
   },
   /**
    * Concats arrays.
@@ -144,11 +145,12 @@ module.exports = {
     let lastButOne = (+values[values.length-2])-1;
     let lastOne = (+values[values.length-1])-1;
 
-    if(typeof (lastButOne || lastOne) != "number")
+    if(typeof (lastButOne || lastOne) != "number") {
       return values;
+    }
 
     let main = values[lastButOne];
-      let follower = values[lastOne];
+    let follower = values[lastOne];
 
     let concatWithoutDuplicate = [...new Set(main.concat(follower))]
 
