@@ -2,7 +2,8 @@ var {
   compose, curry,
   chunk, range, tail, shift, unique,
   clone, propEq, get, matches, memoize,
-  flatten, flattenMap, unary, foldl, foldr, reverse, map, reduce, filter,
+  flatten, flattenMap, unary, foldl, foldr, take,
+  reverse, map, reduce, filter,
 } = require('../fp');
 
 describe('Fp', function () {
@@ -22,9 +23,13 @@ describe('Fp', function () {
   it('unique', function () {
 			JSON.stringify(unique([0,0,1,2,3,3,4,5,3,4,5,6])).should.equal('[0,1,2,3,4,5,6]')
 	});
-  it('tail shift', function () {
+  it('tail shift take', function () {
 			JSON.stringify(tail(range(3))).should.equal('[1,2]')
 			JSON.stringify(shift(range(3))).should.equal('0')
+      JSON.stringify(take(4, range(3))).should.equal('[0,1,2]')
+			JSON.stringify(take(3, range(3))).should.equal('[0,1,2]')
+			JSON.stringify(take(2, range(3))).should.equal('[0,1]')
+			JSON.stringify(take(1, range(3))).should.equal('[0]')
 	});
   it('propEq get matches', function () {
 			(propEq(1)('a')({a:1})).should.equal(true);

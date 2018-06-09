@@ -31,7 +31,7 @@ module.exports = (env, argv) => {
           parallel: true,
           uglifyOptions: {
             compress: true,
-            ecma: 5,
+            ecma: 6,
             mangle: true
           },
           sourceMap: true

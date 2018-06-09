@@ -75,10 +75,17 @@ module.exports = {
   },
 
   flatten,
-  unique: function (list) {return list.filter(function (v, i, a) {return a.indexOf(v) === i})},
-  tail: function (list) {return list.length > 0 ? list.slice(1) : list},
-  reverse: function (list) {return list.reverse()},
-  shift: function (list) {return list.shift()},
+  unique: function (list) {return list.filter(function (val, i, list) {return list.indexOf(val) === i})},
+  tail: function (list) {return list.length > 0 ? Array.prototype.slice.call(list, 1) : list},
+  reverse: function (list) {return typeof list === 'string' ? list.split('').reverse().join('') : Array.prototype.slice.call(list, 0).reverse()},
+  shift: function (list) {return Array.prototype.slice.call(list, 0).shift()},
+  take: curry(function take(n, list) {
+    if (n > 0 && list.length > 0) {
+      var val = list.shift();
+      return [].concat(val, take(n - 1, Array.prototype.slice.call(list, 0)))
+    }
+    return [];
+  }),
 
   prop,
   propEq: curry(function (val, p, obj) {return prop(p)(obj) === val}),
@@ -91,10 +98,9 @@ module.exports = {
   }),
   memoize: function (fn) {
     var memo = {};
-    var slice = Array.prototype.slice;
 
     return function() {
-      var args = slice.call(arguments);
+      var args = Array.prototype.slice.call(arguments);
 
       if (args in memo) {
         return memo[args];
@@ -103,7 +109,7 @@ module.exports = {
     };
   },
   clone: function (obj) {
-    if (! obj) {
+    if (obj === undefined || obj === NaN) {
       return obj;
     }
     return JSON.parse(JSON.stringify(obj))
