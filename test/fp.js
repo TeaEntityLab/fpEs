@@ -3,6 +3,7 @@ var {
   chunk, range, tail, shift, unique,
   clone, propEq, get, matches, memoize,
   flatten, flattenMap, unary, foldl, foldr, take,
+  compact, concat,difference,
   reverse, map, reduce, filter,
 } = require('../fp');
 
@@ -65,5 +66,33 @@ describe('Fp', function () {
 			JSON.stringify(compose(reduce((x,y)=>x+y, 0), map((x)=>x*x), filter((x)=>x<4), flatten)
         ([[[[[[[0],1],2],3],4],5],6]))
         .should.equal('14');
+	});
+
+	it ('should compact by returning all truthy values', () => {
+		JSON.stringify(compact([1,2,false, "", 3])).should.equal("[1,2,3]");
+	});
+	it ('should compact with second argument', () => {
+		JSON.stringify(compact(["John",1, 2, "Jane"],'')).should.equal('["John","Jane"]');
+	});
+
+	it ('should concat arrays', () => {
+		JSON.stringify(concat([1,2,3],4,5)).should.equal("[1,2,3,4,5]")
+		JSON.stringify(concat([1,2,3],[4,5])).should.equal("[1,2,3,[4,5]]")
+	});
+	it ('should concat with a function', () => {
+		JSON.stringify(concat([1,2,3],4,5, x=>x>3)).should.equal("[4,5]")
+	});
+
+	it ('should find the difference between two arrays ', () => {
+		JSON.stringify(difference(
+			["May","Joe","John"],
+		["Jane", "Joe", "John","Kay","May","Q"],
+		["May", "Suzzie", "Fri"],
+		3,1)).should.equal('["Joe","John"]')
+		JSON.stringify(difference(
+			["May","Joe","John"],
+		["Jane", "Joe", "John","Kay","May","Kai"],
+		["May", "Kwei", "Fri"],
+		1,3)).should.equal('["Kwei","Fri"]')
 	});
 })
