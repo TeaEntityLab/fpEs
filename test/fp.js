@@ -4,7 +4,7 @@ var {
   clone, propEq, get, matches, memoize,
   flatten, flattenMap, unary, foldl, foldr, take,
   compact, concat,difference,
-  reverse, map, reduce, filter,
+  reverse, map, reduce, filter, drop, fill
 } = require('../fp');
 
 describe('Fp', function () {
@@ -83,16 +83,76 @@ describe('Fp', function () {
 		JSON.stringify(concat([1,2,3],4,5, x=>x>3)).should.equal("[4,5]")
 	});
 
-	it ('should find the difference between two arrays ', () => {
+	it ('should find the difference between the 3rd and 1st arrays ', () => {
 		JSON.stringify(difference(
 			["May","Joe","John"],
 		["Jane", "Joe", "John","Kay","May","Q"],
 		["May", "Suzzie", "Fri"],
 		3,1)).should.equal('["Joe","John"]')
+	});
+
+	it ('should find the difference between the 1st and 3rd arrays', () => {
 		JSON.stringify(difference(
 			["May","Joe","John"],
 		["Jane", "Joe", "John","Kay","May","Kai"],
 		["May", "Kwei", "Fri"],
 		1,3)).should.equal('["Kwei","Fri"]')
+	});
+
+
+	it ('should return array when dropCount is 0 and no function is passed', () => {
+		JSON.stringify(drop([1,2,3],0)).should.equal('[1,2,3]');
+	});
+	it ('should return array when dropCount is 0 and no function is passed and either right or left is passed', () => {
+		JSON.stringify(drop([1,2,3],0,"left")).should.equal('[1,2,3]');
+		JSON.stringify(drop([1,2,3],0,"right")).should.equal('[1,2,3]');
+	});
+	it ('should drop one element from left when only array is passed as argument', () => {
+		JSON.stringify(drop([1,2,3])).should.equal('[2,3]');
+	});
+	it ('should drop one element from left when array and left is passed as argument', () => {
+		JSON.stringify(drop([1,2,3],1,"left")).should.equal('[2,3]');
+	});
+	it ('should drop one element from right when array and right is passed as argument', () => {
+		JSON.stringify(drop([1,2,3],1,"right")).should.equal('[1,2]');
+	});
+	it ('should drop specified number of elements from left when only array and dropCount is passed as argument', () => {
+		JSON.stringify(drop([1,2,3],2)).should.equal('[3]');
+	});
+	it ('should drop specified number of elements from left when left is passed as argument', () => {
+		JSON.stringify(drop([1,2,3],2,"left")).should.equal('[3]');
+	});
+	it ('should drop specified number of elements from right when right is passed as argument', () => {
+		JSON.stringify(drop([1,2,3],2,"right")).should.equal('[1]');
+	});
+
+	it ('should drop specified number of elements from left and filter remaining values with passed in function', () => {
+		JSON.stringify(drop([1,2,3,4,5,6],3,"left",x=>x>5)).should.equal('[6]');
+	});
+	it ('should drop specified number of elements from right and filter remaining values with passed in function', () => {
+		JSON.stringify(drop([1,2,3,4,5,6],3,"right",x=>x>2)).should.equal('[3]');
+	});
+
+
+	it ('should fill and return new array with specified value', () => {
+		JSON.stringify(fill([1,2,3],4)).should.equal('[4,4,4]');
+	});
+	it ('should fill Array object and return new array with specified value', () => {
+		JSON.stringify(fill(Array(3),4)).should.equal('[4,4,4]');
+	});
+	it ('should fill array with specified value till the end when endIndex isn\'t provided', () => {
+		JSON.stringify(fill([1,1,3,3,5],"*",0)).should.equal('["*","*","*","*","*"]');
+	});
+	it ('should fill array with specified value till the end when endIndex and startIndex aren\'t provided', () => {
+		JSON.stringify(fill([1,1,3,3,5],"*")).should.equal('["*","*","*","*","*"]');
+	});
+	it ('should fill array at specified indexes with specified value', () => {
+		JSON.stringify(fill([1,1,3,3,5],"*",0,2)).should.equal('["*","*","*",3,5]');
+	});
+	it ('should return array when startIndex is greater than array', () => {
+		JSON.stringify(fill([1,1,3,3,5],"*",5)).should.equal('[1,1,3,3,5]');
+	});
+	it ('should return array when startIndex and endIndex are greater than array', () => {
+		JSON.stringify(fill([1,1,3,3,5],"*",6,6)).should.equal('[1,1,3,3,5]');
 	});
 })
