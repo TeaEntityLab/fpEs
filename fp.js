@@ -12,8 +12,23 @@ function curry(fn) {
     return curry(fn.bind(null, ...xs));
   };
 }
-var reduce = curry(function (f, init, list) {return list.reduce(f, init)});
-var foldl = reduce;
+var reduce = curry(function (f, init, ...second) {
+  console.log(arguments);
+  var list;
+  if (arguments.length < 3) {
+    if (Array.isArray(init)) {
+      // Simple reduce
+      return init.reduce(f);
+    } else {
+      // Pass this round, currying it (manual currying)
+      return function (list) {return reduce(f, init, list)}
+    }
+  } else {
+    list = second[0];
+  };
+  return list.reduce(f, init)
+});
+var foldl = curry(function (f, init, list) {return reduce(f, init, list)});
 // var foldl = curry(function (f, init, list) {return (list.length === 0) ? init : foldl(f, f(init, list[0]), list.slice(1));});
 function flatten(list) {
   return foldl(function (flat, toFlatten) {
