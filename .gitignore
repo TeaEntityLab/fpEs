@@ -1,8 +1,7 @@
 # Custom
 
-dist/*
-# dist/*.js
-# !/dist/*.min.js
+dist/*.js*
+!/dist/*.min.js*
 
 
 
