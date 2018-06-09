@@ -2,7 +2,7 @@ var {
   compose, curry,
   chunk, range, tail, shift, unique,
   clone, propEq, get, matches, memoize,
-  flatten, flattenMap, unary, reverse, map, reduce, filter,
+  flatten, flattenMap, unary, foldl, foldr, reverse, map, reduce, filter,
 } = require('../fp');
 
 describe('Fp', function () {
@@ -50,12 +50,14 @@ describe('Fp', function () {
 
       JSON.stringify(reverse([6,5,4,3,2,1,0])).should.equal('[0,1,2,3,4,5,6]')
 			JSON.stringify(map((x)=>x*x)([1,2,3])).should.equal('[1,4,9]')
-			JSON.stringify(reduce((x,y)=>x+y)([1,2,3])).should.equal('6')
+			JSON.stringify(reduce((x,y)=>x+y, 0)([1,2,3])).should.equal('6')
+			JSON.stringify(foldr((x,y)=>x>y?x+y:0, 4)([1,2,3])).should.equal('10')
+			JSON.stringify(foldl((x,y)=>x>y?x+y:0, 0)([1,2,3])).should.equal('0')
 			JSON.stringify(filter((x)=>x>2)([1,2,3])).should.equal('[3]');
 
-      (reduce((x,y)=>x+y)([]) === undefined).should.equal(true)
+      (reduce((x,y)=>x+y, 0)([]) === 0).should.equal(true)
 
-			JSON.stringify(compose(reduce((x,y)=>x+y), map((x)=>x*x), filter((x)=>x<4), flatten)
+			JSON.stringify(compose(reduce((x,y)=>x+y, 0), map((x)=>x*x), filter((x)=>x<4), flatten)
         ([[[[[[[0],1],2],3],4],5],6]))
         .should.equal('14');
 	});

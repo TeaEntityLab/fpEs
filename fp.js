@@ -12,13 +12,17 @@ function curry(fn) {
     return curry(fn.bind(null, ...xs));
   };
 }
+var reduce = curry(function (f, init, list) {return list.reduce(f, init)});
+var foldl = reduce;
+// var foldl = curry(function (f, init, list) {return (list.length === 0) ? init : foldl(f, f(init, list[0]), list.slice(1));});
 function flatten(list) {
-  return list.reduce(function (flat, toFlatten) {
+  return foldl(function (flat, toFlatten) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, []);
+  }, [], list);
 }
 var map = curry(function (f, list) {return list.map(f)});
 var prop = curry(function (prop, obj) {return obj[prop]});
+var ifelse = curry(function(test, elsef, f) {return test() ? f() : elsef()});
 
 module.exports = {
   compose,
@@ -45,11 +49,21 @@ module.exports = {
   }),
 
   map,
-  reduce: curry(function (f, list) {return list.length > 0 ? list.reduce(f) : undefined}),
-  filter: curry(function (f, list) {return list.filter(f)}),
+  reduce,
+  foldl,
+  foldr: curry(function (f, init, list) {return foldl(f, init, list.reverse())}),
   filter: curry(function (f, list) {return list.filter(f)}),
   flattenMap: curry(function (f, list) {return compose(flatten, map)(f, list)}),
+
+  ifelse,
   unary: curry(function (f, arg) {return f(arg)}),
+  not: curry(function (f, ...args) {return !f(...args)}),
+  spread: curry(function (f, args) {return f(...args)}),
+  gather: curry(function (f, ...args) {return f(args)}),
+  partial: curry(function (f, ...presetArgs) {return function (...laterArgs) {return f(...presetArgs, ...laterArgs)}}),
+  partialRight: curry(function (f, ...presetArgs) {return function (...laterArgs) {return f(...laterArgs, ...presetArgs)}}),
+  partialProps: curry(function(f,presetArgsObj, laterArgsObj) {return f(Object.assign( {}, presetArgsObj, laterArgsObj))}),
+  when: curry(function(test, f) {return ifelse(test, function(){return undefined}, f)}),
 
   flatten,
   unique: function (list) {return list.filter(function (v, i, a) {return a.indexOf(v) === i})},

@@ -1,4 +1,8 @@
 module.exports = {
-  ...require('./index-nopattern'),
+  Monad: require('./monad'),
+  MonadIO: require('./monadio'),
+  Publisher: require('./publisher'),
+  ...require('./fp'),
+
   ...require('./pattern'),
 };

@@ -5,8 +5,6 @@ bundled files for web/browser usages:
 
 [all](https://unpkg.com/fpes/dist/bundle.min.js)
 
-[all (without PatternMatching, much smaller](https://unpkg.com/fpes/dist/bundle-nopattern.min.js))
-
 ---
 
 [fp](https://unpkg.com/fpes/dist/fp.min.js)
