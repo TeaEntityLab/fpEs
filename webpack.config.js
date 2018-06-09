@@ -1,4 +1,5 @@
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
 
 module.exports = (env, argv) => {
   return {
@@ -19,6 +20,11 @@ module.exports = (env, argv) => {
             },
         ]
     },
+    plugins: [
+      new CompressionPlugin({
+        cache: true,
+      })
+    ],
     optimization: {
       minimizer: [
         // we specify a custom UglifyJsPlugin here to get source maps in production

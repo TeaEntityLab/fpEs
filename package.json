@@ -62,6 +62,7 @@
     "babel-preset-stage-1": "^6.24.1",
     "babel-preset-stage-2": "^6.24.1",
     "babel-preset-stage-3": "^6.24.1",
+    "compression-webpack-plugin": "^1.1.11",
     "mocha": "^5.2.0",
     "should": "^13.2.1",
     "uglifyjs-webpack-plugin": "^1.2.5",
