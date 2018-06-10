@@ -266,7 +266,7 @@ p = doM(function *() {
   return value + value2 + value3 + value4;
 });
 
-console.log(p); // 22
+p.then((x)=>console.log(x)); // 22
 
 ```
 

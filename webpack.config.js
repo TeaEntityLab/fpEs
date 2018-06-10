@@ -1,4 +1,6 @@
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const CompressionPlugin = require("compression-webpack-plugin");
+const MinifyPlugin = require("babel-minify-webpack-plugin");
 
 module.exports = (env, argv) => {
   return {
@@ -19,6 +21,12 @@ module.exports = (env, argv) => {
             },
         ]
     },
+    plugins: [
+      new CompressionPlugin({
+        cache: true,
+      }),
+      // new MinifyPlugin({}, {}),
+    ],
     optimization: {
       minimizer: [
         // we specify a custom UglifyJsPlugin here to get source maps in production

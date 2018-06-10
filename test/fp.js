@@ -57,6 +57,7 @@ describe('Fp', function () {
       JSON.stringify(reverse([6,5,4,3,2,1,0])).should.equal('[0,1,2,3,4,5,6]')
 			JSON.stringify(map((x)=>x*x)([1,2,3])).should.equal('[1,4,9]')
 			JSON.stringify(reduce((x,y)=>x+y, 0)([1,2,3])).should.equal('6')
+			JSON.stringify(reduce((x,y)=>x+y)([1,2,3])).should.equal('6')
 			JSON.stringify(foldr((x,y)=>x>y?x+y:0, 4)([1,2,3])).should.equal('10')
 			JSON.stringify(foldl((x,y)=>x>y?x+y:0, 0)([1,2,3])).should.equal('0')
 			JSON.stringify(filter((x)=>x>2)([1,2,3])).should.equal('[3]');
