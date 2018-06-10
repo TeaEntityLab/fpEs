@@ -13,7 +13,7 @@ function curry(fn) {
   };
 }
 var reduce = curry(function (f, init, ...second) {
-  console.log(arguments);
+  // console.log(arguments);
   var list;
   if (arguments.length < 3) {
     if (Array.isArray(init)) {
