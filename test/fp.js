@@ -4,7 +4,8 @@ var {
   clone, propEq, get, matches, memoize,
   flatten, flattenMap, unary, foldl, foldr, take,
   compact, concat,difference,
-  reverse, map, reduce, filter, drop, fill
+  reverse, map, reduce, filter, drop, fill,
+  findIndex, findLastIndex, head, fromPairs, initial
 } = require('../fp');
 
 describe('Fp', function () {
@@ -155,5 +156,33 @@ describe('Fp', function () {
 	});
 	it ('should return array when startIndex and endIndex are greater than array', () => {
 		JSON.stringify(fill([1,1,3,3,5],"*",6,6)).should.equal('[1,1,3,3,5]');
+	});
+
+
+	it ('should return first element\'s index for which function equals true', () => {
+		JSON.stringify(findIndex([1,3,4,2,6],x=>x%2==0)).should.equal('2');
+	});
+
+	
+	it ('should return last element\'s index for which function equals true', () => {
+		JSON.stringify(findLastIndex([1,3,4,2,6],x=>x%2==0)).should.equal('4');
+	});
+
+
+	it ('should return empty array if passed in array is empty', () => {
+		JSON.stringify(head([])).should.equal('[]');
+	});
+	it ('should return first element if array contains elements', () => {
+		JSON.stringify(head([1,2,3])).should.equal('1');
+	});
+
+
+	it ('should return an object with key-values pairs from array', () => {
+		JSON.stringify(fromPairs([['a', 1], ['b', 2]])).should.equal('{"a":1,"b":2}')
+	});
+
+
+	it ('should return all but last value of array', () => {
+		JSON.stringify(initial([1,2,3,4])).should.equal('[1,2,3]');
 	});
 })
