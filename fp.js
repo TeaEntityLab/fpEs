@@ -170,5 +170,39 @@ module.exports = {
     let concatWithoutDuplicate = [...new Set(main.concat(follower))]
 
     return concatWithoutDuplicate.slice(main.length, concatWithoutDuplicate.length)
+  },
+  /**
+   * Drops specified number of values from array either through left or right.
+   * Uses passed in function to filter remaining array after values dropped.
+   * Default dropCount = 1
+   */
+  drop: function (arr,dropCount=1,direction="left",fn=null) {
+
+    if(dropCount === 0 && !fn) return arr.slice(0);
+
+    if(arguments.length === 1 || direction === "left") {
+      if(!fn) return arr.slice(+dropCount);
+
+        return (arr.slice(+dropCount)).filter(x=>fn(x));
+    }
+    if(direction === "right"){
+      if(!fn) {
+        return arr.slice(0, arr.length-(+dropCount));
+      }
+        if(dropCount === 0) return (arr.slice(0)).filter(x=>fn(x));
+        return (arr.slice(0, arr.length-(+dropCount))).filter(x=>fn(x));
+    }
+  },
+  /**
+   * Fills array using specified values.
+   * Can optionally pass in start and index of array to fill.
+   * Default startIndex = 0. Default endIndex = length of array.
+   */
+  fill: function(arr,value, startIndex =0, endIndex=arr.length){
+    return Array(...arr).map((x,i)=> {
+      if(i>= startIndex && i <= endIndex)
+        return x=value;
+      else return x;
+    });
   }
 };
