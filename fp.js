@@ -36,6 +36,7 @@ function flatten(list) {
   }, [], list);
 }
 var map = curry(function (f, list) {return list.map(f)});
+var reverse = function (list) {return typeof list === 'string' ? list.split('').reverse().join('') : Array.prototype.slice.call(list, 0).reverse()};
 var prop = curry(function (prop, obj) {return obj[prop]});
 var ifelse = curry(function(test, elsef, f) {return test() ? f() : elsef()});
 
@@ -66,7 +67,7 @@ module.exports = {
   map,
   reduce,
   foldl,
-  foldr: curry(function (f, init, list) {return foldl(f, init, list.reverse())}),
+  foldr: curry(function (f, init, list) {return foldl(f, init, reverse(list))}),
   filter: curry(function (f, list) {return list.filter(f)}),
   flattenMap: curry(function (f, list) {return compose(flatten, map)(f, list)}),
 
@@ -90,9 +91,9 @@ module.exports = {
   },
 
   flatten,
+  reverse,
   unique: function (list) {return list.filter(function (val, i, list) {return list.indexOf(val) === i})},
   tail: function (list) {return list.length > 0 ? Array.prototype.slice.call(list, 1) : list},
-  reverse: function (list) {return typeof list === 'string' ? list.split('').reverse().join('') : Array.prototype.slice.call(list, 0).reverse()},
   shift: function (list) {return Array.prototype.slice.call(list, 0).shift()},
   take: curry(function take(n, list) {
     if (n > 0 && list.length > 0) {
