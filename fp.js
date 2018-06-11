@@ -30,9 +30,9 @@ var reduce = curry(function (f, init, ...second) {
 });
 var foldl = curry(function (f, init, list) {return list.reduce(f, init)});
 function flatten(list) {
-  return foldl(function (flat, toFlatten) {
+  return list.reduce(function (flat, toFlatten) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
-  }, [], list);
+  }, []);
 }
 var map = curry(function (f, list) {return list.map(f)});
 var reverse = function (list) {return typeof list === 'string' ? list.split('').reverse().join('') : Array.prototype.slice.call(list, 0).reverse()};
@@ -60,7 +60,7 @@ module.exports = {
   pipe: function (...fns) {return compose(...fns.reverse())},
 
   curry,
-  chunk: curry(function (array, chunk_size) {return Array(Math.ceil(array.length / chunk_size)).fill().map(function (_, index) {return index * chunk_size}).map(function (begin) {return array.slice(begin, begin + chunk_size)})}),
+  chunk: curry(function (list, chunk_size) {return Array(Math.ceil(list.length / chunk_size)).fill().map(function (_, index) {return index * chunk_size}).map(function (begin) {return Array.prototype.slice.call(list, begin, begin + chunk_size)})}),
   range: function(n) {
     return Array.apply(null,Array(n)).map(function (x,i) {return i})
   },
@@ -150,34 +150,34 @@ module.exports = {
    * Returns truthy values from an array.
    * When typ is supplied, returns new array of specified type
    */
-  compact: function compact(arr,typ) {
+  compact: function compact(list,typ) {
     if(arguments.length === 1) {
-      if (Array.isArray(arr)) {
+      if (Array.isArray(list)) {
         // if the only one param is an array
-        return arr.filter(x=>x);
+        return list.filter(x=>x);
       } else {
         // Curry it manually
-        typ = arr;
-        return function (arr) {return compact(arr, typ)};
+        typ = list;
+        return function (list) {return compact(list, typ)};
       }
     }
-    return arr.filter(x=> typeof x === typeof typ);
+    return list.filter(x=> typeof x === typeof typ);
   },
   /**
    * Concats arrays.
    * Concats arrays using provided function
    */
-  concat: function concat(arr,...values) {
+  concat: function concat(list,...values) {
     if (values.length == 0) {
       // Manually curry it.
-      return function (...values) {return concat(arr,...values)}
+      return function (...values) {return concat(list,...values)}
     }
     let lastValue = values[values.length-1];
     if(typeof lastValue === "function") {
-      let excludeLast = values.slice(0,values.length-1);
-      return (arr.concat(excludeLast)).filter(lastValue);
+      let excludeLast = Array.prototype.slice.call(values, 0, values.length-1);
+      return (list.concat(excludeLast)).filter(lastValue);
     }
-    return arr.concat(values)
+    return list.concat(values)
   },
   /**
    * Compares two arrays, first one as main and second
@@ -196,28 +196,29 @@ module.exports = {
 
     let concatWithoutDuplicate = [...new Set(main.concat(follower))]
 
-    return concatWithoutDuplicate.slice(main.length, concatWithoutDuplicate.length)
+    return Array.prototype.slice.call(concatWithoutDuplicate, main.length, concatWithoutDuplicate.length)
   },
   /**
    * Drops specified number of values from array either through left or right.
    * Uses passed in function to filter remaining array after values dropped.
    * Default dropCount = 1
    */
-  drop: function (arr,dropCount=1,direction="left",fn=null) {
+  drop: function (list,dropCount=1,direction="left",fn=null) {
 
-    if(dropCount === 0 && !fn) return arr.slice(0);
+    if(dropCount === 0 && !fn) return Array.prototype.slice.call(list, 0);
 
     if(arguments.length === 1 || direction === "left") {
-      if(!fn) return arr.slice(+dropCount);
+      if(!fn) return Array.prototype.slice.call(list, +dropCount);
 
-        return (arr.slice(+dropCount)).filter(x=>fn(x));
+        return (Array.prototype.slice.call(list, +dropCount)).filter(x=>fn(x));
     }
     if(direction === "right"){
       if(!fn) {
-        return arr.slice(0, arr.length-(+dropCount));
+        return Array.prototype.slice.call(list, 0, list.length-(+dropCount));
       }
-        if(dropCount === 0) return (arr.slice(0)).filter(x=>fn(x));
-        return (arr.slice(0, arr.length-(+dropCount))).filter(x=>fn(x));
+      if(dropCount === 0) {return (Array.prototype.slice.call(list, 0)).filter(x=>fn(x))};
+
+      return (Array.prototype.slice.call(list, 0, list.length-(+dropCount))).filter(x=>fn(x));
     }
   },
   /**
@@ -225,19 +226,21 @@ module.exports = {
    * Can optionally pass in start and index of array to fill.
    * Default startIndex = 0. Default endIndex = length of array.
    */
-  fill: function(arr,value, startIndex =0, endIndex=arr.length){
-    return Array(...arr).map((x,i)=> {
-      if(i>= startIndex && i <= endIndex)
+  fill: function(list,value, startIndex =0, endIndex=list.length){
+    return Array(...list).map((x,i)=> {
+      if(i>= startIndex && i <= endIndex) {
         return x=value;
-      else return x;
+      } else {
+        return x;
+      }
     });
   },
   /**
    * Returns first element for which function
       returns true
    */
-  find: curry(function(fn, arr){
-    let entry = _findArrayEntry(fn, arr);
+  find: curry(function(fn, list){
+    let entry = _findArrayEntry(fn, list);
     if (entry) {
       return entry[1];
     }
@@ -246,8 +249,8 @@ module.exports = {
    * Returns index of first element for which function
       returns true
    */
-  findIndex: curry(function(fn, arr){
-    let entry = _findArrayEntry(fn, arr);
+  findIndex: curry(function(fn, list){
+    let entry = _findArrayEntry(fn, list);
     if (entry) {
       return entry[0];
     }
@@ -258,8 +261,8 @@ module.exports = {
    * Returns last element for which function
       returns true
    */
-  findLast: curry(function(fn, arr){
-    let entry = _findLastArrayEntry(fn, arr);
+  findLast: curry(function(fn, list){
+    let entry = _findLastArrayEntry(fn, list);
     if (entry) {
       return entry[1];
     }
@@ -268,8 +271,8 @@ module.exports = {
    * Returns index of last element for which function
       returns true
    */
-  findLastIndex: curry(function(fn, arr){
-    let entry = _findLastArrayEntry(fn, arr);
+  findLastIndex: curry(function(fn, list){
+    let entry = _findLastArrayEntry(fn, list);
     if (entry) {
       return entry[0];
     }
@@ -280,21 +283,21 @@ module.exports = {
    * Returns the first element of an array.
    * Returns an empty array when an empty is empty
    */
-  head: function(arr) {
-    return arr.length == 0 ? [] : arr[0];
+  head: function(list) {
+    return list.length == 0 ? [] : list[0];
   },
   /**
    * Constructs an object out of key-value pairs arrays.
    */
-  fromPairs: function(arr) {
+  fromPairs: function(list) {
     let obj = {};
-      arr.forEach(x=> obj[x[0]] = x[1]);
+    list.forEach(x=> obj[x[0]] = x[1]);
     return obj;
   },
   /**
    * Returns all elements of an array but the last
    */
-  initial: function(arr) {
-    return arr.slice(0,arr.length-1);
+  initial: function(list) {
+    return Array.prototype.slice.call(list,0,list.length-1);
   }
 };
