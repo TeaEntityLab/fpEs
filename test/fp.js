@@ -76,6 +76,9 @@ describe('Fp', function () {
 	it ('should compact with second argument', () => {
 		JSON.stringify(compact(["John",1, 2, "Jane"],'')).should.equal('["John","Jane"]');
 	});
+	it ('should compact in currying way', () => {
+		JSON.stringify(compose(compact(''))(["John",1, 2, "Jane"])).should.equal('["John","Jane"]');
+	});
 
 	it ('should concat arrays', () => {
 		JSON.stringify(concat([1,2,3],4,5)).should.equal("[1,2,3,4,5]")
@@ -83,6 +86,9 @@ describe('Fp', function () {
 	});
 	it ('should concat with a function', () => {
 		JSON.stringify(concat([1,2,3],4,5, x=>x>3)).should.equal("[4,5]")
+	});
+	it ('should concat in currying way', () => {
+		JSON.stringify(compose(concat([1,2,3]))(4,5)).should.equal("[1,2,3,4,5]")
 	});
 
 	it ('should find the difference between the 3rd and 1st arrays ', () => {

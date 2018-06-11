@@ -9,7 +9,7 @@
     "build": "webpack --mode production && bash build-custom.sh",
     "build-custom": "webpack --mode production --config webpack.custom.config.js",
     "clean": "find src -name '*.js' | sed 's/^src\\///' | xargs rm -f",
-    "release": "npm version patch; npm publish; git push",
+    "release": "npm version patch; npm publish; git push --tags",
     "prepublish": "npm run build",
     "postpublish": "npm run clean"
   },

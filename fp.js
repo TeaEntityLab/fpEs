@@ -135,9 +135,16 @@ module.exports = {
    * Returns truthy values from an array.
    * When typ is supplied, returns new array of specified type
    */
-  compact: function (arr,typ) {
+  compact: function compact(arr,typ) {
     if(arguments.length === 1) {
-      return arr.filter(x=>x);
+      if (Array.isArray(arr)) {
+        // if the only one param is an array
+        return arr.filter(x=>x);
+      } else {
+        // Curry it manually
+        typ = arr;
+        return function (arr) {return compact(arr, typ)};
+      }
     }
     return arr.filter(x=> typeof x === typeof typ);
   },
@@ -145,7 +152,11 @@ module.exports = {
    * Concats arrays.
    * Concats arrays using provided function
    */
-  concat: function (arr,...values) {
+  concat: function concat(arr,...values) {
+    if (values.length == 0) {
+      // Manually curry it.
+      return function (...values) {return concat(arr,...values)}
+    }
     let lastValue = values[values.length-1];
     if(typeof lastValue === "function") {
       let excludeLast = values.slice(0,values.length-1);
