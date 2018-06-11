@@ -161,11 +161,13 @@ describe('Fp', function () {
 
 	it ('should return first element\'s index for which function equals true', () => {
 		JSON.stringify(findIndex(x=>x%2==0, [1,3,4,2,6])).should.equal('2');
+		JSON.stringify(compose(findIndex(x=>x%2==0), map((x)=>x/2))([2,6,8,4,12])).should.equal('2');
 	});
 
 
 	it ('should return last element\'s index for which function equals true', () => {
 		JSON.stringify(findLastIndex(x=>x%2==0, [1,3,4,2,6])).should.equal('4');
+    JSON.stringify(compose(findLastIndex(x=>x%2==0), map((x)=>x/2))([2,6,8,4,12])).should.equal('4');
 	});
 
 
