@@ -40,6 +40,22 @@ var reverse = function (list) {return typeof list === 'string' ? list.split('').
 var prop = curry(function (prop, obj) {return obj[prop]});
 var ifelse = curry(function(test, elsef, f) {return test() ? f() : elsef()});
 
+// Inner functions
+function _findArrayEntry(f, list) {
+  for (let entry of list.entries()) {
+    if (f(entry[1])) {
+      return entry;
+    }
+  }
+}
+function _findLastArrayEntry(f, list) {
+  for (var i = list.length - 1; i >= 0; i--) {
+    if (f(list[i])) {
+      return [i, list[i]];
+    }
+  }
+}
+
 module.exports = {
   compose,
   pipe: function (...fns) {return compose(...fns.reverse())},
@@ -218,29 +234,48 @@ module.exports = {
     });
   },
   /**
+   * Returns first element for which function
+      returns true
+   */
+  find: curry(function(fn, arr){
+    let entry = _findArrayEntry(fn, arr);
+    if (entry) {
+      return entry[1];
+    }
+  }),
+  /**
    * Returns index of first element for which function
       returns true
    */
   findIndex: curry(function(fn, arr){
-    let result;
-    arr.some((x,i)=>{
-      if(fn(x)){
-        result = i;
-        return true;
-      };
-    })
-    return result;
+    let entry = _findArrayEntry(fn, arr);
+    if (entry) {
+      return entry[0];
+    }
+
+    return -1;
+  }),
+  /**
+   * Returns last element for which function
+      returns true
+   */
+  findLast: curry(function(fn, arr){
+    let entry = _findLastArrayEntry(fn, arr);
+    if (entry) {
+      return entry[1];
+    }
   }),
   /**
    * Returns index of last element for which function
       returns true
    */
   findLastIndex: curry(function(fn, arr){
-    let result;
-    arr.forEach((x,i)=>{
-      if(fn(x)) result = i;
-    });
-    return result;
+    let entry = _findLastArrayEntry(fn, arr);
+    if (entry) {
+      return entry[0];
+    }
+
+    return -1;
   }),
   /**
    * Returns the first element of an array.
