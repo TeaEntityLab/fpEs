@@ -207,30 +207,30 @@ module.exports = {
     });
   },
   /**
-   * Returns index of first element for which function 
+   * Returns index of first element for which function
       returns true
    */
-  findIndex: function(arr, fn){
+  findIndex: curry(function(fn, arr){
     let result;
-    arr.some((x,i)=>{  
+    arr.some((x,i)=>{
       if(fn(x)){
         result = i;
         return true;
       };
     })
     return result;
-  },
+  }),
   /**
-   * Returns index of last element for which function 
+   * Returns index of last element for which function
       returns true
    */
-  findLastIndex: function(arr, fn){
+  findLastIndex: curry(function(fn, arr){
     let result;
     arr.forEach((x,i)=>{
       if(fn(x)) result = i;
     });
     return result;
-  },
+  }),
   /**
    * Returns the first element of an array.
    * Returns an empty array when an empty is empty
