@@ -28,8 +28,7 @@ var reduce = curry(function (f, init, ...second) {
   };
   return list.reduce(f, init)
 });
-var foldl = curry(function (f, init, list) {return reduce(f, init, list)});
-// var foldl = curry(function (f, init, list) {return (list.length === 0) ? init : foldl(f, f(init, list[0]), list.slice(1));});
+var foldl = curry(function (f, init, list) {return list.reduce(f, init)});
 function flatten(list) {
   return foldl(function (flat, toFlatten) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
@@ -83,7 +82,7 @@ module.exports = {
   map,
   reduce,
   foldl,
-  foldr: curry(function (f, init, list) {return foldl(f, init, reverse(list))}),
+  foldr: curry(function (f, init, list) {return list.reduceRight(f, init)}),
   filter: curry(function (f, list) {return list.filter(f)}),
   flattenMap: curry(function (f, list) {return compose(flatten, map)(f, list)}),
 
