@@ -205,5 +205,51 @@ module.exports = {
         return x=value;
       else return x;
     });
+  },
+  /**
+   * Returns index of first element for which function 
+      returns true
+   */
+  findIndex: function(arr, fn){
+    let result;
+    arr.some((x,i)=>{  
+      if(fn(x)){
+        result = i;
+        return true;
+      };
+    })
+    return result;
+  },
+  /**
+   * Returns index of last element for which function 
+      returns true
+   */
+  findLastIndex: function(arr, fn){
+    let result;
+    arr.forEach((x,i)=>{
+      if(fn(x)) result = i;
+    });
+    return result;
+  },
+  /**
+   * Returns the first element of an array.
+   * Returns an empty array when an empty is empty
+   */
+  head: function(arr) {
+    return arr.length == 0 ? [] : arr[0];
+  },
+  /**
+   * Constructs an object out of key-value pairs arrays.
+   */
+  fromPairs: function(arr) {
+    let obj = {};
+      arr.forEach(x=> obj[x[0]] = x[1]);
+    return obj;
+  },
+  /**
+   * Returns all elements of an array but the last
+   */
+  initial: function(arr) {
+    return arr.slice(0,arr.length-1);
   }
 };
