@@ -9,6 +9,12 @@ however somehow that's too heavy if including them at the same time.
 
 Thus the implementation just includes the core functions, and more clear to use.
 
+
+
+As I programmed some sync or async cases, finally I separated async interactions to the other module named `MonadIO`, and `Monad` itself just keeps simple `flapMap()`.
+
+(`MonadIO` concepts are just as *Haskell* one :P)
+
 # Installation
 
 ## Node.js
