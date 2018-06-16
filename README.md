@@ -1,5 +1,13 @@
 # fpEs
-Functional Programming for EcmaScript(Javascript)
+Functional Programming for EcmaScript(Javascript
+
+## Nodejs
+
+```bash
+npm i fpes
+```
+
+## Brower
 
 bundled files for web/browser usages:
 
