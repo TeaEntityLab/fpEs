@@ -1,3 +1,5 @@
+const reuseables = require("./_helpers/reusables");
+
 function compose(...fns) {
   return fns.reduce(function (f, g) {return function (...args) {return f(g(...args))}})
 };
@@ -39,6 +41,17 @@ var map = curry(function (f, list) {return list.map(f)});
 var reverse = function (list) {return typeof list === 'string' ? list.split('').reverse().join('') : Array.prototype.slice.call(list, 0).reverse()};
 var prop = curry(function (prop, obj) {return obj[prop]});
 var ifelse = curry(function(test, elsef, f) {return test() ? f() : elsef()});
+
+function concat(arr,...values) {
+  let lastValue = values[values.length-1];
+  if(typeof lastValue === "function") {
+    let excludeLast = values.slice(0,values.length-1);
+    return (excludeLast
+            .reduce((prev,next)=>(prev.concat(next)),arr))
+            .filter(lastValue);
+  }
+  return values.reduce((prev,next)=>(prev.concat(next)),arr);
+}
 
 module.exports = {
   compose,
@@ -145,30 +158,16 @@ module.exports = {
    * Concats arrays.
    * Concats arrays using provided function
    */
-  concat: function (arr,...values) {
-    let lastValue = values[values.length-1];
-    if(typeof lastValue === "function") {
-      let excludeLast = values.slice(0,values.length-1);
-      return (arr.concat(excludeLast)).filter(lastValue);
-    }
-    return arr.concat(values)
-  },
+  concat: concat,
   /**
    * Compares two arrays, first one as main and second
       as follower. Returns values in follower that aren't in main.
    */
   difference: function (...values) {
-    let lastButOne = (+values[values.length-2])-1;
-    let lastOne = (+values[values.length-1])-1;
-
-    if(typeof (lastButOne || lastOne) != "number") {
-      return values;
-    }
-
-    let main = values[lastButOne];
-    let follower = values[lastOne];
-
-    let concatWithoutDuplicate = [...new Set(main.concat(follower))]
+    let {main} = reuseables.getMainAndFollower(values);
+    let {follower} = reuseables.getMainAndFollower(values);
+  
+    let concatWithoutDuplicate = [...new Set(main.concat(follower))];
 
     return concatWithoutDuplicate.slice(main.length, concatWithoutDuplicate.length)
   },
@@ -251,5 +250,31 @@ module.exports = {
    */
   initial: function(arr) {
     return arr.slice(0,arr.length-1);
-  }
+  },
+  /**
+   * Returns values in two comparing arrays without repetition.
+   * @param 1st Any number of individual arrays
+   * @param 2nd Array to be used as main
+   * @param 3rd Array to be used as follower
+   * @returns values found in both arrays
+   */
+  intersection: function (...values) {
+    let arr = [];
+    let {main} = reuseables.getMainAndFollower(values);
+    let {follower} = reuseables.getMainAndFollower(values);
+
+    main.forEach(x=>{
+      if(arr.indexOf(x) ==-1) {
+        if(follower.indexOf(x) >=0) {
+          if(arr[x] ==undefined) arr.push(x) }
+      }
+    })
+    return arr;  
+  },
+  /**
+   * Converts array elements to string joined by specified joiner.
+   * @param joiner Joins array elements
+   * @param values different individual arrays
+   */
+  join : (joiner, ...values) => concat([],...values).join(joiner)
 };

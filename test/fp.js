@@ -5,7 +5,8 @@ var {
   flatten, flattenMap, unary, foldl, foldr, take,
   compact, concat,difference,
   reverse, map, reduce, filter, drop, fill,
-  findIndex, findLastIndex, head, fromPairs, initial
+  findIndex, findLastIndex, head, fromPairs, initial, intersection,
+  join
 } = require('../fp');
 
 describe('Fp', function () {
@@ -78,11 +79,21 @@ describe('Fp', function () {
 	});
 
 	it ('should concat arrays', () => {
-		JSON.stringify(concat([1,2,3],4,5)).should.equal("[1,2,3,4,5]")
-		JSON.stringify(concat([1,2,3],[4,5])).should.equal("[1,2,3,[4,5]]")
+		JSON.stringify(concat([1,2,3],[4],[5])).should.equal("[1,2,3,4,5]")
+		JSON.stringify(concat([1,2,3],[4,5])).should.equal("[1,2,3,4,5]")
 	});
 	it ('should concat with a function', () => {
 		JSON.stringify(concat([1,2,3],4,5, x=>x>3)).should.equal("[4,5]")
+	});
+
+
+
+	it (`should find the difference between 2 arrays 
+		when no other arguments are specified with the first as main`, () => {
+		JSON.stringify(difference(
+			["Naa", "Kofi", "Mensah"],
+			["Naa", "Mensah", "Tsatsu", "Amevor"]))
+			.should.equal('["Tsatsu","Amevor"]');
 	});
 
 	it ('should find the difference between the 3rd and 1st arrays ', () => {
@@ -186,5 +197,40 @@ describe('Fp', function () {
 
 	it ('should return all but last value of array', () => {
 		JSON.stringify(initial([1,2,3,4])).should.equal('[1,2,3]');
+	});
+
+
+
+	it (`should find the intersection between 2 arrays 
+		when no other arguments are specified with the first as main`, () => {
+		JSON.stringify(intersection(
+			["Naa", "Kofi", "Mensah"],
+			["Naa", "Mensah", "Tsatsu", "Amevor"]))
+			.should.equal('["Naa","Mensah"]');
+	});
+
+	it ('should find the intersection between the 3rd and 1st arrays ', () => {
+		JSON.stringify(intersection(
+			["May","Joe","John"],
+		["Jane", "Joe", "John","Kay","May","Q"],
+		["Joe", "Suzzie", "May"],
+		3,1)).should.equal('["Joe","May"]')
+	});
+
+	it ('should find the intersection between the 1st and 3rd arrays', () => {
+		JSON.stringify(intersection(
+			["May","Joe","John"],
+		["Jane", "Joe", "John","Kay","May","Q"],
+		["Joe", "Suzzie", "May"],
+		1,3)).should.equal('["May","Joe"]')
+	});
+
+
+	it ('should join 2 arrays with speficied joiner', () => {
+		(join("~",[1,2],[3,4])).should.equal('1~2~3~4');
+	});
+
+	it ('should join several arrays with specified joiner', () => {
+		(join("~",[1,2],[3,4],[5,6],[7,8])).should.equal('1~2~3~4~5~6~7~8');
 	});
 })
