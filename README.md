@@ -1,7 +1,19 @@
 # fpEs
 Functional Programming for EcmaScript(Javascript
 
-## Nodejs
+# Why
+
+Originally I would like to have some features of Optional & Rx-like & PubSub functions;
+
+however somehow that's too heavy if including them at the same time.
+
+Thus the implementation just includes the core functions, and more clear to use.
+
+# Installation
+
+## Node.js
+
+* Installation:
 
 ```bash
 npm i fpes
