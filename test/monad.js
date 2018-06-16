@@ -57,4 +57,10 @@ describe('Monad', function () {
       });
       v.should.equal(0)
 	});
+  it('flatMap', function () {
+			var m;
+
+      m = Monad.just(1).flatMap((x)=>x+2).flatMap((x)=>x+3);
+      m.unwrap().should.equal(6);
+	});
 })

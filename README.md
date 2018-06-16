@@ -181,7 +181,7 @@ console.log(s.apply("ccc") === undefined); // false
 
 ```
 
-## Monad
+## Monad (Sync)
 
 Example:
 
@@ -190,6 +190,11 @@ Example:
 import Monad from "fpEs/Monad";
 
 var m;
+
+// flatMap (sync)
+
+m = Monad.just(1).flatMap((x)=>x+2).flatMap((x)=>x+3);
+m.unwrap().should.equal(6);
 
 // isPresent/isNull
 
@@ -238,7 +243,7 @@ console.log(v); // 0
 
 ```
 
-## MonadIO/Rx.Observable
+## MonadIO/Rx.Observable (Async,Sync)
 
 Example:
 
