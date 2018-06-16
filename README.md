@@ -29,7 +29,7 @@ bundled files for web/browser usages:
 
 [fp](https://unpkg.com/fpes/dist/fp.min.js)
 
-[monad](https://unpkg.com/fpes/dist/monad.min.js)
+[maybe](https://unpkg.com/fpes/dist/maybe.min.js)
 
 [monadio](https://unpkg.com/fpes/dist/monadio.min.js)
 
@@ -49,7 +49,7 @@ import fpEs from 'fpEs';
 
 * There are 5 modules in this library, you can include them individually:
   * Facades:
-    * monad
+    * maybe
     * monadio
     * publisher
   * FP functions:
@@ -59,13 +59,13 @@ import fpEs from 'fpEs';
 Just include things you need:
 
 ```javascript
-import Monad from "fpEs";
+import Maybe from "fpEs";
 // or this one:
 /*
-import Monad from "fpEs/Monad";
+import Maybe from "fpEs/maybe";
 */
 
-var m = Monad.just(1); // It works
+var m = Maybe.just(1); // It works
 ```
 
 or
@@ -175,60 +175,60 @@ console.log(s.apply("ccc") === undefined); // false
 
 ```
 
-## Monad (Sync)
+## Maybe (Sync)
 
 Example:
 
 ```javascript
 
-import Monad from "fpEs/Monad";
+import Maybe from "fpEs/maybe";
 
 var m;
 
 // map (sync)
 
-m = Monad.just(1).map((x)=>x+2).map((x)=>x+3);
+m = Maybe.just(1).map((x)=>x+2).map((x)=>x+3);
 console.log(m.unwrap()); // 6
 
 // isPresent/isNull
 
-m = Monad.just(1);
+m = Maybe.just(1);
 console.log(m.isPresent()); // true
 console.log(m.isNull()); // false
-m = Monad.just(null);
+m = Maybe.just(null);
 console.log(m.isPresent()); // false
 console.log(m.isNull()); // true
-m = Monad.just(undefined);
+m = Maybe.just(undefined);
 console.log(m.isPresent()); // false
 console.log(m.isNull()); // true
 
 // Or
 
-m = Monad.just(1);
+m = Maybe.just(1);
 console.log(m.or(3).unwrap()); // 1
 console.log(m.or(4).unwrap()); // 1
-m = Monad.just(null);
+m = Maybe.just(null);
 console.log(m.or(3).unwrap()); // 3
 console.log(m.or(4).unwrap()); // 4
-m = Monad.just(undefined);
+m = Maybe.just(undefined);
 console.log(m.or(3).unwrap()); // 3
 console.log(m.or(4).unwrap()); // 4
 
 // letDo
 
-m = Monad.just(1);
+m = Maybe.just(1);
 v = 0;
 m.letDo(function () {
   v = 1;
 });
 console.log(v); // 1
-m = Monad.just(null);
+m = Maybe.just(null);
 v = 0;
 m.letDo(function () {
   v = 1;
 });
 console.log(v); // 0
-m = Monad.just(undefined);
+m = Maybe.just(undefined);
 v = 0;
 m.letDo(function () {
   v = 1;
@@ -243,7 +243,7 @@ Example:
 
 ```javascript
 
-import Monad from "fpEs";
+import Maybe from "fpEs";
 import MonadIO from "fpEs";
 var {promiseof, doM} = MonadIO;
 
@@ -286,7 +286,7 @@ v = 0;
 p = doM(function *() {
   var value = yield promiseof(5);
   var value2 = yield promiseof(11);
-  var value3 = yield Monad.just(3);
+  var value3 = yield Maybe.just(3);
   var value4 = yield MonadIO.just(3);
   return value + value2 + value3 + value4;
 });

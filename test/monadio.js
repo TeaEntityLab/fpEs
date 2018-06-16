@@ -1,4 +1,4 @@
-import Monad from '../monad';
+import Maybe from '../maybe';
 import MonadIO from '../monadio';
 var {promiseof, doM, generatorToPromise} = MonadIO;
 
@@ -38,7 +38,7 @@ describe('MonadIO', function () {
       p = doM(function *() {
         var value = yield promiseof(5);
         var value2 = yield promiseof(11);
-        var value3 = yield Monad.just(3);
+        var value3 = yield Maybe.just(3);
         var value4 = yield MonadIO.just(3);
         var value5 = yield MonadIO.fromPromise(Promise.resolve(3));
         return value + value2 + value3 + value4 + value5;
@@ -54,7 +54,7 @@ describe('MonadIO', function () {
       p = generatorToPromise(function *() {
         var value = yield promiseof(5);
         var value2 = yield promiseof(11);
-        var value3 = yield Monad.just(3);
+        var value3 = yield Maybe.just(3);
         var value4 = yield MonadIO.just(3);
         var value5 = yield MonadIO.fromPromise(Promise.resolve(3));
         return value + value2 + value3 + value4 + value5;
