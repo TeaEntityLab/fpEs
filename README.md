@@ -194,7 +194,7 @@ var m;
 // flatMap (sync)
 
 m = Monad.just(1).flatMap((x)=>x+2).flatMap((x)=>x+3);
-m.unwrap().should.equal(6);
+console.log(m.unwrap()); // 6
 
 // isPresent/isNull
 
