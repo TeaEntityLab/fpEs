@@ -4,8 +4,8 @@ describe('Monad', function () {
   it('New', function () {
 			var m = Monad.just(1);
 	});
-  it('flatMap', function () {
-			var m = Monad.just(1).flatMap((a)=>a+2).flatMap((a)=>a+3);
+  it('bind', function () {
+			var m = Monad.just(1).bind((a)=>a+2).bind((a)=>a+3);
       m.unwrap().should.equal(6)
 	});
   it('isPresent', function () {
@@ -57,10 +57,10 @@ describe('Monad', function () {
       });
       v.should.equal(0)
 	});
-  it('flatMap', function () {
+  it('bind', function () {
 			var m;
 
-      m = Monad.just(1).flatMap((x)=>x+2).flatMap((x)=>x+3);
+      m = Monad.just(1).bind((x)=>x+2).bind((x)=>x+3);
       m.unwrap().should.equal(6);
 	});
 })

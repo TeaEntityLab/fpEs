@@ -3,7 +3,7 @@ class Publisher {
     this.subscribers = [];
   }
 
-  flatMap(fn) {
+  map(fn) {
     var next = new Publisher();
     next.origin = this;
 

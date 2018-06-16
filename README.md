@@ -9,12 +9,6 @@ however somehow that's too heavy if including them at the same time.
 
 Thus the implementation just includes the core functions, and more clear to use.
 
-
-
-As I programmed some sync or async cases, finally I separated async interactions to the other module named `MonadIO`, and `Monad` itself just keeps simple `flapMap()`.
-
-(`MonadIO` concepts are just as *Haskell* one :P)
-
 # Installation
 
 ## Node.js
@@ -191,9 +185,9 @@ import Monad from "fpEs/Monad";
 
 var m;
 
-// flatMap (sync)
+// bind (sync)
 
-m = Monad.just(1).flatMap((x)=>x+2).flatMap((x)=>x+3);
+m = Monad.just(1).bind((x)=>x+2).bind((x)=>x+3);
 console.log(m.unwrap()); // 6
 
 // isPresent/isNull
@@ -264,9 +258,9 @@ var v = 0;
 m = MonadIO.just(0);
 v = 0;
 m
-.flatMap((val)=>val+1)
-.flatMap((val)=>val+2)
-.flatMap((val)=>val+3)
+.bind((val)=>val+1)
+.bind((val)=>val+2)
+.bind((val)=>val+3)
 .subscribe((val)=>v=val);
 
 console.log(v); // 6
@@ -276,9 +270,9 @@ console.log(v); // 6
 m = MonadIO.just(0);
 v = 0;
 p = m
-.flatMap((val)=>val+1)
-.flatMap((val)=>val+2)
-.flatMap((val)=>val+3)
+.bind((val)=>val+1)
+.bind((val)=>val+2)
+.bind((val)=>val+3)
 .subscribe((val)=>v=val, true); // Async: true
 
 console.log(v); // 0
@@ -334,12 +328,12 @@ setTimeout(()=>{
   console.log(v); // 1
 },100);
 
-// flatMap
+// map
 
 p = new Publisher();
 v = 0;
 
-p.flatMap((x)=>x+2).flatMap((x)=>x+3).subscribe((i)=>v=i);
+p.map((x)=>x+2).map((x)=>x+3).subscribe((i)=>v=i);
 p.publish(1, true);
 console.log(v); // 0
 

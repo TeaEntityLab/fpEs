@@ -22,6 +22,9 @@ class MonadDef {
   then(fn) {
     return new MonadDef(fn(this.ref));
   }
+  bind(fn) {
+    return this.then(fn);
+  }
   flatMap(fn) {
     return this.then(fn);
   }

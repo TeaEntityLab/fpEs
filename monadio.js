@@ -9,7 +9,7 @@ class MonadIODef {
       return fn(self.effect());
     });
   }
-  flatMap(fn) {
+  bind(fn) {
     return this.then(fn);
   }
 
