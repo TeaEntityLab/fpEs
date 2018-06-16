@@ -5,7 +5,7 @@ describe('Monad', function () {
 			var m = Monad.just(1);
 	});
   it('bind', function () {
-			var m = Monad.just(1).bind((a)=>a+2).bind((a)=>a+3);
+			var m = Monad.just(1).map((a)=>a+2).map((a)=>a+3);
       m.unwrap().should.equal(6)
 	});
   it('isPresent', function () {
@@ -60,7 +60,7 @@ describe('Monad', function () {
   it('bind', function () {
 			var m;
 
-      m = Monad.just(1).bind((x)=>x+2).bind((x)=>x+3);
+      m = Monad.just(1).map((x)=>x+2).map((x)=>x+3);
       m.unwrap().should.equal(6);
 	});
 })

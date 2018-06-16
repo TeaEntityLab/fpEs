@@ -25,7 +25,7 @@ class MonadDef {
   bind(fn) {
     return this.then(fn);
   }
-  flatMap(fn) {
+  map(fn) {
     return this.then(fn);
   }
 

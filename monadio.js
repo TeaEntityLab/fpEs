@@ -12,6 +12,9 @@ class MonadIODef {
   bind(fn) {
     return this.then(fn);
   }
+  map(fn) {
+    return this.then(fn);
+  }
 
   subscribe(fn, asynchronized) {
     if (asynchronized) {

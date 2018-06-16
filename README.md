@@ -187,7 +187,7 @@ var m;
 
 // bind (sync)
 
-m = Monad.just(1).bind((x)=>x+2).bind((x)=>x+3);
+m = Monad.just(1).map((x)=>x+2).map((x)=>x+3);
 console.log(m.unwrap()); // 6
 
 // isPresent/isNull
@@ -258,9 +258,9 @@ var v = 0;
 m = MonadIO.just(0);
 v = 0;
 m
-.bind((val)=>val+1)
-.bind((val)=>val+2)
-.bind((val)=>val+3)
+.map((val)=>val+1)
+.map((val)=>val+2)
+.map((val)=>val+3)
 .subscribe((val)=>v=val);
 
 console.log(v); // 6
@@ -270,9 +270,9 @@ console.log(v); // 6
 m = MonadIO.just(0);
 v = 0;
 p = m
-.bind((val)=>val+1)
-.bind((val)=>val+2)
-.bind((val)=>val+3)
+.map((val)=>val+1)
+.map((val)=>val+2)
+.map((val)=>val+3)
 .subscribe((val)=>v=val, true); // Async: true
 
 console.log(v); // 0

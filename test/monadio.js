@@ -9,9 +9,9 @@ describe('MonadIO', function () {
 
       v = 0;
       m
-      .bind((val)=>val+1)
-      .bind((val)=>val+2)
-      .bind((val)=>val+3)
+      .map((val)=>val+1)
+      .map((val)=>val+2)
+      .map((val)=>val+3)
       .subscribe((val)=>v=val);
 
       v.should.equal(6);
@@ -23,9 +23,9 @@ describe('MonadIO', function () {
 
       v = 0;
       p = m
-      .bind((val)=>val+1)
-      .bind((val)=>val+2)
-      .bind((val)=>val+3)
+      .map((val)=>val+1)
+      .map((val)=>val+2)
+      .map((val)=>val+3)
       .subscribe((val)=>v=val, true);
 
       return p.then(()=>v.should.equal(6));
