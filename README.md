@@ -1,5 +1,25 @@
 # fpEs
-Functional Programming for EcmaScript(Javascript)
+Functional Programming for EcmaScript(Javascript
+
+# Why
+
+Originally I would like to have some features of Optional & Rx-like & PubSub functions;
+
+however somehow that's too heavy if including them at the same time.
+
+Thus the implementation just includes the core functions, and more clear to use.
+
+# Installation
+
+## Node.js
+
+* Installation:
+
+```bash
+npm i fpes
+```
+
+## Brower
 
 bundled files for web/browser usages:
 
@@ -9,7 +29,7 @@ bundled files for web/browser usages:
 
 [fp](https://unpkg.com/fpes/dist/fp.min.js)
 
-[monad](https://unpkg.com/fpes/dist/monad.min.js)
+[maybe](https://unpkg.com/fpes/dist/maybe.min.js)
 
 [monadio](https://unpkg.com/fpes/dist/monadio.min.js)
 
@@ -29,7 +49,7 @@ import fpEs from 'fpEs';
 
 * There are 5 modules in this library, you can include them individually:
   * Facades:
-    * monad
+    * maybe
     * monadio
     * publisher
   * FP functions:
@@ -39,13 +59,13 @@ import fpEs from 'fpEs';
 Just include things you need:
 
 ```javascript
-import Monad from "fpEs";
+import Maybe from "fpEs";
 // or this one:
 /*
-import Monad from "fpEs/Monad";
+import Maybe from "fpEs/maybe";
 */
 
-var m = Monad.just(1); // It works
+var m = Maybe.just(1); // It works
 ```
 
 or
@@ -155,55 +175,60 @@ console.log(s.apply("ccc") === undefined); // false
 
 ```
 
-## Monad
+## Maybe (Sync)
 
 Example:
 
 ```javascript
 
-import Monad from "fpEs/Monad";
+import Maybe from "fpEs/maybe";
 
 var m;
 
+// map (sync)
+
+m = Maybe.just(1).map((x)=>x+2).map((x)=>x+3);
+console.log(m.unwrap()); // 6
+
 // isPresent/isNull
 
-m = Monad.just(1);
+m = Maybe.just(1);
 console.log(m.isPresent()); // true
 console.log(m.isNull()); // false
-m = Monad.just(null);
+m = Maybe.just(null);
 console.log(m.isPresent()); // false
 console.log(m.isNull()); // true
-m = Monad.just(undefined);
+m = Maybe.just(undefined);
 console.log(m.isPresent()); // false
 console.log(m.isNull()); // true
 
 // Or
 
-m = Monad.just(1);
+m = Maybe.just(1);
 console.log(m.or(3).unwrap()); // 1
 console.log(m.or(4).unwrap()); // 1
-m = Monad.just(null);
+m = Maybe.just(null);
 console.log(m.or(3).unwrap()); // 3
 console.log(m.or(4).unwrap()); // 4
-m = Monad.just(undefined);
+m = Maybe.just(undefined);
 console.log(m.or(3).unwrap()); // 3
 console.log(m.or(4).unwrap()); // 4
 
 // letDo
 
-m = Monad.just(1);
+m = Maybe.just(1);
 v = 0;
 m.letDo(function () {
   v = 1;
 });
 console.log(v); // 1
-m = Monad.just(null);
+m = Maybe.just(null);
 v = 0;
 m.letDo(function () {
   v = 1;
 });
 console.log(v); // 0
-m = Monad.just(undefined);
+m = Maybe.just(undefined);
 v = 0;
 m.letDo(function () {
   v = 1;
@@ -212,13 +237,13 @@ console.log(v); // 0
 
 ```
 
-## MonadIO/Rx.Observable
+## MonadIO/Rx.Observable (Async,Sync)
 
 Example:
 
 ```javascript
 
-import Monad from "fpEs";
+import Maybe from "fpEs";
 import MonadIO from "fpEs";
 var {promiseof, doM} = MonadIO;
 
@@ -233,9 +258,9 @@ var v = 0;
 m = MonadIO.just(0);
 v = 0;
 m
-.flatMap((val)=>val+1)
-.flatMap((val)=>val+2)
-.flatMap((val)=>val+3)
+.map((val)=>val+1)
+.map((val)=>val+2)
+.flatMap((val)=>MonadIO.just(val+1).map((val)=>val+1).map((val)=>val+1))
 .subscribe((val)=>v=val);
 
 console.log(v); // 6
@@ -245,9 +270,9 @@ console.log(v); // 6
 m = MonadIO.just(0);
 v = 0;
 p = m
-.flatMap((val)=>val+1)
-.flatMap((val)=>val+2)
-.flatMap((val)=>val+3)
+.map((val)=>val+1)
+.map((val)=>val+2)
+.map((val)=>val+3)
 .subscribe((val)=>v=val, true); // Async: true
 
 console.log(v); // 0
@@ -261,7 +286,7 @@ v = 0;
 p = doM(function *() {
   var value = yield promiseof(5);
   var value2 = yield promiseof(11);
-  var value3 = yield Monad.just(3);
+  var value3 = yield Maybe.just(3);
   var value4 = yield MonadIO.just(3);
   return value + value2 + value3 + value4;
 });
@@ -303,12 +328,12 @@ setTimeout(()=>{
   console.log(v); // 1
 },100);
 
-// flatMap
+// map
 
 p = new Publisher();
 v = 0;
 
-p.flatMap((x)=>x+2).flatMap((x)=>x+3).subscribe((i)=>v=i);
+p.map((x)=>x+2).map((x)=>x+3).subscribe((i)=>v=i);
 p.publish(1, true);
 console.log(v); // 0
 

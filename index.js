@@ -1,5 +1,5 @@
 module.exports = {
-  Monad: require('./monad'),
+  Maybe: require('./maybe'),
   MonadIO: require('./monadio'),
   Publisher: require('./publisher'),
   ...require('./fp'),

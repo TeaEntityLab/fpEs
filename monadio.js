@@ -9,8 +9,14 @@ class MonadIODef {
       return fn(self.effect());
     });
   }
-  flatMap(fn) {
+  bind(fn) {
     return this.then(fn);
+  }
+  map(fn) {
+    return this.then(fn);
+  }
+  flatMap(fn) {
+    return this.then((result)=>fn(result).effect());
   }
 
   subscribe(fn, asynchronized) {
@@ -40,7 +46,7 @@ MonadIO.fromPromise = function (p) {
 MonadIO.promiseof = function (ref) {
   return Promise.resolve(ref);
 };
-MonadIO.doM = function (genDef) {
+MonadIO.wrapGenerator = function (genDef) {
   var gen = genDef();
   function step(value) {
       var result = gen.next(value);
@@ -52,7 +58,13 @@ MonadIO.doM = function (genDef) {
       }
       return result.value.then(step);
   }
-  return step();
+  return step;
+};
+MonadIO.generatorToPromise = function (genDef) {
+  return Promise.resolve().then(MonadIO.wrapGenerator(genDef));
+}
+MonadIO.doM = function (genDef) {
+  return MonadIO.wrapGenerator(genDef)();
 };
 
 module.exports = MonadIO;

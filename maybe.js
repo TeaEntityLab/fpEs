@@ -1,4 +1,4 @@
-class MonadDef {
+class MaybeDef {
   constructor(ref) {
     this.ref = ref;
   }
@@ -11,7 +11,7 @@ class MonadDef {
   }
 
   or(ref) {
-    return this.isPresent() ? this : new MonadDef(ref);
+    return this.isPresent() ? this : new MaybeDef(ref);
   }
   letDo(fn) {
     if (this.isPresent()) {
@@ -20,9 +20,12 @@ class MonadDef {
   }
 
   then(fn) {
-    return new MonadDef(fn(this.ref));
+    return new MaybeDef(fn(this.ref));
   }
-  flatMap(fn) {
+  bind(fn) {
+    return this.then(fn);
+  }
+  map(fn) {
     return this.then(fn);
   }
 
@@ -31,11 +34,11 @@ class MonadDef {
   }
 }
 
-var Monad = {};
-Monad.just = function (ref) {
-  var m = new MonadDef(ref);
+var Maybe = {};
+Maybe.just = function (ref) {
+  var m = new MaybeDef(ref);
   return m;
 };
-Monad.of = Monad.just;
+Maybe.of = Maybe.just;
 
-module.exports = Monad;
+module.exports = Maybe;

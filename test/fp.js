@@ -6,7 +6,7 @@ var {
   compact, concat,difference,
   reverse, map, reduce, filter, drop, fill,
   findIndex, findLastIndex, head, fromPairs, initial, intersection,
-  join
+  join, findLast, findIndex, findLastIndex, head, fromPairs, initial
 } = require('../fp');
 
 describe('Fp', function () {
@@ -76,6 +76,9 @@ describe('Fp', function () {
 	});
 	it ('should compact with second argument', () => {
 		JSON.stringify(compact(["John",1, 2, "Jane"],'')).should.equal('["John","Jane"]');
+	});
+	it ('should compact in currying way', () => {
+		JSON.stringify(compose(compact(''))(["John",1, 2, "Jane"])).should.equal('["John","Jane"]');
 	});
 
 	it ('should concat arrays', () => {
@@ -178,6 +181,7 @@ describe('Fp', function () {
 
 	it ('should return last element\'s index for which function equals true', () => {
 		JSON.stringify(findLastIndex(x=>x%2==0, [1,3,4,2,6])).should.equal('4');
+		JSON.stringify(findLast(x=>x%2==0, [1,3,4,2,6])).should.equal('6');
     JSON.stringify(compose(findLastIndex(x=>x%2==0), map((x)=>x/2))([2,6,8,4,12])).should.equal('4');
 	});
 

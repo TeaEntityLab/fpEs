@@ -40,12 +40,12 @@ describe('Publisher', function () {
       p.publish(1);
       v.should.equal(0)
 	});
-  it('flatMap', function () {
+  it('map', function () {
       var p = new Publisher();
       var v = 0;
 
       v = 0;
-      p.flatMap((x)=>x+2).flatMap((x)=>x+3).subscribe((i)=>v=i);
+      p.map((x)=>x+2).map((x)=>x+3).subscribe((i)=>v=i);
       p.publish(1, true);
       v.should.equal(0);
 
