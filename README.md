@@ -185,7 +185,7 @@ import Monad from "fpEs/Monad";
 
 var m;
 
-// bind (sync)
+// map (sync)
 
 m = Monad.just(1).map((x)=>x+2).map((x)=>x+3);
 console.log(m.unwrap()); // 6
@@ -260,7 +260,7 @@ v = 0;
 m
 .map((val)=>val+1)
 .map((val)=>val+2)
-.map((val)=>val+3)
+.flatMap((val)=>MonadIO.just(val+1).map((val)=>val+1).map((val)=>val+1))
 .subscribe((val)=>v=val);
 
 console.log(v); // 6

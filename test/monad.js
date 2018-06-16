@@ -4,7 +4,7 @@ describe('Monad', function () {
   it('New', function () {
 			var m = Monad.just(1);
 	});
-  it('bind', function () {
+  it('map', function () {
 			var m = Monad.just(1).map((a)=>a+2).map((a)=>a+3);
       m.unwrap().should.equal(6)
 	});
@@ -57,7 +57,7 @@ describe('Monad', function () {
       });
       v.should.equal(0)
 	});
-  it('bind', function () {
+  it('map', function () {
 			var m;
 
       m = Monad.just(1).map((x)=>x+2).map((x)=>x+3);

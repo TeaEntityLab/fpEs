@@ -11,7 +11,7 @@ describe('MonadIO', function () {
       m
       .map((val)=>val+1)
       .map((val)=>val+2)
-      .map((val)=>val+3)
+      .flatMap((val)=>MonadIO.just(val+1).map((val)=>val+1).map((val)=>val+1))
       .subscribe((val)=>v=val);
 
       v.should.equal(6);

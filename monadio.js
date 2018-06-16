@@ -15,6 +15,9 @@ class MonadIODef {
   map(fn) {
     return this.then(fn);
   }
+  flatMap(fn) {
+    return this.then((result)=>fn(result).effect());
+  }
 
   subscribe(fn, asynchronized) {
     if (asynchronized) {
