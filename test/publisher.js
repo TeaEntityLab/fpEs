@@ -52,7 +52,7 @@ describe('Publisher', function () {
       this.timeout(500);
       setTimeout(()=>{
         v.should.equal(6)
-        // done();
+        done();
       },100);
 	});
 })
