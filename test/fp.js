@@ -82,6 +82,7 @@ describe('Fp', function () {
 	});
 
 	it ('should concat arrays', () => {
+    JSON.stringify(concat([1,2,3],4,5)).should.equal("[1,2,3,4,5]")
 		JSON.stringify(concat([1,2,3],[4],[5])).should.equal("[1,2,3,4,5]")
 		JSON.stringify(concat([1,2,3],[4,5])).should.equal("[1,2,3,4,5]")
 	});
