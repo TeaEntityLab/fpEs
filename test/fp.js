@@ -5,9 +5,8 @@ var {
   flatten, flattenMap, unary, foldl, foldr, take,
   compact, concat,difference,
   reverse, map, reduce, filter, drop, fill,
-  findIndex, findLastIndex, head, fromPairs, initial, intersection,
-  join, findLast, findIndex, findLastIndex, head, fromPairs, initial,
-  nth
+  find, findIndex, findLast, findLastIndex, head, fromPairs, initial, intersection,
+  join, findLast, findIndex, findLastIndex, head, fromPairs, initial, nth
 } = require('../fp');
 
 describe('Fp', function () {
@@ -83,16 +82,20 @@ describe('Fp', function () {
 	});
 
 	it ('should concat arrays', () => {
+    JSON.stringify(concat([1,2,3],4,5)).should.equal("[1,2,3,4,5]")
 		JSON.stringify(concat([1,2,3],[4],[5])).should.equal("[1,2,3,4,5]")
 		JSON.stringify(concat([1,2,3],[4,5])).should.equal("[1,2,3,4,5]")
 	});
+  it ('should concat in currying way', () => {
+    JSON.stringify(compose(concat([1,2,3]))(4,5)).should.equal("[1,2,3,4,5]")
+  });
 	it ('should concat with a function', () => {
 		JSON.stringify(concat([1,2,3],4,5, x=>x>3)).should.equal("[4,5]")
 	});
 
 
 
-	it (`should find the difference between 2 arrays 
+	it (`should find the difference between 2 arrays
 		when no other arguments are specified with the first as main`, () => {
 		JSON.stringify(difference(
 			["Naa", "Kofi", "Mensah"],
@@ -176,6 +179,7 @@ describe('Fp', function () {
 
 	it ('should return first element\'s index for which function equals true', () => {
 		JSON.stringify(findIndex(x=>x%2==0, [1,3,4,2,6])).should.equal('2');
+    JSON.stringify(find(x=>x%2==0, [1,3,4,2,6])).should.equal('4');
 		JSON.stringify(compose(findIndex(x=>x%2==0), map((x)=>x/2))([2,6,8,4,12])).should.equal('2');
 	});
 
@@ -206,7 +210,7 @@ describe('Fp', function () {
 
 
 
-	it (`should find the intersection between 2 arrays 
+	it (`should find the intersection between 2 arrays
 		when no other arguments are specified with the first as main`, () => {
 		JSON.stringify(intersection(
 			["Naa", "Kofi", "Mensah"],
