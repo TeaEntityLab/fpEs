@@ -5,8 +5,7 @@ var {
   flatten, flattenMap, unary, foldl, foldr, take,
   compact, concat,difference,
   reverse, map, reduce, filter, drop, fill,
-  find, findIndex, findLast, findLastIndex, head, fromPairs, initial, intersection,
-  join, findLast, findIndex, findLastIndex, head, fromPairs, initial, nth
+  join, intersection, find, findLast, findIndex, findLastIndex, find, head, fromPairs, initial, nth
 } = require('../fp');
 
 describe('Fp', function () {
