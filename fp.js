@@ -281,7 +281,7 @@ module.exports = {
    * Returns all elements of an array but the last
    */
   initial: function(list) {
-    return list.slice(0,list.length-1);
+    return Array.prototype.slice.call(list, 0, list.length-1);
   },
   /**
    * Returns values in two comparing arrays without repetition.
