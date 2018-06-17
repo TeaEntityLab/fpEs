@@ -6,7 +6,8 @@ var {
   compact, concat,difference,
   reverse, map, reduce, filter, drop, fill,
   findIndex, findLastIndex, head, fromPairs, initial, intersection,
-  join, findLast, findIndex, findLastIndex, head, fromPairs, initial
+  join, findLast, findIndex, findLastIndex, head, fromPairs, initial,
+  nth
 } = require('../fp');
 
 describe('Fp', function () {
@@ -236,5 +237,14 @@ describe('Fp', function () {
 
 	it ('should join several arrays with specified joiner', () => {
 		(join("~",[1,2],[3,4],[5,6],[7,8])).should.equal('1~2~3~4~5~6~7~8');
+	});
+
+
+	it ('should return nth value at the index number specified', () => {
+		nth([1,2,3,4],2).should.equal(3);
+	});
+
+	it ('should return the nth value starting from the end when a negative number is specified', () => {
+		nth([1,2,3,4],-2).should.equal(2);
 	});
 })

@@ -296,6 +296,7 @@ module.exports = {
   },
   /**
    * Returns values in two comparing arrays without repetition.
+   * Arrangement of resulting array is determined by main array.
    * @param 1st Any number of individual arrays
    * @param 2nd Array to be used as main
    * @param 3rd Array to be used as follower
@@ -322,5 +323,15 @@ module.exports = {
   join : (joiner, ...values) => concat([],...values).join(joiner),
   initial: function(list) {
     return Array.prototype.slice.call(list,0,list.length-1);
+  },
+  /**
+   * Returns the nth value at the specified index. 
+   * If index is negative, it returns value starting from the right
+   * @param arr the array to be operated on
+   * @param indexNum the index number of the value to be retrieved
+   */
+  nth: function (arr,indexNum) {
+    if(indexNum >= 0) return arr[+indexNum];
+    return [...arr].reverse()[arr.length+indexNum];
   }
 };
