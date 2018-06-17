@@ -41,30 +41,19 @@ var reverse = function (list) {return typeof list === 'string' ? list.split('').
 var prop = curry(function (prop, obj) {return obj[prop]});
 var ifelse = curry(function(test, elsef, f) {return test() ? f() : elsef()});
 
-function concat(arr,...values) {
+function concat(list,...values) {
+  if (values.length == 0) {
+    // Manually curry it.
+    return function (...values) {return concat(list,...values)}
+  }
   let lastValue = values[values.length-1];
   if(typeof lastValue === "function") {
     let excludeLast = values.slice(0,values.length-1);
     return (excludeLast
-            .reduce((prev,next)=>(prev.concat(next)),arr))
+            .reduce((prev,next)=>(prev.concat(next)),list))
             .filter(lastValue);
   }
-  return values.reduce((prev,next)=>(prev.concat(next)),arr);
-}
-// Inner functions
-function _findArrayEntry(f, list) {
-  for (let entry of list.entries()) {
-    if (f(entry[1])) {
-      return entry;
-    }
-  }
-}
-function _findLastArrayEntry(f, list) {
-  for (var i = list.length - 1; i >= 0; i--) {
-    if (f(list[i])) {
-      return [i, list[i]];
-    }
-  }
+  return values.reduce((prev,next)=>(prev.concat(next)),list);
 }
 
 module.exports = {
@@ -187,7 +176,7 @@ module.exports = {
   difference: function (...values) {
     let {main} = reuseables.getMainAndFollower(values);
     let {follower} = reuseables.getMainAndFollower(values);
-  
+
     let concatWithoutDuplicate = [...new Set(main.concat(follower))];
 
     return Array.prototype.slice.call(concatWithoutDuplicate, main.length, concatWithoutDuplicate.length)
@@ -234,7 +223,7 @@ module.exports = {
       returns true
    */
   find: curry(function(fn, list){
-    let entry = _findArrayEntry(fn, list);
+    let entry = reuseables.findArrayEntry(fn, list);
     if (entry) {
       return entry[1];
     }
@@ -244,7 +233,7 @@ module.exports = {
       returns true
    */
   findIndex: curry(function(fn, list){
-    let entry = _findArrayEntry(fn, list);
+    let entry = reuseables.findArrayEntry(fn, list);
     if (entry) {
       return entry[0];
     }
@@ -256,7 +245,7 @@ module.exports = {
       returns true
    */
   findLast: curry(function(fn, list){
-    let entry = _findLastArrayEntry(fn, list);
+    let entry = reuseables.findLastArrayEntry(fn, list);
     if (entry) {
       return entry[1];
     }
@@ -266,7 +255,7 @@ module.exports = {
       returns true
    */
   findLastIndex: curry(function(fn, list){
-    let entry = _findLastArrayEntry(fn, list);
+    let entry = reuseables.findLastArrayEntry(fn, list);
     if (entry) {
       return entry[0];
     }
@@ -291,8 +280,8 @@ module.exports = {
   /**
    * Returns all elements of an array but the last
    */
-  initial: function(arr) {
-    return arr.slice(0,arr.length-1);
+  initial: function(list) {
+    return list.slice(0,list.length-1);
   },
   /**
    * Returns values in two comparing arrays without repetition.
@@ -302,17 +291,17 @@ module.exports = {
    * @returns values found in both arrays
    */
   intersection: function (...values) {
-    let arr = [];
+    let list = [];
     let {main} = reuseables.getMainAndFollower(values);
     let {follower} = reuseables.getMainAndFollower(values);
 
     main.forEach(x=>{
-      if(arr.indexOf(x) ==-1) {
+      if(list.indexOf(x) ==-1) {
         if(follower.indexOf(x) >=0) {
-          if(arr[x] ==undefined) arr.push(x) }
+          if(list[x] ==undefined) list.push(x) }
       }
     })
-    return arr;  
+    return list;
   },
   /**
    * Converts array elements to string joined by specified joiner.
