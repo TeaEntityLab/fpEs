@@ -3,7 +3,7 @@
 [![npm download](https://img.shields.io/npm/dt/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![npm version](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
 
-[![license](https://img.shields.io/github/license/fpes.svg)](https://www.npmjs.com/package/fpes)
+[![license](https://img.shields.io/github/license/TeaEntityLab/fpEs.svg?style=social&label=License)](https://github.com/TeaEntityLab/fpEs)
 [![stars](https://img.shields.io/github/stars/TeaEntityLab/fpEs.svg?style=social&label=Stars)](https://github.com/TeaEntityLab/fpEs)
 [![forks](https://img.shields.io/github/forks/TeaEntityLab/fpEs.svg?style=social&label=Fork)](https://github.com/TeaEntityLab/fpEs)
 
