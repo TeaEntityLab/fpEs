@@ -1,6 +1,13 @@
 # fpEs
 
+[![npm](https://img.shields.io/npm/l/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![npm](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
+[![npm](https://img.shields.io/npm/dt/fpes.svg)](https://www.npmjs.com/package/fpes)
+[![npm](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
+
+[![npm](https://img.shields.io/github/stars/TeaEntityLab/fpEs.svg?style=social&label=Stars)](https://github.com/TeaEntityLab/fpEs)
+[![npm](https://img.shields.io/github/forks/TeaEntityLab/fpEs.svg?style=social&label=Fork)](https://github.com/TeaEntityLab/fpEs)
+
 
 Functional Programming for EcmaScript(Javascript
 
