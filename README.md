@@ -1,5 +1,5 @@
 # fpEs
-[![Coverage Status](https://codecov.io/gh/TeaEntityLab/fpEs/coverage.svg?branch=master)](https://codecov.io/gh/TeaEntityLab/fpEs?branch=master)
+
 [![npm](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
 
 Functional Programming for EcmaScript(Javascript
