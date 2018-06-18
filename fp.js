@@ -310,9 +310,6 @@ module.exports = {
    * @param values different individual arrays
    */
   join : (joiner, ...values) => concat([],...values).join(joiner),
-  initial: function(list) {
-    return Array.prototype.slice.call(list,0,list.length-1);
-  },
   /**
    * Returns the nth value at the specified index. 
    * If index is negative, it returns value starting from the right
