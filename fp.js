@@ -309,15 +309,30 @@ module.exports = {
    * @param joiner Joins array elements
    * @param values different individual arrays
    */
-  join : (joiner, ...values) => concat([],...values).join(joiner),
+  join : function join(joiner, ...values) {
+    if (values.length > 0) {
+      return concat([],...values).join(joiner);
+    }
+
+    // Manually currying
+    return (...values) => join(joiner, ...values);
+  },
   /**
-   * Returns the nth value at the specified index. 
+   * Returns the nth value at the specified index.
    * If index is negative, it returns value starting from the right
-   * @param arr the array to be operated on
+   * @param list the array to be operated on
    * @param indexNum the index number of the value to be retrieved
    */
-  nth: function (arr,indexNum) {
-    if(indexNum >= 0) return arr[+indexNum];
-    return [...arr].reverse()[arr.length+indexNum];
+  nth: function nth(list,indexNum) {
+    if (arguments.length == 1) {
+      // Manually currying
+      indexNum = list;
+      return (list) => nth(list, indexNum);
+    }
+
+    if(indexNum >= 0) {
+      return list[+indexNum]
+    };
+    return [...list].reverse()[list.length+indexNum];
   }
 };

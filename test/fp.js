@@ -241,10 +241,16 @@ describe('Fp', function () {
 	it ('should join several arrays with specified joiner', () => {
 		(join("~",[1,2],[3,4],[5,6],[7,8])).should.equal('1~2~3~4~5~6~7~8');
 	});
+	it ('should join several arrays in currying way', () => {
+		(join("~")([1,2],[3,4],[5,6],[7,8])).should.equal('1~2~3~4~5~6~7~8');
+	});
 
 
 	it ('should return nth value at the index number specified', () => {
 		nth([1,2,3,4],2).should.equal(3);
+	});
+	it ('should return nth value at the index number specified in currying way', () => {
+		nth(2)([1,2,3,4]).should.equal(3);
 	});
 
 	it ('should return the nth value starting from the end when a negative number is specified', () => {
