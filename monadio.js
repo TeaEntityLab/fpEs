@@ -18,6 +18,19 @@ class MonadIODef {
   flatMap(fn) {
     return this.then((result)=>fn(result).effect());
   }
+  of(ref) {
+    var m = new MonadIODef(()=>ref);
+    return m;
+  }
+  just(ref) {
+    return this.of(ref);
+  }
+  ap(fnM) {
+    return fnM.chain(f => this.map(f));
+  }
+  chain(fn) {
+    return this.flatMap(fn);
+  }
 
   subscribe(fn, asynchronized) {
     if (asynchronized) {
@@ -29,12 +42,7 @@ class MonadIODef {
   }
 }
 
-var MonadIO = {};
-MonadIO.just = function (ref) {
-  var m = new MonadIODef(()=>ref);
-  return m;
-};
-MonadIO.of = MonadIO.just;
+var MonadIO = new MonadIODef({});
 MonadIO.fromPromise = function (p) {
   var m = new MonadIODef(function () {
     return MonadIO.doM(function *() {

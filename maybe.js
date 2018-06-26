@@ -28,17 +28,28 @@ class MaybeDef {
   map(fn) {
     return this.then(fn);
   }
+  flatMap(fn) {
+    return fn(this);
+  }
+  of(ref) {
+    var m = new MaybeDef(ref);
+    return m;
+  }
+  just(ref) {
+    return this.of(ref);
+  }
+  ap(fnM) {
+    return fnM.chain(f => this.map(f));
+  }
+  chain(fn) {
+    return this.flatMap(fn);
+  }
 
   unwrap() {
     return this.ref;
   }
 }
 
-var Maybe = {};
-Maybe.just = function (ref) {
-  var m = new MaybeDef(ref);
-  return m;
-};
-Maybe.of = Maybe.just;
+var Maybe = new MaybeDef({});
 
 module.exports = Maybe;
