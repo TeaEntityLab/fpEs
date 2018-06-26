@@ -44,6 +44,18 @@ class MaybeDef {
   chain(fn) {
     return this.flatMap(fn);
   }
+  chainRec (f, i) {
+    let result;
+    let x = i;
+    do {
+      result = f((x) => {return {value: x, done: false}}, (x) => {return {value: x, done: true}}, x).unwrap();
+      x = result.value;
+    } while (!result.done);
+    return this.of(result.value);
+  }
+  equals(m) {
+    return m instanceof MaybeDef && m.unwrap() === this.ref;
+  }
 
   unwrap() {
     return this.ref;

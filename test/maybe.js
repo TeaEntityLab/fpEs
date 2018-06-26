@@ -81,7 +81,13 @@ describe('Maybe', function () {
       m = Maybe.of(1);
       m.chain(Maybe.of).unwrap().should.equal(m.unwrap());
   });
-  it('ap', function () {
+  it('fantasyland chainRec', function () {
+      Maybe.chainRec((next, done, x) => Maybe.of(x < 1000 ? next(x + 1) : done(x)), 0).unwrap().should.equal(1000);
+  });
+  it('fantasyland equals', function () {
+      Maybe.of(32).equals(Maybe.of(32)).should.equal(true);
+  });
+  it('fantasyland ap', function () {
 			var m;
       var f;
       var u;
