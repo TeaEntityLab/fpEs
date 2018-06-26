@@ -69,6 +69,18 @@ describe('Maybe', function () {
       m = Maybe.just(1).flatMap((x)=>Maybe.just(x+2)).flatMap((x)=>Maybe.just(x+3));
       m.unwrap().should.equal(6);
 	});
+  it('fantasyland monad', function () {
+      var a;
+      var f;
+      var m;
+
+      a = 1;
+      f = (x) => Maybe.of(x + 1);
+      Maybe.of(a).chain(f).unwrap().should.equal(f(a).unwrap());
+
+      m = Maybe.of(1);
+      m.chain(Maybe.of).unwrap().should.equal(m.unwrap());
+  });
   it('ap', function () {
 			var m;
       var f;
