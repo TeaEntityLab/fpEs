@@ -29,7 +29,7 @@ class MaybeDef {
     return this.then(fn);
   }
   flatMap(fn) {
-    return fn(this);
+    return fn(this.unwrap());
   }
   of(ref) {
     var m = new MaybeDef(ref);

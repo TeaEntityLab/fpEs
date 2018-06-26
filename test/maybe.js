@@ -63,4 +63,29 @@ describe('Maybe', function () {
       m = Maybe.just(1).map((x)=>x+2).map((x)=>x+3);
       m.unwrap().should.equal(6);
 	});
+  it('flatMap', function () {
+			var m;
+
+      m = Maybe.just(1).flatMap((x)=>Maybe.just(x+2)).flatMap((x)=>Maybe.just(x+3));
+      m.unwrap().should.equal(6);
+	});
+  it('ap', function () {
+			var m;
+      var f;
+      var u;
+      var v;
+      var x;
+      var y;
+
+      m = Maybe.just(1);
+      m.ap(Maybe.of(x => x)).unwrap().should.equal(m.unwrap());
+
+      x = 1;
+      f = (x) => x + 1;
+      Maybe.of(x).ap(Maybe.of(f)).unwrap().should.equal(Maybe.of(f(x)).unwrap());
+
+      u = Maybe.of(f);
+      y = 1;
+      Maybe.of(y).ap(u).unwrap().should.equal(u.ap(Maybe.of(f => f(y))).unwrap());
+	});
 })
