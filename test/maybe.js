@@ -82,7 +82,17 @@ describe('Maybe', function () {
       m.chain(Maybe.of).unwrap().should.equal(m.unwrap());
   });
   it('fantasyland chainRec', function () {
-      Maybe.chainRec((next, done, x) => Maybe.of(x < 1000 ? next(x + 1) : done(x)), 0).unwrap().should.equal(1000);
+      Maybe.chainRec((next, done, x) => Maybe.of(x < 1000000 ? next(x + 1) : done(x)), 0).unwrap().should.equal(1000000);
+
+      function fibChainRec (next, done, args) {
+          var n = args[0], a = args[1], b = args[2];
+
+          if (n === 0) {return Maybe.of(done(a));}
+          if (n === 1) {return Maybe.of(done(b));}
+          return Maybe.of(next([n - 1, b, a + b]));
+      };
+
+      ((n)=>Maybe.chainRec(fibChainRec, [n, 0, 1]))(70).unwrap().should.equal(190392490709135);
   });
   it('fantasyland equals', function () {
       Maybe.of(32).equals(Maybe.of(32)).should.equal(true);

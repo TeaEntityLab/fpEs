@@ -1,5 +1,5 @@
 var {
-  compose, curry,
+  compose, curry, trampoline,
   chunk, range, tail, shift, unique,
   clone, propEq, get, matches, memoize,
   flatten, flattenMap, unary, foldl, foldr, take,
@@ -18,6 +18,16 @@ describe('Fp', function () {
 			curry((x, y, z) => x + y + z)(1)(2,3).should.equal(6)
 			curry((x, y, z) => x + y + z)(1,2)(3).should.equal(6)
 			curry((x, y, z) => x + y + z)(1)(2)(3).should.equal(6)
+	});
+  it('trampoline', function () {
+      function fib (n) {
+          return trampoline(function inner_fib(n, a, b) {
+              if (n === 0) {return a;}
+              if (n === 1) {return b;}
+              return () => inner_fib(n - 1, b, a + b);
+          })(n, 0, 1);
+      };
+			fib(70).should.equal(190392490709135);
 	});
   it('chunk', function () {
 			JSON.stringify(chunk(range(7),3)).should.equal('[[0,1,2],[3,4,5],[6]]')
