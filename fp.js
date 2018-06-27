@@ -207,8 +207,7 @@ module.exports = {
    * @return {Array} of values in follower but not in main without duplicate
    */
   difference: function (...values) {
-    let {main} = reuseables.getMainAndFollower(values);
-    let {follower} = reuseables.getMainAndFollower(values);
+    let {main, follower} = reuseables.getMainAndFollower(values);
 
     let concatWithoutDuplicate = [...new Set(main.concat(follower))];
 
@@ -336,8 +335,7 @@ module.exports = {
    */
   intersection: function (...values) {
     let list = [];
-    let {main} = reuseables.getMainAndFollower(values);
-    let {follower} = reuseables.getMainAndFollower(values);
+    let {main, follower} = reuseables.getMainAndFollower(values);
 
     main.forEach(x=>{
       if(list.indexOf(x) ==-1) {
