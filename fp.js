@@ -16,9 +16,15 @@ function curry(fn) {
 }
 
 function contains (list, value){
+  if (arguments.length == 1) {
+    // Manually currying
+    value = list;
+    return (list) => contains(list, value);
+  }
+
   return list.reduce((accum, currentValue)=>{
     return accum ? true : currentValue === value;
-  },false)
+  }, false)
 }
 
 function differenceWithDup (...values) {
@@ -189,12 +195,12 @@ module.exports = {
    * Returns true if value specified in present in array.
    * @param list {Array} array to be looped
    * @param value array to check for in array
-   * @returns boolean 
+   * @returns boolean
    */
   contains: contains,
   /**
    * Compares two arrays, first one as main and second
-      as follower. Returns values in follower that aren't in main 
+      as follower. Returns values in follower that aren't in main
       excluding duplicate values in follower
    * @param 1st Any number of individual arrays
    * @param 2nd {number} Position number of array to be used as main
@@ -373,7 +379,13 @@ module.exports = {
     };
     return [...list].reverse()[list.length+indexNum];
   },
-  pull: function (list, ...values){
+  pull: function pull(list, ...values){
+    if ( !(list && Array.isArray(list)) ) {
+      // Manually currying
+      values = arguments;
+      return (list) => pull(list, ...values);
+    }
+
     return differenceWithDup(values, list);
   }
 };

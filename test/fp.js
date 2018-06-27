@@ -107,6 +107,9 @@ describe('Fp', function () {
 	it ('should return boolean if value is contain in array or not', () => {
 		contains([2,3,4,5],5).should.equal(true)
 	});
+	it ('should return boolean if value is contain in array or not in currying way', () => {
+		contains(5)([2,3,4,5]).should.equal(true)
+	});
 
 
 
@@ -305,6 +308,10 @@ describe('Fp', function () {
 
 	it ('should return array excluding specified values', () => {
 		JSON.stringify(pull(["Naa","Esi","Aku","Awo","Ajo"],"Ajo","Aku"))
+			.should.equal('["Naa","Esi","Awo"]')
+	});
+	it ('should return array excluding specified values in currying way', () => {
+		JSON.stringify(pull("Ajo","Aku")(["Naa","Esi","Aku","Awo","Ajo"]))
 			.should.equal('["Naa","Esi","Awo"]')
 	});
 })
