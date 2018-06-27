@@ -14,6 +14,22 @@ function curry(fn) {
     return curry(fn.bind(null, ...xs));
   };
 }
+
+function contains (list, value){
+  return list.reduce((accum, currentValue)=>{
+    return accum ? true : currentValue === value;
+  },false)
+}
+
+function differenceWithDup (...values) {
+  let {main} = reuseables.getMainAndFollower(values);
+  let {follower} = reuseables.getMainAndFollower(values);
+
+  return follower.filter(x=> {
+    return !(contains(main,x));
+  })
+}
+
 var reduce = curry(function (f, init, ...second) {
   // console.log(arguments);
   var list;
@@ -170,8 +186,20 @@ module.exports = {
    */
   concat: concat,
   /**
+   * Returns true if value specified in present in array.
+   * @param list {Array} array to be looped
+   * @param value array to check for in array
+   * @returns boolean 
+   */
+  contains: contains,
+  /**
    * Compares two arrays, first one as main and second
-      as follower. Returns values in follower that aren't in main.
+      as follower. Returns values in follower that aren't in main 
+      excluding duplicate values in follower
+   * @param 1st Any number of individual arrays
+   * @param 2nd {number} Position number of array to be used as main
+   * @param 3rd {number} Position number of to be used as follower
+   * @return {Array} of values in follower but not in main without duplicate
    */
   difference: function (...values) {
     let {main} = reuseables.getMainAndFollower(values);
@@ -181,6 +209,16 @@ module.exports = {
 
     return Array.prototype.slice.call(concatWithoutDuplicate, main.length, concatWithoutDuplicate.length)
   },
+  /**
+   * Compares two arrays, first one as main and second
+      as follower. Returns values in follower that aren't in main
+      including duplicate values in follower.
+   * @param 1st Any number of individual arrays
+   * @param 2nd {number} Position number of array to be used as main
+   * @param 3rd {number} Position number of to be used as follower
+   * @return {Array} of values in follower but not in main including duplicate
+   */
+  differenceWithDup: differenceWithDup,
   /**
    * Drops specified number of values from array either through left or right.
    * Uses passed in function to filter remaining array after values dropped.
@@ -287,8 +325,8 @@ module.exports = {
    * Returns values in two comparing arrays without repetition.
    * Arrangement of resulting array is determined by main array.
    * @param 1st Any number of individual arrays
-   * @param 2nd Array to be used as main
-   * @param 3rd Array to be used as follower
+   * @param 2nd {number} Position number of array to be used as main
+   * @param 3rd {number} Position number of to be used as follower
    * @returns values found in both arrays
    */
   intersection: function (...values) {
@@ -334,5 +372,8 @@ module.exports = {
       return list[+indexNum]
     };
     return [...list].reverse()[list.length+indexNum];
+  },
+  pull: function (list, ...values){
+    return differenceWithDup(values, list);
   }
 };

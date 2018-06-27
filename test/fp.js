@@ -3,9 +3,10 @@ var {
   chunk, range, tail, shift, unique,
   clone, propEq, get, matches, memoize,
   flatten, flattenMap, unary, foldl, foldr, take,
-  compact, concat,difference,
+  compact, concat, contains, difference, differenceWithDup,
   reverse, map, reduce, filter, drop, fill,
-  join, intersection, find, findLast, findIndex, findLastIndex, find, head, fromPairs, initial, nth
+  join, intersection, find, findLast, findIndex, findLastIndex, find, head, fromPairs, initial, nth,
+  pull
 } = require('../fp');
 
 describe('Fp', function () {
@@ -103,12 +104,17 @@ describe('Fp', function () {
 	});
 
 
+	it ('should return boolean if value is contain in array or not', () => {
+		contains([2,3,4,5],5).should.equal(true)
+	});
+
+
 
 	it (`should find the difference between 2 arrays
-		when no other arguments are specified with the first as main`, () => {
+		when no other arguments are specified with the first as main without duplicates`, () => {
 		JSON.stringify(difference(
 			["Naa", "Kofi", "Mensah"],
-			["Naa", "Mensah", "Tsatsu", "Amevor"]))
+			["Naa", "Mensah", "Tsatsu", "Amevor","Amevor"]))
 			.should.equal('["Tsatsu","Amevor"]');
 	});
 
@@ -127,6 +133,35 @@ describe('Fp', function () {
 		["May", "Kwei", "Fri"],
 		1,3)).should.equal('["Kwei","Fri"]')
 	});
+
+
+
+	it ('should find the difference between the 1st and 3rd arrays', () => {
+		JSON.stringify(differenceWithDup(
+			["May","Joe","John"],
+		["Jane", "Joe", "John","Kay","May","Kai"],
+		["May", "Kwei", "Fri", "Fri"],
+		1,3)).should.equal('["Kwei","Fri","Fri"]')
+	});
+
+	it (`should find the difference between 2 arrays
+		when no other arguments are specified with the first as main
+		even when no duplicates are involved`, () => {
+		JSON.stringify(differenceWithDup(
+			["Naa", "Kofi", "Mensah"],
+			["Naa", "Mensah", "Tsatsu", "Amevor"]))
+			.should.equal('["Tsatsu","Amevor"]');
+	});
+
+	it ('should find the difference between the 3rd and 1st arrays with duplicates', () => {
+		JSON.stringify(differenceWithDup(
+			["May","Joe","John","Joe"],
+		["Jane", "Joe", "John","Kay","May","Q"],
+		["May", "Suzzie", "Fri"],
+		3,1)).should.equal('["Joe","John","Joe"]')
+	});
+
+
 
 
 	it ('should return array when dropCount is 0 and no function is passed', () => {
@@ -265,5 +300,11 @@ describe('Fp', function () {
 
 	it ('should return the nth value starting from the end when a negative number is specified', () => {
 		nth([1,2,3,4],-2).should.equal(2);
+	});
+
+
+	it ('should return array excluding specified values', () => {
+		JSON.stringify(pull(["Naa","Esi","Aku","Awo","Ajo"],"Ajo","Aku"))
+			.should.equal('["Naa","Esi","Awo"]')
 	});
 })
