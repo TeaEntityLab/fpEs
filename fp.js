@@ -16,14 +16,19 @@ function curry(fn) {
 }
 
 function contains (list, value){
+  if (arguments.length == 1) {
+    // Manually currying
+    value = list;
+    return (list) => contains(list, value);
+  }
+
   return list.reduce((accum, currentValue)=>{
     return accum ? true : currentValue === value;
-  },false)
+  }, false)
 }
 
 function differenceWithDup (...values) {
-  let {main} = reuseables.getMainAndFollower(values);
-  let {follower} = reuseables.getMainAndFollower(values);
+  let {main, follower} = reuseables.getMainAndFollower(values);
 
   return follower.filter(x=> {
     return !(contains(main,x));
@@ -189,12 +194,12 @@ module.exports = {
    * Returns true if value specified in present in array.
    * @param list {Array} array to be looped
    * @param value array to check for in array
-   * @returns boolean 
+   * @returns boolean
    */
   contains: contains,
   /**
    * Compares two arrays, first one as main and second
-      as follower. Returns values in follower that aren't in main 
+      as follower. Returns values in follower that aren't in main
       excluding duplicate values in follower
    * @param 1st Any number of individual arrays
    * @param 2nd {number} Position number of array to be used as main
@@ -202,8 +207,7 @@ module.exports = {
    * @return {Array} of values in follower but not in main without duplicate
    */
   difference: function (...values) {
-    let {main} = reuseables.getMainAndFollower(values);
-    let {follower} = reuseables.getMainAndFollower(values);
+    let {main, follower} = reuseables.getMainAndFollower(values);
 
     let concatWithoutDuplicate = [...new Set(main.concat(follower))];
 
@@ -331,8 +335,7 @@ module.exports = {
    */
   intersection: function (...values) {
     let list = [];
-    let {main} = reuseables.getMainAndFollower(values);
-    let {follower} = reuseables.getMainAndFollower(values);
+    let {main, follower} = reuseables.getMainAndFollower(values);
 
     main.forEach(x=>{
       if(list.indexOf(x) ==-1) {
@@ -373,7 +376,13 @@ module.exports = {
     };
     return [...list].reverse()[list.length+indexNum];
   },
-  pull: function (list, ...values) {
+  pull: function pull(list, ...values){
+    if ( !(list && Array.isArray(list)) ) {
+      // Manually currying
+      values = arguments;
+      return (list) => pull(list, ...values);
+    }
+
     return differenceWithDup(values, list);
   },
   /**
