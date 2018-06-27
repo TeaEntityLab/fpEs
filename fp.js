@@ -373,7 +373,20 @@ module.exports = {
     };
     return [...list].reverse()[list.length+indexNum];
   },
-  pull: function (list, ...values){
+  pull: function (list, ...values) {
     return differenceWithDup(values, list);
+  },
+  /**
+   * Returns the lowest index number of a value if it is to be added to an array.
+   * @param list {Array} array that value will be added to
+   * @param value value to evaluate
+   * @param valueIndex {string} accepts either 'first' or 'last'. 
+   *  Specifies either to return the first or last index if the value is to be added to the array.
+   * Default is 'first'
+   * @returns {number}
+   */
+  sortedIndex: function (list, value,valueIndex) {
+    return reuseables.sorter(list,value, valueIndex);
   }
+
 };

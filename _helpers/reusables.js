@@ -25,4 +25,15 @@ module.exports = {
         }
       }
     },
+    sorter: function (list, value, indexOfPosition = "first") {
+      let listValueConcat = list.concat([value]);
+      if (typeof value == "number") {
+        if (indexOfPosition == "first")
+          return listValueConcat.sort((a, b) => a - b).indexOf(value);
+        return listValueConcat.sort((a, b) => a - b).lastIndexOf(value);
+      }
+      if (indexOfPosition == "first")
+        return listValueConcat.sort().indexOf(value);
+      return listValueConcat.sort().lastIndexOf(value);
+    }
 }

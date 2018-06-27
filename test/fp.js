@@ -6,7 +6,7 @@ var {
   compact, concat, contains, difference, differenceWithDup,
   reverse, map, reduce, filter, drop, fill,
   join, intersection, find, findLast, findIndex, findLastIndex, find, head, fromPairs, initial, nth,
-  pull
+  pull, sortedIndex
 } = require('../fp');
 
 describe('Fp', function () {
@@ -307,4 +307,36 @@ describe('Fp', function () {
 		JSON.stringify(pull(["Naa","Esi","Aku","Awo","Ajo"],"Ajo","Aku"))
 			.should.equal('["Naa","Esi","Awo"]')
 	});
+
+
+
+	it ('should return lowest index of value if to be added to array', () => {
+		sortedIndex(["Aaron", "Joe"], "Fred").should.equal(1);
+	});
+
+	it (`should correctly return lowest index of value 
+		if to be added to array even if it's an array of numbers`, () => {
+		sortedIndex([1, 30, 4],21).should.equal(2);
+	});
+
+	it (`should correctly return lowest last index if value and array are of different types`, () => {
+		sortedIndex([30, 50, 15], "Fred").should.equal(3);
+	});
+
+	it (`should correctly return lowest index of value 
+		if to be added to array even if it's an array of numbers`, () => {
+		sortedIndex([4, 5, 5, 5, 6], 5).should.equal(1);
+	});
+
+
+
+	it (`should correctly return highest index of value 
+		if to be added to array even if it's an array of numbers`, () => {
+		sortedIndex([4, 5, 5, 5, 6], 5,"last").should.equal(4);
+	});
+
+	it (`should correctly return highest last index if value and array are of different types`, () => {
+		sortedIndex([30, 50, 15], "Fred","last").should.equal(3);
+	});
+
 })
