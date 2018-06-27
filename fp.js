@@ -28,8 +28,7 @@ function contains (list, value){
 }
 
 function differenceWithDup (...values) {
-  let {main} = reuseables.getMainAndFollower(values);
-  let {follower} = reuseables.getMainAndFollower(values);
+  let {main, follower} = reuseables.getMainAndFollower(values);
 
   return follower.filter(x=> {
     return !(contains(main,x));
