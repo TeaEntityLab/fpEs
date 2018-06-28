@@ -228,14 +228,25 @@ module.exports = {
    * Uses passed in function to filter remaining array after values dropped.
    * Default dropCount = 1
    */
-  drop: function (list,dropCount=1,direction="left",fn=null) {
+  drop: function drop(list,dropCount=1,direction="left",fn=null) {
 
-    if(dropCount === 0 && !fn) return Array.prototype.slice.call(list, 0);
+    // If the first argument is not kind of `array`-like.
+    if (!(list && Array.isArray(list))) {
+      // Manually currying
+      let args = arguments;
+      return (list) => drop(list, ...args);
+    }
+
+    if(dropCount === 0 && !fn) {
+      return Array.prototype.slice.call(list, 0)
+    };
 
     if(arguments.length === 1 || direction === "left") {
-      if(!fn) return Array.prototype.slice.call(list, +dropCount);
+      if (!fn) {
+        return Array.prototype.slice.call(list, +dropCount);
+      }
 
-        return (Array.prototype.slice.call(list, +dropCount)).filter(x=>fn(x));
+      return (Array.prototype.slice.call(list, +dropCount)).filter(x=>fn(x));
     }
     if(direction === "right"){
       if(!fn) {
@@ -251,7 +262,13 @@ module.exports = {
    * Can optionally pass in start and index of array to fill.
    * Default startIndex = 0. Default endIndex = length of array.
    */
-  fill: function(list,value, startIndex =0, endIndex=list.length){
+  fill: function fill(list, value, startIndex=0, endIndex=list.length){
+    if (!(list && Array.isArray(list))) {
+      // Manually currying
+      let args = arguments;
+      return (list) => fill(list, ...args);
+    }
+
     return Array(...list).map((x,i)=> {
       if(i>= startIndex && i <= endIndex) {
         return x=value;
@@ -364,7 +381,7 @@ module.exports = {
    * @param list the array to be operated on
    * @param indexNum the index number of the value to be retrieved
    */
-  nth: function nth(list,indexNum) {
+  nth: function nth(list, indexNum) {
     if (arguments.length == 1) {
       // Manually currying
       indexNum = list;
@@ -379,8 +396,8 @@ module.exports = {
   pull: function pull(list, ...values){
     if ( !(list && Array.isArray(list)) ) {
       // Manually currying
-      values = arguments;
-      return (list) => pull(list, ...values);
+      let args = arguments;
+      return (list) => pull(list, ...args);
     }
 
     return differenceWithDup(values, list);
@@ -389,13 +406,19 @@ module.exports = {
    * Returns the lowest index number of a value if it is to be added to an array.
    * @param list {Array} array that value will be added to
    * @param value value to evaluate
-   * @param valueIndex {string} accepts either 'first' or 'last'. 
+   * @param valueIndex {string} accepts either 'first' or 'last'.
    *  Specifies either to return the first or last index if the value is to be added to the array.
    * Default is 'first'
    * @returns {number}
    */
-  sortedIndex: function (list, value,valueIndex) {
-    return reuseables.sorter(list,value, valueIndex);
+  sortedIndex: function sortedIndex(list, value, valueIndex) {
+    if (!(list && Array.isArray(list))) {
+      // Manually currying
+      let args = arguments;
+      return (list) => sortedIndex(list, ...args);
+    }
+
+    return reuseables.sorter(list, value, valueIndex);
   }
 
 };

@@ -11,7 +11,7 @@ describe('Publisher', function () {
 
       v.should.equal(1)
 	});
-  it('async', function () {
+  it('async', function (done) {
       var p = new Publisher();
       var v = 0;
 
@@ -24,7 +24,7 @@ describe('Publisher', function () {
       setTimeout(()=>{
         v.should.equal(1)
         done();
-      },100);
+      },30);
 	});
   it('unsubscribe', function () {
       var p = new Publisher();
@@ -40,7 +40,7 @@ describe('Publisher', function () {
       p.publish(1);
       v.should.equal(0)
 	});
-  it('map', function () {
+  it('map', function (done) {
       var p = new Publisher();
       var v = 0;
 
@@ -53,6 +53,6 @@ describe('Publisher', function () {
       setTimeout(()=>{
         v.should.equal(6)
         done();
-      },100);
+      },30);
 	});
 })

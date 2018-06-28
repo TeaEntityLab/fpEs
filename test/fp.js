@@ -199,6 +199,9 @@ describe('Fp', function () {
 	it ('should drop specified number of elements from right and filter remaining values with passed in function', () => {
 		JSON.stringify(drop([1,2,3,4,5,6],3,"right",x=>x>2)).should.equal('[3]');
 	});
+	it ('should drop specified number of elements from right and filter remaining values with passed in function in currying way', () => {
+		JSON.stringify(drop(3,"right",x=>x>2)([1,2,3,4,5,6])).should.equal('[3]');
+	});
 
 
 	it ('should fill and return new array with specified value', () => {
@@ -221,6 +224,9 @@ describe('Fp', function () {
 	});
 	it ('should return array when startIndex and endIndex are greater than array', () => {
 		JSON.stringify(fill([1,1,3,3,5],"*",6,6)).should.equal('[1,1,3,3,5]');
+	});
+	it ('should return array when startIndex and endIndex are greater than array in currying way', () => {
+		JSON.stringify(fill("*",6,6)([1,1,3,3,5])).should.equal('[1,1,3,3,5]');
 	});
 
 
@@ -317,7 +323,7 @@ describe('Fp', function () {
 		sortedIndex(["Aaron", "Joe"], "Fred").should.equal(1);
 	});
 
-	it (`should correctly return lowest index of value 
+	it (`should correctly return lowest index of value
 		if to be added to array even if it's an array of numbers`, () => {
 		sortedIndex([1, 30, 4],21).should.equal(2);
 	});
@@ -326,16 +332,20 @@ describe('Fp', function () {
 		sortedIndex([30, 50, 15], "Fred").should.equal(3);
 	});
 
-	it (`should correctly return lowest index of value 
+	it (`should correctly return lowest index of value
 		if to be added to array even if it's an array of numbers`, () => {
 		sortedIndex([4, 5, 5, 5, 6], 5).should.equal(1);
 	});
 
 
 
-	it (`should correctly return highest index of value 
+	it (`should correctly return highest index of value
 		if to be added to array even if it's an array of numbers`, () => {
 		sortedIndex([4, 5, 5, 5, 6], 5,"last").should.equal(4);
+	});
+	it (`should correctly return highest index of value
+		if to be added to array even if it's an array of numbers in currying way`, () => {
+		sortedIndex(5,"last")([4, 5, 5, 5, 6]).should.equal(4);
 	});
 
 	it (`should correctly return highest last index if value and array are of different types`, () => {
