@@ -86,6 +86,7 @@ module.exports = {
   range: function(n) {
     return Array.apply(null,Array(n)).map(function (x,i) {return i})
   },
+  snooze: ms => new Promise(resolve => setTimeout(resolve, ms)),
   debounce: curry(function (fn, timeout) {
     var ref = setTimeout(fn, timeout)
     return {
