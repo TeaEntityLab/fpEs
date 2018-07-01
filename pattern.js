@@ -42,6 +42,21 @@ function inCaseOfRegex (regex, effect) {
     return regex.test(v);
   }, effect);
 }
+
+function TypeInCaseOf (matches) {
+  return new Pattern(matches, ()=>true);
+}
+
+function TypeMatchesAllPatterns (...patterns) {
+  return TypeInCaseOf((v)=>{
+    let matched = true;
+    for (let pattern of patterns) {
+      matched = matched && pattern.matches(v);
+    }
+    return matched;
+  });
+}
+
 function otherwise (effect) {
   return new Pattern(()=>true, effect);
 }
@@ -181,4 +196,6 @@ module.exports = {
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
+  TypeInCaseOf,
+  TypeMatchesAllPatterns,
 };

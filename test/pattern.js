@@ -1,5 +1,5 @@
 var {
-  either, PatternMatching,
+  either, PatternMatching, Pattern,
   inCaseOfEqual, inCaseOfRegex, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfNaN, inCaseOfString, inCaseOfObject, inCaseOfArray,
   otherwise,
 
@@ -13,6 +13,7 @@ var {
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
+  TypeInCaseOf, TypeMatchesAllPatterns
 } = require('../pattern');
 
 describe('SumType', function () {
@@ -24,6 +25,27 @@ describe('SumType', function () {
 
     (s.apply("1") === undefined).should.equal(true);
     (s.apply("ccc") === undefined).should.equal(false);
+	});
+  it('Structural', function () {
+    var s;
+
+    var patternList = [
+      TypeObject,
+      TypeInCaseOf((v) => (+v.id) >= 0),
+      TypeInCaseOf((v) => TypeObject.matches(v.user) && v.user.id >= 0),
+      otherwise(()=>false),
+    ];
+
+    var customType = TypeMatchesAllPatterns(...patternList);
+
+    s = new SumType(new ProductType(TypeString, TypeNumber), new ProductType(customType));
+    (s.apply("1", "2asdf") === undefined).should.equal(true);
+    (s.apply("1", 2) === undefined).should.equal(false);
+
+    (s.apply({id: -1,}) === undefined).should.equal(true);
+    (s.apply({id: 30,}) === undefined).should.equal(true);
+    (s.apply({id: 30,user: {id: -1,}}) === undefined).should.equal(true);
+    (s.apply({id: 30,user: {id: 20,}}) === undefined).should.equal(false);
 	});
 });
 describe('pattern', function () {
