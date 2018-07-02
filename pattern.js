@@ -156,7 +156,7 @@ function TypeADT(adtDef) {
       if (adtDef.hasOwnProperty(key)) {
         let fieldName = key;
         patternsForAnd.push(TypeInCaseOf((v)=>{
-          return v.hasOwnProperty(fieldName) && TypeADT(adtDef[fieldName]).matches(v[fieldName]);
+          return TypeADT(adtDef[fieldName]).matches(v[fieldName]);
         }));
       }
     }

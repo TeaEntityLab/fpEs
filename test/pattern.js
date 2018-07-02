@@ -82,7 +82,8 @@ describe('SumType', function () {
         id: Number,
         data: {
           id: Number,
-        }
+        },
+        nodata: TypeNull,
       },
     ];
 
@@ -94,6 +95,7 @@ describe('SumType', function () {
     (s.apply([{id: 30,}]) !== undefined).should.equal(false);
     (s.apply([{id: 30,user: {id: NaN,}}]) !== undefined).should.equal(false);
     (s.apply([{id: 30,newdata: {id: 20,}}, {id: 30,user: {id: 20,}}]) !== undefined).should.equal(false);
+    (s.apply([{id: 30,data: {id: 20,}, nodata: 33}, {id: 30,user: {id: 20,}}]) !== undefined).should.equal(false);
 
     (s.apply([]) !== undefined).should.equal(true);
     (s.apply([{id: 30,user: {id: 20,}}]) !== undefined).should.equal(true);
