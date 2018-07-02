@@ -61,26 +61,24 @@ function TypeADT(adtDef) {
   let patterns = [];
 
   let primaryTypesMapping = [
-    (adt) => {
-      let theType = TypeNull;
-      // console.log('TypeNull');
-      return adt === theType || theType.matches(adt) ? theType : undefined;
-    },
-    (adt) => {
-      let theType = TypeInCaseOf((v) => (! (TypeObject.matches(v) || TypeArray.matches(v))) && TypeNaN.matches(v));
-      // console.log('TypeInCaseOf');
-      return adt === TypeNaN || theType.matches(adt) ? theType : undefined;
-    },
 
     (adt) => {
       let theType = TypeString;
-      // console.log('TypeString');
       return adt === theType || adt === String || theType.matches(adt) ? theType : undefined;
     },
     (adt) => {
       let theType = TypeNumber;
-      // console.log('TypeNumber');
       return adt === theType || adt === Number || theType.matches(adt) ? theType : undefined;
+    },
+
+
+    (adt) => {
+      let theType = TypeNull;
+      return adt === theType || theType.matches(adt) ? theType : undefined;
+    },
+    (adt) => {
+      let theType = TypeInCaseOf((v) => (! (TypeObject.matches(v) || TypeArray.matches(v))) && TypeNaN.matches(v));
+      return adt === TypeNaN || theType.matches(adt) ? theType : undefined;
     },
   ];
   for (let theTypeMapping of primaryTypesMapping) {

@@ -20,11 +20,11 @@ describe('SumType', function () {
   it('Common', function () {
     var s;
     s = new SumType(new ProductType(TypeString, TypeNumber), new ProductType(TypeRegexMatches('c+')));
-    (s.apply("1", "2asdf") === undefined).should.equal(true);
-    (s.apply("1", 2) === undefined).should.equal(false);
+    (s.apply("1", "2asdf") !== undefined).should.equal(false);
+    (s.apply("1", 2) !== undefined).should.equal(true);
 
-    (s.apply("1") === undefined).should.equal(true);
-    (s.apply("ccc") === undefined).should.equal(false);
+    (s.apply("1") !== undefined).should.equal(false);
+    (s.apply("ccc") !== undefined).should.equal(true);
 	});
   it('Structural(Manual)', function () {
     var s;
@@ -39,15 +39,14 @@ describe('SumType', function () {
     var customType = TypeMatchesAllPatterns(...patternList);
 
     s = new SumType(new ProductType(TypeString, TypeNumber), new ProductType(customType));
-    (s.apply("1", "2asdf") === undefined).should.equal(true);
-    (s.apply("1", 2) === undefined).should.equal(false);
+    (s.apply("1", "2asdf") !== undefined).should.equal(false);
+    (s.apply("1", 2) !== undefined).should.equal(true);
 
-    (s.apply({id: -1,}) === undefined).should.equal(true);
-    (s.apply({id: 30,}) === undefined).should.equal(true);
-    (s.apply({id: 30,user: {id: -1,}}) === undefined).should.equal(true);
-    (s.apply({id: 30,user: {id: 20,}}) === undefined).should.equal(false);
+    (s.apply({id: -1,}) !== undefined).should.equal(false);
+    (s.apply({id: 30,}) !== undefined).should.equal(false);
+    (s.apply({id: 30,user: {id: -1,}}) !== undefined).should.equal(false);
+    (s.apply({id: 30,user: {id: 20,}}) !== undefined).should.equal(true);
 	});
-  /*
   it('Structural(ADT)', function () {
     var s;
 
@@ -59,17 +58,16 @@ describe('SumType', function () {
     };
 
     var customType = TypeADT(adt);
-    console.log(customType);
 
     s = new SumType( new ProductType(customType));
-    (s.apply(undefined) === undefined).should.equal(true);
-    (s.apply(null) === undefined).should.equal(true);
-    (s.apply([]) === undefined).should.equal(true);
-    (s.apply({id: 30,}) === undefined).should.equal(true);
+    (s.apply(undefined) !== undefined).should.equal(false);
+    (s.apply(null) !== undefined).should.equal(false);
+    (s.apply([]) !== undefined).should.equal(false);
+    (s.apply({id: 30,}) !== undefined).should.equal(false);
+    (s.apply({id: 30,user: {id: NaN,}}) !== undefined).should.equal(false);
 
-    (s.apply({id: 30,user: {id: 20,}}) === undefined).should.equal(false);
+    (s.apply({id: 30,user: {id: 20,}}) !== undefined).should.equal(true);
 	});
-  */
 });
 describe('pattern', function () {
   it('PatternMatching', function () {
@@ -128,7 +126,7 @@ describe('pattern', function () {
 
       err = undefined;
 			either(1, inCaseOfEqual(1, (x)=>x+1)).should.equal(2);
-      (err === undefined).should.equal(true);
+      (err !== undefined).should.equal(false);
 
       err = undefined;
 			try {
@@ -136,7 +134,7 @@ describe('pattern', function () {
       } catch (e) {
         err = e;
       }
-      (err === undefined).should.equal(false);
+      (err !== undefined).should.equal(true);
 
       err = undefined;
 			try {
@@ -145,6 +143,6 @@ describe('pattern', function () {
         err = e;
         console.log(e);
       }
-      (err === undefined).should.equal(true);
+      (err !== undefined).should.equal(false);
 	});
 })
