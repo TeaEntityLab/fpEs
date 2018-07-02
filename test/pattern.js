@@ -47,7 +47,7 @@ describe('SumType', function () {
     (s.apply({id: 30,user: {id: -1,}}) !== undefined).should.equal(false);
     (s.apply({id: 30,user: {id: 20,}}) !== undefined).should.equal(true);
 	});
-  it('Structural(ADT)', function () {
+  it('Structural(ADT) Object', function () {
     var s;
 
     var adt = {
@@ -67,6 +67,37 @@ describe('SumType', function () {
     (s.apply({id: 30,user: {id: NaN,}}) !== undefined).should.equal(false);
 
     (s.apply({id: 30,user: {id: 20,}}) !== undefined).should.equal(true);
+	});
+  it('Structural(ADT) TypeArray', function () {
+    var s;
+
+    var adt = [
+      {
+        id: Number,
+        user: {
+          id: Number,
+        },
+      },
+      {
+        id: Number,
+        data: {
+          id: Number,
+        }
+      },
+    ];
+
+    var customType = TypeADT(adt);
+
+    s = new SumType( new ProductType(customType));
+    (s.apply(undefined) !== undefined).should.equal(false);
+    (s.apply(null) !== undefined).should.equal(false);
+    (s.apply([{id: 30,}]) !== undefined).should.equal(false);
+    (s.apply([{id: 30,user: {id: NaN,}}]) !== undefined).should.equal(false);
+    (s.apply([{id: 30,newdata: {id: 20,}}, {id: 30,user: {id: 20,}}]) !== undefined).should.equal(false);
+
+    (s.apply([]) !== undefined).should.equal(true);
+    (s.apply([{id: 30,user: {id: 20,}}]) !== undefined).should.equal(true);
+    (s.apply([{id: 30,data: {id: 20,}}, {id: 30,user: {id: 20,}}]) !== undefined).should.equal(true);
 	});
 });
 describe('pattern', function () {

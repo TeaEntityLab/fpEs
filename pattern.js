@@ -102,7 +102,7 @@ function TypeADT(adtDef) {
     patterns.push(TypeInCaseOf((v)=>{
       return v.map((item)=>{
         return TypeSubVFromAdt.matches(item);
-      }).reduce((prevResult, x) => x || prevResult, false);
+      }).reduce((prevResult, x) => x && prevResult, true);
 
     }));
   } else if (TypeObject.matches(adtDef)) {
