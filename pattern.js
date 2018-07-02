@@ -52,7 +52,7 @@ function inCaseOfCompType (effect) {
   return inCaseOfClass(CompType, effect);
 }
 function inCaseOfCompTypeMatchesWithSpread (theCompType, effect) {
-  return new Pattern((list)=> theCompType.matches(...list), effect);
+  return new Pattern((v)=> (TypeArray.matches(v) && theCompType.matches(...v)) || theCompType.matches(v), effect);
 }
 function inCaseOfRegex (regex, effect) {
   return new Pattern((v)=> {
