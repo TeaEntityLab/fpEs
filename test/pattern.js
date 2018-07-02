@@ -13,7 +13,7 @@ var {
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
-  TypeInCaseOf, TypeMatchesAllPatterns, TypeADT,
+  TypeInCaseOf, TypeMatchesAllPatterns, TypeADT, TypeCompTypeMatchesWithSpread,
 } = require('../pattern');
 
 describe('SumType', function () {
@@ -59,7 +59,7 @@ describe('SumType', function () {
 
     var customType = TypeADT(adt);
 
-    s = new SumType( new ProductType(customType));
+    s = new SumType(new ProductType(customType));
     (s.apply(undefined) !== undefined).should.equal(false);
     (s.apply(null) !== undefined).should.equal(false);
     (s.apply([]) !== undefined).should.equal(false);
@@ -68,7 +68,7 @@ describe('SumType', function () {
 
     (s.apply({id: 30,user: {id: 20,}}) !== undefined).should.equal(true);
 	});
-  it('Structural(ADT) TypeArray', function () {
+  it('Structural(ADT) Array', function () {
     var s;
 
     var adt = [
@@ -88,7 +88,7 @@ describe('SumType', function () {
 
     var customType = TypeADT(adt);
 
-    s = new SumType( new ProductType(customType));
+    s = new SumType(new ProductType(customType));
     (s.apply(undefined) !== undefined).should.equal(false);
     (s.apply(null) !== undefined).should.equal(false);
     (s.apply([{id: 30,}]) !== undefined).should.equal(false);
@@ -98,6 +98,56 @@ describe('SumType', function () {
     (s.apply([]) !== undefined).should.equal(true);
     (s.apply([{id: 30,user: {id: 20,}}]) !== undefined).should.equal(true);
     (s.apply([{id: 30,data: {id: 20,}}, {id: 30,user: {id: 20,}}]) !== undefined).should.equal(true);
+	});
+  it('Structural(ADT) Composite with rules', function () {
+    var s;
+    var adt;
+    var customType;
+
+    // Pattern
+    customType = TypeADT({
+      arrayWithOrder: TypeCompTypeMatchesWithSpread(new SumType(new ProductType(TypeString, TypeNumber))),
+    });
+    s = new SumType(new ProductType(customType));
+    (s.apply(undefined) !== undefined).should.equal(false);
+    (s.apply(null) !== undefined).should.equal(false);
+    (s.apply([]) !== undefined).should.equal(false);
+    (s.apply({arrayWithOrder: [12, "id"]}) !== undefined).should.equal(false);
+    (s.apply({arrayWithOrder: ["id", 12]}) !== undefined).should.equal(true);
+
+    // PatternMatching
+    customType = TypeADT({
+      arrayWithOrder: new PatternMatching(TypeCompTypeMatchesWithSpread(new SumType(new ProductType(TypeString, TypeNumber))), otherwise((x)=>false)),
+    });
+    s = new SumType(new ProductType(customType));
+    (s.apply(undefined) !== undefined).should.equal(false);
+    (s.apply(null) !== undefined).should.equal(false);
+    (s.apply([]) !== undefined).should.equal(false);
+    (s.apply({arrayWithOrder: [12, "id"]}) !== undefined).should.equal(false);
+    (s.apply({arrayWithOrder: ["id", 12]}) !== undefined).should.equal(true);
+
+    // Function
+    customType = TypeADT({
+      arrayWithOrder: (list) => new SumType(new ProductType(TypeString, TypeNumber)).matches(...list),
+    });
+    s = new SumType(new ProductType(customType));
+    (s.apply(undefined) !== undefined).should.equal(false);
+    (s.apply(null) !== undefined).should.equal(false);
+    (s.apply([]) !== undefined).should.equal(false);
+    (s.apply({arrayWithOrder: [12, "id"]}) !== undefined).should.equal(false);
+    (s.apply({arrayWithOrder: ["id", 12]}) !== undefined).should.equal(true);
+
+    // CompType
+    customType = TypeADT({
+      data: new SumType(new ProductType(TypeString)),
+    });
+    s = new SumType(new ProductType(customType));
+    (s.apply(undefined) !== undefined).should.equal(false);
+    (s.apply(null) !== undefined).should.equal(false);
+    (s.apply([]) !== undefined).should.equal(false);
+    (s.apply({data: [12, "id"]}) !== undefined).should.equal(false);
+
+    (s.apply({data: "the string"}) !== undefined).should.equal(true);
 	});
 });
 describe('pattern', function () {

@@ -5,6 +5,12 @@ class Pattern {
   }
 }
 
+class Matchable {
+  matches(...values) {
+    throw new Error('No implementation');
+  }
+}
+
 function isNotNumber(v) {
   return isNaN(v) || v.toString().trim() === '';
 }
@@ -32,6 +38,21 @@ function inCaseOfClass (theClass, effect) {
 }
 function inCaseOfNull (effect) {
   return new Pattern((v)=> v === null || v === undefined, effect);
+}
+function inCaseOfFunction (effect) {
+  return inCaseOfClass(Function, effect);
+}
+function inCaseOfPattern (effect) {
+  return inCaseOfClass(Pattern, effect);
+}
+function inCaseOfPatternMatching (effect) {
+  return inCaseOfClass(PatternMatching, effect);
+}
+function inCaseOfCompType (effect) {
+  return inCaseOfClass(CompType, effect);
+}
+function inCaseOfCompTypeMatchesWithSpread (theCompType, effect) {
+  return new Pattern((list)=> theCompType.matches(...list), effect);
 }
 function inCaseOfRegex (regex, effect) {
   return new Pattern((v)=> {
@@ -62,6 +83,7 @@ function TypeADT(adtDef) {
 
   let primaryTypesMapping = [
 
+    // Primary
     (adt) => {
       let theType = TypeString;
       return adt === theType || adt === String || theType.matches(adt) ? theType : undefined;
@@ -70,8 +92,30 @@ function TypeADT(adtDef) {
       let theType = TypeNumber;
       return adt === theType || adt === Number || theType.matches(adt) ? theType : undefined;
     },
+    (adt) => {
+      let theType = TypeFunction;
+      return adt === theType || adt === Function ? theType : undefined;
+    },
 
+    // Rule
+    (adt) => {
+      let theType = TypeFunction;
+      return theType.matches(adt) ? TypeInCaseOf(adt) : undefined;
+    },
+    (adt) => {
+      let theType = TypePattern;
+      return theType.matches(adt) ? adt : undefined;
+    },
+    (adt) => {
+      let theType = TypePatternMatching;
+      return theType.matches(adt) ? TypeInCaseOf((v)=>adt.matchFor(v)) : undefined;
+    },
+    (adt) => {
+      let theType = TypeCompType;
+      return theType.matches(adt) ? adt : undefined;
+    },
 
+    // Null/Nan
     (adt) => {
       let theType = TypeNull;
       return adt === theType || theType.matches(adt) ? theType : undefined;
@@ -139,13 +183,17 @@ function either(value, ...patterns) {
   throw new Error(`Cannot match ${JSON.stringify(value)}`);
 }
 
-class PatternMatching {
+class PatternMatching extends Matchable {
   constructor(...patterns) {
+    super();
     this.patterns = patterns;
   }
 
-  matchFor(value) {
+  matches(value) {
     return either(value, ...this.patterns);
+  }
+  matchFor(value) {
+    return this.matches(value);
   }
 }
 
@@ -156,7 +204,7 @@ class CompData {
   }
 }
 
-class CompType {
+class CompType extends Matchable {
   effect(...values) {
     if (this.matches(...values)) {
       return new CompData(this, values);
@@ -224,6 +272,10 @@ var TypeNaN = inCaseOfNaN(()=>true);
 var TypeObject = inCaseOfObject(()=>true);
 var TypeArray = inCaseOfArray(()=>true);
 var TypeNull = inCaseOfNull(()=>true);
+var TypeFunction = inCaseOfFunction(()=>true);
+var TypePattern = inCaseOfPattern(()=>true);
+var TypePatternMatching = inCaseOfPatternMatching(()=>true);
+var TypeCompType = inCaseOfCompType(()=>true);
 function TypeEqualTo(value) {
   return inCaseOfEqual(value, ()=>true);
 }
@@ -232,6 +284,9 @@ function TypeClassOf(theClass) {
 }
 function TypeRegexMatches(regex) {
   return inCaseOfRegex(regex, ()=>true);
+}
+function TypeCompTypeMatchesWithSpread(theCompType) {
+  return inCaseOfCompTypeMatchesWithSpread(theCompType, ()=>true);
 }
 
 module.exports = {
@@ -246,6 +301,11 @@ module.exports = {
   inCaseOfArray,
   inCaseOfClass,
   inCaseOfNull,
+  inCaseOfFunction,
+  inCaseOfPattern,
+  inCaseOfPatternMatching,
+  inCaseOfCompType,
+  inCaseOfCompTypeMatchesWithSpread,
   inCaseOfRegex,
   otherwise,
 
@@ -259,6 +319,11 @@ module.exports = {
   TypeObject,
   TypeArray,
   TypeNull,
+  TypeFunction,
+  TypePattern,
+  TypePatternMatching,
+  TypeCompType,
+  TypeCompTypeMatchesWithSpread,
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
