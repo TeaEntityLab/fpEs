@@ -1,6 +1,6 @@
 {
   "name": "fpes",
-  "version": "1.0.53",
+  "version": "1.0.54",
   "description": "Functional Programming for EcmaScript(Javascript)",
   "main": "index.js",
   "scripts": {
