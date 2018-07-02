@@ -13,7 +13,7 @@ var {
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
-  TypeInCaseOf, TypeMatchesAllPatterns
+  TypeInCaseOf, TypeMatchesAllPatterns, TypeADT,
 } = require('../pattern');
 
 describe('SumType', function () {
@@ -26,7 +26,7 @@ describe('SumType', function () {
     (s.apply("1") === undefined).should.equal(true);
     (s.apply("ccc") === undefined).should.equal(false);
 	});
-  it('Structural', function () {
+  it('Structural(Manual)', function () {
     var s;
 
     var patternList = [
@@ -47,6 +47,29 @@ describe('SumType', function () {
     (s.apply({id: 30,user: {id: -1,}}) === undefined).should.equal(true);
     (s.apply({id: 30,user: {id: 20,}}) === undefined).should.equal(false);
 	});
+  /*
+  it('Structural(ADT)', function () {
+    var s;
+
+    var adt = {
+      id: Number,
+      user: {
+        id: Number,
+      },
+    };
+
+    var customType = TypeADT(adt);
+    console.log(customType);
+
+    s = new SumType( new ProductType(customType));
+    (s.apply(undefined) === undefined).should.equal(true);
+    (s.apply(null) === undefined).should.equal(true);
+    (s.apply([]) === undefined).should.equal(true);
+    (s.apply({id: 30,}) === undefined).should.equal(true);
+
+    (s.apply({id: 30,user: {id: 20,}}) === undefined).should.equal(false);
+	});
+  */
 });
 describe('pattern', function () {
   it('PatternMatching', function () {

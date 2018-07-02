@@ -57,6 +57,74 @@ function TypeMatchesAllPatterns (...patterns) {
   });
 }
 
+function TypeADT(adtDef) {
+  let patterns = [];
+
+  let primaryTypesMapping = [
+    (adt) => {
+      let theType = TypeNull;
+      // console.log('TypeNull');
+      return adt === theType || theType.matches(adt) ? theType : undefined;
+    },
+    (adt) => {
+      let theType = TypeInCaseOf((v) => (! (TypeObject.matches(v) || TypeArray.matches(v))) && TypeNaN.matches(v));
+      // console.log('TypeInCaseOf');
+      return adt === TypeNaN || theType.matches(adt) ? theType : undefined;
+    },
+
+    (adt) => {
+      let theType = TypeString;
+      // console.log('TypeString');
+      return adt === theType || adt === String || theType.matches(adt) ? theType : undefined;
+    },
+    (adt) => {
+      let theType = TypeNumber;
+      // console.log('TypeNumber');
+      return adt === theType || adt === Number || theType.matches(adt) ? theType : undefined;
+    },
+  ];
+  for (let theTypeMapping of primaryTypesMapping) {
+    let theType = theTypeMapping(adtDef);
+    if (theType) {
+      return theType;
+    }
+  }
+
+  if (TypeArray.matches(adtDef)) {
+
+    let subPatternsForOr = adtDef.map((subAdt) => {
+      return TypeADT(subAdt);
+    });
+    subPatternsForOr.push(otherwise(()=>false));
+    let TypeSubVFromAdt = TypeInCaseOf((subV)=>{
+      return either(subV, ...subPatternsForOr);
+    });
+
+    patterns.push(TypeArray);
+    patterns.push(TypeInCaseOf((v)=>{
+      return v.map((item)=>{
+        return TypeSubVFromAdt.matches(item);
+      }).reduce((prevResult, x) => x || prevResult, false);
+
+    }));
+  } else if (TypeObject.matches(adtDef)) {
+
+    let patternsForAnd = [];
+    for (let key in adtDef) {
+      if (adtDef.hasOwnProperty(key)) {
+        let fieldName = key;
+        patternsForAnd.push(TypeInCaseOf((v)=>{
+          return v.hasOwnProperty(fieldName) && TypeADT(adtDef[fieldName]).matches(v[fieldName]);
+        }));
+      }
+    }
+
+    patterns.push(TypeObject);
+    patterns.push(TypeMatchesAllPatterns(...patternsForAnd));
+  }
+  return TypeMatchesAllPatterns(...patterns);
+}
+
 function otherwise (effect) {
   return new Pattern(()=>true, effect);
 }
@@ -198,4 +266,5 @@ module.exports = {
   TypeRegexMatches,
   TypeInCaseOf,
   TypeMatchesAllPatterns,
+  TypeADT,
 };
