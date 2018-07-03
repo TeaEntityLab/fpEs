@@ -1,6 +1,6 @@
 var {
   compose, curry, trampoline,
-  chunk, range, tail, shift, unique,
+  chunk, range, tail, shift, unique, snooze,
   clone, propEq, get, matches, memoize,
   flatten, flattenMap, unary, foldl, foldr, take,
   compact, concat, contains, difference, differenceWithDup,
@@ -32,6 +32,9 @@ describe('Fp', function () {
 	});
   it('chunk', function () {
 			JSON.stringify(chunk(range(7),3)).should.equal('[[0,1,2],[3,4,5],[6]]')
+	});
+  it('snooze', function () {
+			return snooze(20).then(()=>'ok').then((x)=>x.should.equal('ok'));
 	});
   it('unique', function () {
 			JSON.stringify(unique([0,0,1,2,3,3,4,5,3,4,5,6])).should.equal('[0,1,2,3,4,5,6]')

@@ -5,6 +5,12 @@ class Pattern {
   }
 }
 
+class Matchable {
+  matches(...values) {
+    throw new Error('No implementation');
+  }
+}
+
 function isNotNumber(v) {
   return isNaN(v) || v.toString().trim() === '';
 }
@@ -33,6 +39,21 @@ function inCaseOfClass (theClass, effect) {
 function inCaseOfNull (effect) {
   return new Pattern((v)=> v === null || v === undefined, effect);
 }
+function inCaseOfFunction (effect) {
+  return inCaseOfClass(Function, effect);
+}
+function inCaseOfPattern (effect) {
+  return inCaseOfClass(Pattern, effect);
+}
+function inCaseOfPatternMatching (effect) {
+  return inCaseOfClass(PatternMatching, effect);
+}
+function inCaseOfCompType (effect) {
+  return inCaseOfClass(CompType, effect);
+}
+function inCaseOfCompTypeMatchesWithSpread (theCompType, effect) {
+  return new Pattern((v)=> (TypeArray.matches(v) && theCompType.matches(...v)) || theCompType.matches(v), effect);
+}
 function inCaseOfRegex (regex, effect) {
   return new Pattern((v)=> {
     if (typeof regex === 'string') {
@@ -42,6 +63,110 @@ function inCaseOfRegex (regex, effect) {
     return regex.test(v);
   }, effect);
 }
+
+function TypeInCaseOf (matches) {
+  return new Pattern(matches, ()=>true);
+}
+
+function TypeMatchesAllPatterns (...patterns) {
+  return TypeInCaseOf((v)=>{
+    let matched = true;
+    for (let pattern of patterns) {
+      matched = matched && pattern.matches(v);
+    }
+    return matched;
+  });
+}
+
+function TypeADT(adtDef) {
+  let patterns = [];
+
+  let primaryTypesMapping = [
+
+    // Primary
+    (adt) => {
+      let theType = TypeString;
+      return adt === theType || adt === String || theType.matches(adt) ? theType : undefined;
+    },
+    (adt) => {
+      let theType = TypeNumber;
+      return adt === theType || adt === Number || theType.matches(adt) ? theType : undefined;
+    },
+    (adt) => {
+      let theType = TypeFunction;
+      return adt === theType || adt === Function ? theType : undefined;
+    },
+
+    // Rule
+    (adt) => {
+      let theType = TypeFunction;
+      return theType.matches(adt) ? TypeInCaseOf(adt) : undefined;
+    },
+    (adt) => {
+      let theType = TypePattern;
+      return theType.matches(adt) ? adt : undefined;
+    },
+    (adt) => {
+      let theType = TypePatternMatching;
+      return theType.matches(adt) ? TypeInCaseOf((v)=>adt.matchFor(v)) : undefined;
+    },
+    (adt) => {
+      let theType = TypeCompType;
+      return theType.matches(adt) ? adt : undefined;
+    },
+
+    // Null/Nan
+    (adt) => {
+      let theType = TypeNull;
+      return adt === theType || theType.matches(adt) ? theType : undefined;
+    },
+    (adt) => {
+      let theType = TypeInCaseOf((v) => (! (TypeObject.matches(v) || TypeArray.matches(v))) && TypeNaN.matches(v));
+      return adt === TypeNaN || theType.matches(adt) ? theType : undefined;
+    },
+  ];
+  for (let theTypeMapping of primaryTypesMapping) {
+    let theType = theTypeMapping(adtDef);
+    if (theType) {
+      return theType;
+    }
+  }
+
+  if (TypeArray.matches(adtDef)) {
+
+    let subPatternsForOr = adtDef.map((subAdt) => {
+      return TypeADT(subAdt);
+    });
+    subPatternsForOr.push(otherwise(()=>false));
+    let TypeSubVFromAdt = TypeInCaseOf((subV)=>{
+      return either(subV, ...subPatternsForOr);
+    });
+
+    patterns.push(TypeArray);
+    patterns.push(TypeInCaseOf((v)=>{
+      return v.map((item)=>{
+        return TypeSubVFromAdt.matches(item);
+      }).reduce((prevResult, x) => x && prevResult, true);
+
+    }));
+  } else if (TypeObject.matches(adtDef)) {
+
+    let patternsForAnd = [];
+    for (let key in adtDef) {
+      if (adtDef.hasOwnProperty(key)) {
+        let fieldName = key;
+        patternsForAnd.push(TypeInCaseOf((v)=>{
+          return TypeADT(adtDef[fieldName]).matches(v[fieldName]);
+        }));
+      }
+    }
+
+    patterns.push(TypeObject);
+    patterns.push(TypeMatchesAllPatterns(...patternsForAnd));
+  }
+  return TypeMatchesAllPatterns(...patterns);
+}
+
 function otherwise (effect) {
   return new Pattern(()=>true, effect);
 }
@@ -58,13 +183,17 @@ function either(value, ...patterns) {
   throw new Error(`Cannot match ${JSON.stringify(value)}`);
 }
 
-class PatternMatching {
+class PatternMatching extends Matchable {
   constructor(...patterns) {
+    super();
     this.patterns = patterns;
   }
 
-  matchFor(value) {
+  matches(value) {
     return either(value, ...this.patterns);
+  }
+  matchFor(value) {
+    return this.matches(value);
   }
 }
 
@@ -75,7 +204,7 @@ class CompData {
   }
 }
 
-class CompType {
+class CompType extends Matchable {
   effect(...values) {
     if (this.matches(...values)) {
       return new CompData(this, values);
@@ -143,6 +272,10 @@ var TypeNaN = inCaseOfNaN(()=>true);
 var TypeObject = inCaseOfObject(()=>true);
 var TypeArray = inCaseOfArray(()=>true);
 var TypeNull = inCaseOfNull(()=>true);
+var TypeFunction = inCaseOfFunction(()=>true);
+var TypePattern = inCaseOfPattern(()=>true);
+var TypePatternMatching = inCaseOfPatternMatching(()=>true);
+var TypeCompType = inCaseOfCompType(()=>true);
 function TypeEqualTo(value) {
   return inCaseOfEqual(value, ()=>true);
 }
@@ -151,6 +284,9 @@ function TypeClassOf(theClass) {
 }
 function TypeRegexMatches(regex) {
   return inCaseOfRegex(regex, ()=>true);
+}
+function TypeCompTypeMatchesWithSpread(theCompType) {
+  return inCaseOfCompTypeMatchesWithSpread(theCompType, ()=>true);
 }
 
 module.exports = {
@@ -165,6 +301,11 @@ module.exports = {
   inCaseOfArray,
   inCaseOfClass,
   inCaseOfNull,
+  inCaseOfFunction,
+  inCaseOfPattern,
+  inCaseOfPatternMatching,
+  inCaseOfCompType,
+  inCaseOfCompTypeMatchesWithSpread,
   inCaseOfRegex,
   otherwise,
 
@@ -178,7 +319,15 @@ module.exports = {
   TypeObject,
   TypeArray,
   TypeNull,
+  TypeFunction,
+  TypePattern,
+  TypePatternMatching,
+  TypeCompType,
+  TypeCompTypeMatchesWithSpread,
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
+  TypeInCaseOf,
+  TypeMatchesAllPatterns,
+  TypeADT,
 };

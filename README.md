@@ -68,7 +68,7 @@ import fpEs from 'fpEs';
 Just include things you need:
 
 ```javascript
-import Maybe from "fpEs";
+import {Maybe} from "fpEs";
 // or this one:
 /*
 import Maybe from "fpEs/maybe";
@@ -252,8 +252,8 @@ Example:
 
 ```javascript
 
-import Maybe from "fpEs";
-import MonadIO from "fpEs";
+import Maybe from "fpEs/maybe";
+import MonadIO from "fpEs/monadio";
 var {promiseof, doM} = MonadIO;
 
 
