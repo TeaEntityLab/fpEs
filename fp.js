@@ -27,6 +27,14 @@ function contains (list, value){
   }, false)
 }
 
+function difference(...values) {
+  let {main, follower} = reuseables.getMainAndFollower(values);
+
+  let concatWithoutDuplicate = [...new Set(main.concat(follower))];
+
+  return Array.prototype.slice.call(concatWithoutDuplicate, main.length, concatWithoutDuplicate.length)
+}
+
 function differenceWithDup (...values) {
   let {main, follower} = reuseables.getMainAndFollower(values);
 
@@ -206,13 +214,7 @@ module.exports = {
    * @param 3rd {number} Position number of to be used as follower
    * @return {Array} of values in follower but not in main without duplicate
    */
-  difference: function (...values) {
-    let {main, follower} = reuseables.getMainAndFollower(values);
-
-    let concatWithoutDuplicate = [...new Set(main.concat(follower))];
-
-    return Array.prototype.slice.call(concatWithoutDuplicate, main.length, concatWithoutDuplicate.length)
-  },
+  difference: difference,
   /**
    * Compares two arrays, first one as main and second
       as follower. Returns values in follower that aren't in main
@@ -419,6 +421,29 @@ module.exports = {
     }
 
     return reuseables.sorter(list, value, valueIndex);
-  }
+  },
+  /**
+   * Returns sorted array without duplicates
+   * @param list {Array} array to be sorted
+   * @returns {Array} sorted array
+   */
+  sortedUniq: function(list){
+    const listNoDuplicate = difference([],list);
+    if(typeof list[0] == "number")
+      return listNoDuplicate.sort((a,b)=>a-b);
 
+    return listNoDuplicate.sort();
+  },
+  /**
+   * Returns unified array with or without duplicates.
+   * @param list1 {Array} first array
+   * @param list2 {Array} second array
+   * @param duplicate {boolean} boolean to include duplicates
+   * @returns {Array} array with/without duplicates
+   */
+  union: function (list1, list2, duplicate=false) {
+    if(duplicate) 
+      return differenceWithDup([],list1.concat(list2));
+    return difference([],list1.concat(list2));
+  }
 };

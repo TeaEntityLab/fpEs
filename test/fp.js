@@ -6,7 +6,7 @@ var {
   compact, concat, contains, difference, differenceWithDup,
   reverse, map, reduce, filter, drop, fill,
   join, intersection, find, findLast, findIndex, findLastIndex, find, head, fromPairs, initial, nth,
-  pull, sortedIndex
+  pull, sortedIndex, sortedUniq, union
 } = require('../fp');
 
 describe('Fp', function () {
@@ -355,5 +355,25 @@ describe('Fp', function () {
 	it ('should return array excluding specified values in currying way', () => {
 		JSON.stringify(pull("Ajo","Aku")(["Naa","Esi","Aku","Awo","Ajo"]))
 			.should.equal('["Naa","Esi","Awo"]')
+	});
+
+
+
+	it ('should return sorted array of numbers without duplicates', () => {
+		JSON.stringify(sortedUniq([1,2,2,3,4])).should.equal("[1,2,3,4]")
+	});
+
+	it ('should return sorted array of letters without duplicates', () => {
+		JSON.stringify(sortedUniq(["Apple","Cat","Boy","Boy"]))
+			.should.equal('["Apple","Boy","Cat"]')
+	});
+
+
+	it ('should unify 2 arrays without duplicates', () => {
+		JSON.stringify(union([2],[1,2])).should.equal('[2,1]');
+	});
+
+	it ('should unify 2 arrays with duplicates', () => {
+		JSON.stringify(union([2],[1,2],true)).should.equal('[2,1,2]');
 	});
 })
