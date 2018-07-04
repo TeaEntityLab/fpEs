@@ -430,8 +430,9 @@ module.exports = {
    */
   sortedUniq: function(list){
     const listNoDuplicate = difference([],list);
-    if(typeof list[0] == "number")
+    if(typeof list[0] == "number") {
       return listNoDuplicate.sort((a,b)=>a-b);
+    }
 
     return listNoDuplicate.sort();
   },
@@ -443,8 +444,9 @@ module.exports = {
    * @returns {Array} array with/without duplicates
    */
   union: function (list1, list2, duplicate=false) {
-    if(duplicate) 
+    if(duplicate) {
       return differenceWithDup([],list1.concat(list2));
+    }
     return difference([],list1.concat(list2));
   }
 };
