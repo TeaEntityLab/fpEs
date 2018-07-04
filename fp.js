@@ -443,7 +443,19 @@ module.exports = {
    * @param duplicate {boolean} boolean to include duplicates
    * @returns {Array} array with/without duplicates
    */
-  union: function (list1, list2, duplicate=false) {
+  union: function union(list1, list2, duplicate=false) {
+    if ( arguments.length < 2 ) {
+      // Manually currying
+      let args1 = arguments;
+
+      return (...args2) => union(...args1, ...args2);
+    } else if (arguments.length === 2 && (! Array.isArray(list2))) {
+      // curring union(_, list, duplicate) cases
+      // Manually currying
+      let args = arguments;
+      return (list) => union(list, ...args);
+    }
+
     if(duplicate) {
       return differenceWithDup([],list1.concat(list2));
     }

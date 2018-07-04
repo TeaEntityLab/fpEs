@@ -375,8 +375,15 @@ describe('Fp', function () {
 	it ('should unify 2 arrays without duplicates', () => {
 		JSON.stringify(union([2],[1,2])).should.equal('[2,1]');
 	});
+	it ('should unify 2 arrays without duplicates in currying way', () => {
+		JSON.stringify(union([2])([1,2])).should.equal('[2,1]');
+	});
 
 	it ('should unify 2 arrays with duplicates', () => {
 		JSON.stringify(union([2],[1,2],true)).should.equal('[2,1,2]');
+	});
+	it ('should unify 2 arrays with duplicates in currying way (many forms)', () => {
+		JSON.stringify(union([2])([1,2],true)).should.equal('[2,1,2]');
+		JSON.stringify(union([1,2],true)([2])).should.equal('[2,1,2]');
 	});
 })
