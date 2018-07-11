@@ -43,6 +43,13 @@ function differenceWithDup (...values) {
   })
 }
 
+function zip(...list) {
+  let result = [];
+    for(let i=0; i<list[0].length; i++)
+      result[i] = list.map(x=>x[i]);
+  return result;
+}
+
 var reduce = curry(function (f, init, ...second) {
   // console.log(arguments);
   var list;
@@ -460,5 +467,16 @@ module.exports = {
       return differenceWithDup([],list1.concat(list2));
     }
     return difference([],list1.concat(list2));
-  }
+  },
+  /**
+   * Returns an array of arrays of merged values of corresponding indexes.
+   * @param list {Array} arrays to be merged.
+   */
+  zip: zip,
+  /**
+   * Returns array of arrays the first of which contains all of the first elements in the input arrays, 
+      the second of which contains all of the second elements, and so on.
+      @param list {Array} Array of grouped elements to be processed.
+   */
+  unzip: (list)=> zip(...list)
 };

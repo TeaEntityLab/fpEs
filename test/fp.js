@@ -6,7 +6,7 @@ var {
   compact, concat, contains, difference, differenceWithDup,
   reverse, map, reduce, filter, drop, fill,
   join, intersection, find, findLast, findIndex, findLastIndex, find, head, fromPairs, initial, nth,
-  pull, sortedIndex, sortedUniq, union
+  pull, sortedIndex, sortedUniq, union,zip, unzip
 } = require('../fp');
 
 describe('Fp', function () {
@@ -385,5 +385,25 @@ describe('Fp', function () {
 	it ('should unify 2 arrays with duplicates in currying way (many forms)', () => {
 		JSON.stringify(union([2])([1,2],true)).should.equal('[2,1,2]');
 		JSON.stringify(union([1,2],true)([2])).should.equal('[2,1,2]');
+	});
+
+
+	it ('should zip arrays into one array', () => {
+		JSON.stringify(zip(['a', 'b'], [1, 2], [true, false])).should.equal('[["a",1,true],["b",2,false]]')
+	});
+
+	it (`should zip arrays into one array and return null ("undefined") 
+		as index values for arrays with length less than that of the first array`, () => {
+		JSON.stringify(zip(['a', 'b','c'], [1, 2], [true, false])).should.equal(`[["a",1,true],["b",2,false],["c",${null},${null}]]`)
+	});
+
+	it (`should zip arrays into one array and not return null ("undefined") 
+		as index values for arrays with length greater than that of the first array`, () => {
+		JSON.stringify(zip(['a', 'b'], [1, 2, 3], [true, false])).should.equal(`[["a",1,true],["b",2,false]]`)
+	});
+
+
+	it ('should unzip arrays into one array', () => {
+		JSON.stringify(unzip([["a",1,true],["b",2,false]])).should.equal('[["a","b"],[1,2],[true,false]]')
 	});
 })
