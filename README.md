@@ -9,7 +9,7 @@
 [![forks](https://img.shields.io/github/forks/TeaEntityLab/fpEs.svg?style=social&label=Fork)](https://github.com/TeaEntityLab/fpEs)
 
 
-Functional Programming for EcmaScript(Javascript
+Functional Programming for EcmaScript(Javascript)
 
 # Why
 
@@ -23,13 +23,15 @@ Thus the implementation just includes the core functions, and more clear to use.
 
 ## Node.js
 
+node >= 6.0
+
 * Installation:
 
 ```bash
 npm i fpes
 ```
 
-## Brower
+## Browser
 
 bundled files for web/browser usages:
 
