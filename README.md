@@ -2,13 +2,14 @@
 
 [![npm download](https://img.shields.io/npm/dt/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![npm version](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
+[![Travis CI Build Status](https://api.travis-ci.org/TeaEntityLab/fpEs.svg?branch=master)](https://travis-ci.org/TeaEntityLab/fpEs)
 
 [![license](https://img.shields.io/github/license/TeaEntityLab/fpEs.svg?style=social&label=License)](https://github.com/TeaEntityLab/fpEs)
 [![stars](https://img.shields.io/github/stars/TeaEntityLab/fpEs.svg?style=social&label=Stars)](https://github.com/TeaEntityLab/fpEs)
 [![forks](https://img.shields.io/github/forks/TeaEntityLab/fpEs.svg?style=social&label=Fork)](https://github.com/TeaEntityLab/fpEs)
 
 
-Functional Programming for EcmaScript(Javascript
+Functional Programming for EcmaScript(Javascript)
 
 # Why
 
@@ -22,13 +23,15 @@ Thus the implementation just includes the core functions, and more clear to use.
 
 ## Node.js
 
+node >= 6.0
+
 * Installation:
 
 ```bash
 npm i fpes
 ```
 
-## Brower
+## Browser
 
 bundled files for web/browser usages:
 
