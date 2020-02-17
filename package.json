@@ -66,6 +66,7 @@
     "@babel/preset-stage-2": "^7.0.0",
     "@babel/preset-stage-3": "^7.0.0",
     "compression-webpack-plugin": "^1.1.11",
+    "serialize-javascript": ">=2.1.1",
     "mocha": "^7.0.1",
     "should": "^13.2.3",
     "uglifyjs-webpack-plugin": "^1.2.5",
