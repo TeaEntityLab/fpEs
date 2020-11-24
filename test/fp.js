@@ -1,13 +1,13 @@
-var {
+import {
   compose, curry, trampoline,
   chunk, range, tail, shift, unique, snooze,
   clone, propEq, get, matches, memoize,
   flatten, flattenMap, unary, foldl, foldr, take,
   compact, concat, contains, difference, differenceWithDup,
   reverse, map, reduce, filter, drop, fill,
-  join, intersection, find, findLast, findIndex, findLastIndex, find, head, fromPairs, initial, nth,
+  join, intersection, find, findLast, findIndex, findLastIndex, head, fromPairs, initial, nth,
   pull, sortedIndex, sortedUniq, union,zip, unzip
-} = require('../fp');
+} from '../fp';
 
 describe('Fp', function () {
   it('compose', function () {
@@ -392,12 +392,12 @@ describe('Fp', function () {
 		JSON.stringify(zip(['a', 'b'], [1, 2], [true, false])).should.equal('[["a",1,true],["b",2,false]]')
 	});
 
-	it (`should zip arrays into one array and return null ("undefined") 
+	it (`should zip arrays into one array and return null ("undefined")
 		as index values for arrays with length less than that of the first array`, () => {
 		JSON.stringify(zip(['a', 'b','c'], [1, 2], [true, false])).should.equal(`[["a",1,true],["b",2,false],["c",${null},${null}]]`)
 	});
 
-	it (`should zip arrays into one array and not return null ("undefined") 
+	it (`should zip arrays into one array and not return null ("undefined")
 		as index values for arrays with length greater than that of the first array`, () => {
 		JSON.stringify(zip(['a', 'b'], [1, 2, 3], [true, false])).should.equal(`[["a",1,true],["b",2,false]]`)
 	});

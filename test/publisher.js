@@ -1,4 +1,4 @@
-var Publisher = require('../publisher');
+import Publisher from '../publisher';
 
 describe('Publisher', function () {
   it('sync', function () {

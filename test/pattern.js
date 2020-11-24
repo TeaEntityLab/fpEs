@@ -1,4 +1,4 @@
-var {
+import {
   either, PatternMatching, Pattern,
   inCaseOfEqual, inCaseOfRegex, inCaseOfNull, inCaseOfClass, inCaseOfNumber, inCaseOfNaN, inCaseOfString, inCaseOfObject, inCaseOfArray,
   otherwise,
@@ -14,7 +14,7 @@ var {
   TypeClassOf,
   TypeRegexMatches,
   TypeInCaseOf, TypeMatchesAllPatterns, TypeADT, TypeCompTypeMatchesWithSpread,
-} = require('../pattern');
+} from '../pattern';
 
 describe('SumType', function () {
   it('Common', function () {

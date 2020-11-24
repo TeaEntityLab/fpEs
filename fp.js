@@ -1,7 +1,7 @@
 const reuseables = require("./_helpers/reusables");
 
 function compose(...fns) {
-  return fns.reduce(function (f, g) {return function (...args) {return f(g(...args))}})
+  return fns.reduce(function (fn, g) {return function (...args) {return fn(g(...args))}})
 };
 function curry(fn) {
   return function (...xs) {
@@ -50,32 +50,32 @@ function zip(...list) {
   return result;
 }
 
-var reduce = curry(function (f, init, ...second) {
+var reduce = curry(function (fn, init, ...second) {
   // console.log(arguments);
   var list;
   if (arguments.length < 3) {
     if (Array.isArray(init)) {
       // Simple reduce
-      return init.reduce(f);
+      return init.reduce(fn);
     } else {
       // Pass this round, currying it (manual currying)
-      return function (list) {return reduce(f, init, list)}
+      return function (list) {return reduce(fn, init, list)}
     }
   } else {
     list = second[0];
   };
-  return list.reduce(f, init)
+  return list.reduce(fn, init)
 });
-var foldl = curry(function (f, init, list) {return list.reduce(f, init)});
+var foldl = curry(function (fn, init, list) {return list.reduce(fn, init)});
 function flatten(list) {
   return list.reduce(function (flat, toFlatten) {
     return flat.concat(Array.isArray(toFlatten) ? flatten(toFlatten) : toFlatten);
   }, []);
 }
-var map = curry(function (f, list) {return list.map(f)});
+var map = curry(function (fn, list) {return list.map(fn)});
 var reverse = function (list) {return typeof list === 'string' ? list.split('').reverse().join('') : Array.prototype.slice.call(list, 0).reverse()};
 var prop = curry(function (prop, obj) {return obj[prop]});
-var ifelse = curry(function(test, elsef, f) {return test() ? f() : elsef()});
+var ifelse = curry(function(test, elsef, fn) {return test() ? fn() : elsef()});
 
 function concat(list,...values) {
   if (values.length == 0) {
@@ -120,22 +120,22 @@ module.exports = {
   map,
   reduce,
   foldl,
-  foldr: curry(function (f, init, list) {return list.reduceRight(f, init)}),
-  filter: curry(function (f, list) {return list.filter(f)}),
-  flattenMap: curry(function (f, list) {return compose(flatten, map)(f, list)}),
+  foldr: curry(function (fn, init, list) {return list.reduceRight(fn, init)}),
+  filter: curry(function (fn, list) {return list.filter(fn)}),
+  flattenMap: curry(function (fn, list) {return compose(flatten, map)(fn, list)}),
 
   ifelse,
-  unary: curry(function (f, arg) {return f(arg)}),
-  not: curry(function (f, ...args) {return !f(...args)}),
-  spread: curry(function (f, args) {return f(...args)}),
-  gather: curry(function (f, ...args) {return f(args)}),
-  partial: curry(function (f, ...presetArgs) {return function (...laterArgs) {return f(...presetArgs, ...laterArgs)}}),
-  partialRight: curry(function (f, ...presetArgs) {return function (...laterArgs) {return f(...laterArgs, ...presetArgs)}}),
-  partialProps: curry(function(f,presetArgsObj, laterArgsObj) {return f(Object.assign( {}, presetArgsObj, laterArgsObj))}),
-  when: curry(function(test, f) {return ifelse(test, function(){return undefined}, f)}),
-  trampoline: function (f) {
+  unary: curry(function (fn, arg) {return fn(arg)}),
+  not: curry(function (fn, ...args) {return !fn(...args)}),
+  spread: curry(function (fn, args) {return fn(...args)}),
+  gather: curry(function (fn, ...args) {return fn(args)}),
+  partial: curry(function (fn, ...presetArgs) {return function (...laterArgs) {return fn(...presetArgs, ...laterArgs)}}),
+  partialRight: curry(function (fn, ...presetArgs) {return function (...laterArgs) {return fn(...laterArgs, ...presetArgs)}}),
+  partialProps: curry(function(fn,presetArgsObj, laterArgsObj) {return fn(Object.assign( {}, presetArgsObj, laterArgsObj))}),
+  when: curry(function(test, fn) {return ifelse(test, function(){return undefined}, fn)}),
+  trampoline: function (fn) {
     return function (...args){
-        var result = f( ...args )
+        var result = fn( ...args )
         while (typeof result === "function") {
             result = result()
         }
@@ -474,7 +474,7 @@ module.exports = {
    */
   zip: zip,
   /**
-   * Returns array of arrays the first of which contains all of the first elements in the input arrays, 
+   * Returns array of arrays the first of which contains all of the first elements in the input arrays,
       the second of which contains all of the second elements, and so on.
       @param list {Array} Array of grouped elements to be processed.
    */

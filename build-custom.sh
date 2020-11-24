@@ -8,7 +8,7 @@ do
     continue
   fi
 
-  npm run build-custom -- --env.filename=./$fullpath
+  npm run build-custom -- --env filename=./$fullpath
 
   filename="${fullpath##*/}"                      # Strip longest match of */ from start
   dir="${fullpath:0:${#fullpath} - ${#filename}}" # Substring from 0 thru pos of filename

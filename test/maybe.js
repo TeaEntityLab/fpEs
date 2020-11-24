@@ -1,4 +1,4 @@
-var Maybe = require('../maybe');
+import Maybe from '../maybe';
 
 describe('Maybe', function () {
   it('New', function () {
