@@ -25,9 +25,7 @@ module.exports = (env, argv) => {
     },
     target: ['es5'],
     plugins: [
-      new CompressionPlugin({
-        cache: true,
-      }),
+      new CompressionPlugin({}),
     ],
   };
 };
