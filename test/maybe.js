@@ -56,6 +56,22 @@ describe('Maybe', function () {
         v = 1;
       });
       v.should.equal(0)
+
+      // letDo vs orDo
+      m = Maybe.just(0);
+      v = m.letDo(function (p) {
+        return p + 2
+      }).orDo(function () {
+        return 3
+      }).unwrap();
+      v.should.equal(2);
+      m = Maybe.just(undefined);
+      v = m.letDo(function (p) {
+        return p + 2
+      }).orDo(function () {
+        return 3
+      }).unwrap();
+      v.should.equal(3);
 	});
   it('map', function () {
 			var m;

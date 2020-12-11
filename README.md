@@ -247,6 +247,22 @@ m.letDo(function () {
 });
 console.log(v); // 0
 
+// letDo & orDo
+m = Maybe.just(0);
+v = m.letDo(function (p) {
+  return p + 2
+}).orDo(function () {
+  return 3
+}).unwrap();
+console.log(v); // 2
+m = Maybe.just(undefined);
+v = m.letDo(function (p) {
+  return p + 2
+}).orDo(function () {
+  return 3
+}).unwrap();
+console.log(v); // 3
+
 ```
 
 ## MonadIO/Rx.Observable (Async,Sync)

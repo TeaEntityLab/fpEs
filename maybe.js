@@ -9,18 +9,30 @@ class MaybeDef {
   isPresent() {
     return ! this.isNull();
   }
+  unwrap() {
+    return this.ref;
+  }
 
   or(ref) {
-    return this.isPresent() ? this : new MaybeDef(ref);
+    return this.isNull() ? new MaybeDef(ref) : this;
+  }
+  orDo(fn) {
+    if (this.isNull()) {
+      // return this.then(fn);
+      // NOTE: It's expectable: null cases
+      return this.of(fn());
+    }
+    return this
   }
   letDo(fn) {
     if (this.isPresent()) {
-      fn();
+      return this.then(fn);
     }
+    return this
   }
 
   then(fn) {
-    return new MaybeDef(fn(this.ref));
+    return new MaybeDef(fn(this.unwrap()));
   }
   bind(fn) {
     return this.then(fn);
@@ -54,11 +66,7 @@ class MaybeDef {
     return this.of(result.value);
   }
   equals(m) {
-    return m instanceof MaybeDef && m.unwrap() === this.ref;
-  }
-
-  unwrap() {
-    return this.ref;
+    return m instanceof MaybeDef && m.unwrap() === this.unwrap();
   }
 }
 
