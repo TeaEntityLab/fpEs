@@ -1,75 +1,104 @@
+function isNull(ref) {
+  return ref === undefined || ref === null
+}
+
 class MaybeDef {
   constructor(ref) {
-    this.ref = ref;
+    this.ref = ref
   }
 
   isNull() {
-    return this.ref === undefined || this.ref === null;
+    return false
   }
   isPresent() {
-    return ! this.isNull();
+    return true
   }
   unwrap() {
-    return this.ref;
+    return this.ref
   }
 
   or(ref) {
-    return this.isNull() ? new MaybeDef(ref) : this;
+    return this
   }
   orDo(fn) {
-    if (this.isNull()) {
-      // return this.then(fn);
-      // NOTE: It's expectable: null cases
-      return this.of(fn());
-    }
     return this
   }
   letDo(fn) {
-    if (this.isPresent()) {
-      return this.then(fn);
-    }
-    return this
+    return this.then(fn)
   }
 
   then(fn) {
-    return new MaybeDef(fn(this.unwrap()));
-  }
-  bind(fn) {
-    return this.then(fn);
-  }
-  map(fn) {
-    return this.then(fn);
+    return this.of(this.flatMap(fn))
   }
   flatMap(fn) {
-    return fn(this.unwrap());
+    return fn(this.unwrap())
   }
   of(ref) {
-    var m = new MaybeDef(ref);
-    return m;
-  }
-  just(ref) {
-    return this.of(ref);
+    if (isNull(ref)) {
+      return None
+    }
+
+    var m = new MaybeDef(ref)
+    return m
   }
   ap(fnM) {
-    return fnM.chain(f => this.map(f));
-  }
-  chain(fn) {
-    return this.flatMap(fn);
+    return fnM.chain(f => this.map(f))
   }
   chainRec (f, i) {
-    let result;
-    let x = i;
+    let result
+    let x = i
     do {
-      result = f((x) => {return {value: x, done: false}}, (x) => {return {value: x, done: true}}, x).unwrap();
-      x = result.value;
-    } while (!result.done);
-    return this.of(result.value);
+      result = f((x) => {return {value: x, done: false}}, (x) => {return {value: x, done: true}}, x).unwrap()
+      x = result.value
+    } while (!result.done)
+    return this.of(result.value)
   }
   equals(m) {
-    return m instanceof MaybeDef && m.unwrap() === this.unwrap();
+    return m instanceof MaybeDef && m.unwrap() === this.unwrap()
   }
 }
 
-var Maybe = new MaybeDef({});
+// Expectable cases of Null
+class NoneDef extends MaybeDef {
+  isNull() {
+    return true
+  }
+  isPresent() {
+    return false
+  }
+  unwrap() {
+    return null
+  }
 
-module.exports = Maybe;
+  or(ref) {
+    return this.of(ref)
+  }
+  orDo(fn) {
+    return this.of(fn())
+  }
+  letDo(fn) {
+    return this
+  }
+
+  ap(fnM) {
+    return None
+  }
+  equals(m) {
+    return m instanceof MaybeDef && m.isNull()
+  }
+}
+
+// Prevent avoiding aliases in case of leaking.
+[MaybeDef, NoneDef].forEach((classInstance) => {
+  classInstance.prototype.chain = classInstance.prototype.flatMap
+  classInstance.prototype.just = classInstance.prototype.of
+  classInstance.prototype.alt = classInstance.prototype.or
+  classInstance.prototype.bind = classInstance.prototype.then
+  classInstance.prototype.map = classInstance.prototype.then
+})
+
+
+var Maybe = new MaybeDef({})
+var None = new NoneDef()
+
+module.exports = Maybe

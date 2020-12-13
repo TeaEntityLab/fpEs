@@ -4,8 +4,11 @@ describe('Maybe', function () {
   it('New', function () {
 			var m = Maybe.just(1);
 	});
-  it('map', function () {
-			var m = Maybe.just(1).map((a)=>a+2).map((a)=>a+3);
+  it('map/bind', function () {
+			var m;
+      m = Maybe.just(1).map((a)=>a+2).map((a)=>a+3);
+      m.unwrap().should.equal(6)
+      m = Maybe.just(1).bind((a)=>a+2).bind((a)=>a+3);
       m.unwrap().should.equal(6)
 	});
   it('isPresent', function () {
