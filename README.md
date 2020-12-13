@@ -19,6 +19,9 @@ however somehow that's too heavy if including them at the same time.
 
 Thus the implementation just includes the core functions, and more clear to use.
 
+## Special thanks:
+  * [purify](https://github.com/gigobyte/purify) (Inspiration from parts of Maybe implementations for [Fantasy-Land Specs](https://github.com/fantasyland/fantasy-land))
+
 # Installation
 
 ## Node.js

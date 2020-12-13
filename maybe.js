@@ -12,6 +12,24 @@ class MaybeDef {
   constructor(ref) {
     this.ref = ref
   }
+  of(ref) {
+    if (isNull(ref) || isNone(ref)) {
+      return None
+    }
+
+    var m = new MaybeDef(ref)
+    return m
+  }
+  fromFalsy(ref) {
+    return ref ? this.of(ref) : None
+  }
+  fromPredicate(predicate, value) {
+    if (arguments.length > 1) {
+      return predicate(value) ? this.of(value) : None
+    }
+
+    return (x) => this.fromPredicate(predicate, x)
+  }
 
   isNull() {
     return false
@@ -21,6 +39,9 @@ class MaybeDef {
   }
   unwrap() {
     return this.ref
+  }
+  toList() {
+    return [this.ref]
   }
   empty() {
     return None
@@ -45,14 +66,6 @@ class MaybeDef {
   flatMap(fn) {
     return fn(this.unwrap())
   }
-  of(ref) {
-    if (isNull(ref) || isNone(ref)) {
-      return None
-    }
-
-    var m = new MaybeDef(ref)
-    return m
-  }
   join() {
     let ref = this.unwrap()
     if (isMaybe(ref)) {
@@ -60,6 +73,12 @@ class MaybeDef {
     }
 
     return this
+  }
+  reduce(reducer, initVal) {
+    return reducer(initVal, this.unwrap())
+  }
+  filter(predicate) {
+    return predicate(this.unwrap()) ? this.of(this.unwrap()) : None
   }
   ap(fnM) {
     return fnM.chain(f => this.map(f))
@@ -110,6 +129,12 @@ class MaybeDef {
   ['fantasy-land/extend']() {
     return this.extend(...arguments)
   }
+  ['fantasy-land/reduce']() {
+    return this.reduce(...arguments)
+  }
+  ['fantasy-land/filter']() {
+    return this.filter(...arguments)
+  }
 }
 
 // Expectable cases of Null
@@ -123,6 +148,9 @@ class NoneDef extends MaybeDef {
   unwrap() {
     return null
   }
+  toList() {
+    return []
+  }
 
   or(ref) {
     return this.of(ref)
@@ -135,6 +163,12 @@ class NoneDef extends MaybeDef {
   }
 
   join() {
+    return None
+  }
+  reduce(reducer, initVal) {
+    return initVal
+  }
+  filter() {
     return None
   }
   ap(fnM) {

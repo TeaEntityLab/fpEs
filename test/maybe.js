@@ -1,8 +1,23 @@
 import Maybe from '../maybe';
 
 describe('Maybe', function () {
-  it('New', function () {
-			var m = Maybe.just(1);
+  it('New/Convert', function () {
+			var m
+      m = Maybe.just(0);
+      m.toList().length.should.equal(1)
+      m.toList()[0].should.equal(0)
+      m = Maybe.empty()
+      m.toList().length.should.equal(0)
+
+      Maybe.fromFalsy(0).should.equal(Maybe.empty())
+      Maybe.fromFalsy('').should.equal(Maybe.empty())
+      Maybe.fromFalsy(NaN).should.equal(Maybe.empty())
+      Maybe.fromFalsy(null).should.equal(Maybe.empty())
+      Maybe.fromFalsy(undefined).should.equal(Maybe.empty())
+
+      Maybe.fromPredicate((x) => x > 3, 3).should.equal(Maybe.empty())
+      Maybe.fromPredicate((x) => x > 3, 4).unwrap().should.equal(4)
+      Maybe.fromPredicate((x) => x > 3)(5).unwrap().should.equal(5)
 	});
   it('map/bind', function () {
 			var m;
@@ -119,6 +134,15 @@ describe('Maybe', function () {
   it('fantasy-land/join', function () {
       Maybe.of(Maybe.of(Maybe.zero())).join().should.equal(Maybe.empty());
       Maybe.of(Maybe.of(Maybe.of(1))).join().unwrap().should.equal(1);
+  });
+  it('fantasy-land/reduce', function () {
+      Maybe.of(1).reduce(x => x * 3, 3).should.equal(9);
+      Maybe.of(undefined).reduce(x => x * 3, 3).should.equal(3);
+  });
+  it('fantasy-land/filter', function () {
+      Maybe.of(1).filter(x => x > 3).should.equal(Maybe.empty());
+      Maybe.of(undefined).filter(x => x > 3).should.equal(Maybe.empty());
+      Maybe.of(4).filter(x => x > 3).unwrap().should.equal(4);
   });
   it('fantasy-land/ap', function () {
 			var m;
