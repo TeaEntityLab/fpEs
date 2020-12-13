@@ -40,6 +40,9 @@ class MaybeDef {
   unwrap() {
     return this.ref
   }
+  toString() {
+    return `Some(${JSON.stringify(this.ref)})`
+  }
   toList() {
     return [this.ref]
   }
@@ -64,10 +67,10 @@ class MaybeDef {
     return this.of(this.flatMap(fn))
   }
   flatMap(fn) {
-    return fn(this.unwrap())
+    return fn(this.ref)
   }
   join() {
-    let ref = this.unwrap()
+    let ref = this.ref
     if (isMaybe(ref)) {
       return ref.join()
     }
@@ -75,10 +78,10 @@ class MaybeDef {
     return this
   }
   reduce(reducer, initVal) {
-    return reducer(initVal, this.unwrap())
+    return reducer(initVal, this.ref)
   }
   filter(predicate) {
-    return predicate(this.unwrap()) ? this.of(this.unwrap()) : None
+    return predicate(this.ref) ? this.of(this.ref) : None
   }
   ap(fnM) {
     return fnM.chain(f => this.map(f))
@@ -93,7 +96,7 @@ class MaybeDef {
     return this.of(result.value)
   }
   equals(m) {
-    return isMaybe(m) && m.unwrap() === this.unwrap()
+    return isMaybe(m) && m.unwrap() === this.ref
   }
 
   ['fantasy-land/of'](value) {
@@ -147,6 +150,9 @@ class NoneDef extends MaybeDef {
   }
   unwrap() {
     return null
+  }
+  toString() {
+    return 'None'
   }
   toList() {
     return []

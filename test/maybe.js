@@ -6,8 +6,10 @@ describe('Maybe', function () {
       m = Maybe.just(0);
       m.toList().length.should.equal(1)
       m.toList()[0].should.equal(0)
+      m.toString().should.equal('Some(0)')
       m = Maybe.empty()
       m.toList().length.should.equal(0)
+      m.toString().should.equal('None')
 
       Maybe.fromFalsy(0).should.equal(Maybe.empty())
       Maybe.fromFalsy('').should.equal(Maybe.empty())
