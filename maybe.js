@@ -16,6 +16,12 @@ class MaybeDef {
   unwrap() {
     return this.ref
   }
+  empty() {
+    return None
+  }
+  zero() {
+    return None
+  }
 
   or(ref) {
     return this
@@ -55,6 +61,31 @@ class MaybeDef {
   }
   equals(m) {
     return m instanceof MaybeDef && m.unwrap() === this.unwrap()
+  }
+
+  ['fantasy-land/of'](value) {
+    return this.of(value)
+  }
+  ['fantasy-land/empty']() {
+    return this.empty()
+  }
+  ['fantasy-land/zero']() {
+    return this.zero()
+  }
+  ['fantasy-land/equals']() {
+    return this.equals(...arguments)
+  }
+  ['fantasy-land/map']() {
+    return this.map(...arguments)
+  }
+  ['fantasy-land/ap']() {
+    return this.ap(...arguments)
+  }
+  ['fantasy-land/alt']() {
+    return this.alt(...arguments)
+  }
+  ['fantasy-land/chain']() {
+    return this.chain(...arguments)
   }
 }
 
