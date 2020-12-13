@@ -1,6 +1,12 @@
 function isNull(ref) {
   return ref === undefined || ref === null
 }
+function isMaybe(m) {
+  return m instanceof MaybeDef
+}
+function isNone(m) {
+  return m instanceof NoneDef
+}
 
 class MaybeDef {
   constructor(ref) {
@@ -40,12 +46,20 @@ class MaybeDef {
     return fn(this.unwrap())
   }
   of(ref) {
-    if (isNull(ref)) {
+    if (isNull(ref) || isNone(ref)) {
       return None
     }
 
     var m = new MaybeDef(ref)
     return m
+  }
+  join() {
+    let ref = this.unwrap()
+    if (isMaybe(ref)) {
+      return ref.join()
+    }
+
+    return this
   }
   ap(fnM) {
     return fnM.chain(f => this.map(f))
@@ -60,7 +74,7 @@ class MaybeDef {
     return this.of(result.value)
   }
   equals(m) {
-    return m instanceof MaybeDef && m.unwrap() === this.unwrap()
+    return isMaybe(m) && m.unwrap() === this.unwrap()
   }
 
   ['fantasy-land/of'](value) {
@@ -71,6 +85,9 @@ class MaybeDef {
   }
   ['fantasy-land/zero']() {
     return this.zero()
+  }
+  ['fantasy-land/extract']() {
+    return this.extract()
   }
   ['fantasy-land/equals']() {
     return this.equals(...arguments)
@@ -86,6 +103,12 @@ class MaybeDef {
   }
   ['fantasy-land/chain']() {
     return this.chain(...arguments)
+  }
+  ['fantasy-land/join']() {
+    return this.join(...arguments)
+  }
+  ['fantasy-land/extend']() {
+    return this.extend(...arguments)
   }
 }
 
@@ -111,11 +134,14 @@ class NoneDef extends MaybeDef {
     return this
   }
 
+  join() {
+    return None
+  }
   ap(fnM) {
     return None
   }
   equals(m) {
-    return m instanceof MaybeDef && m.isNull()
+    return isNone(m)
   }
 }
 
@@ -126,6 +152,8 @@ class NoneDef extends MaybeDef {
   classInstance.prototype.alt = classInstance.prototype.or
   classInstance.prototype.bind = classInstance.prototype.then
   classInstance.prototype.map = classInstance.prototype.then
+  classInstance.prototype.extend = classInstance.prototype.letDo
+  classInstance.prototype.extract = classInstance.prototype.unwrap
 })
 
 

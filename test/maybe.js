@@ -88,7 +88,7 @@ describe('Maybe', function () {
       m = Maybe.just(1).flatMap((x)=>Maybe.just(x+2)).flatMap((x)=>Maybe.just(x+3));
       m.unwrap().should.equal(6);
 	});
-  it('fantasyland monad', function () {
+  it('fantasy-land/monad', function () {
       var a;
       var f;
       var m;
@@ -100,7 +100,7 @@ describe('Maybe', function () {
       m = Maybe.of(1);
       m.chain(Maybe.of).unwrap().should.equal(m.unwrap());
   });
-  it('fantasyland chainRec', function () {
+  it('fantasy-land/chainRec', function () {
       Maybe.chainRec((next, done, x) => Maybe.of(x < 1000000 ? next(x + 1) : done(x)), 0).unwrap().should.equal(1000000);
 
       function fibChainRec (next, done, args) {
@@ -113,10 +113,14 @@ describe('Maybe', function () {
 
       ((n)=>Maybe.chainRec(fibChainRec, [n, 0, 1]))(70).unwrap().should.equal(190392490709135);
   });
-  it('fantasyland equals', function () {
+  it('fantasy-land/equals', function () {
       Maybe.of(32).equals(Maybe.of(32)).should.equal(true);
   });
-  it('fantasyland ap', function () {
+  it('fantasy-land/join', function () {
+      Maybe.of(Maybe.of(Maybe.zero())).join().should.equal(Maybe.empty());
+      Maybe.of(Maybe.of(Maybe.of(1))).join().unwrap().should.equal(1);
+  });
+  it('fantasy-land/ap', function () {
 			var m;
       var f;
       var u;
