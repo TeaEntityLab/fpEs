@@ -32,15 +32,18 @@ class MaybeDef {
   }
 
   isNull() {
+    //   return isNull(this.ref)
     return false
   }
   isPresent() {
+    // return !this.isNull()
     return true
   }
   unwrap() {
     return this.ref
   }
   toString() {
+    // return `Maybe(${JSON.stringify(this.ref)})`
     return `Some(${JSON.stringify(this.ref)})`
   }
   toList() {
@@ -54,12 +57,22 @@ class MaybeDef {
   }
 
   or(ref) {
+    // return this.isNull() ? this.of(ref) : this
     return this
   }
   orDo(fn) {
+    // if (this.isNull()) {
+    //   // return this.then(fn);
+    //   // NOTE: It's expectable: null cases
+    //   return this.of(fn());
+    // }
     return this
   }
   letDo(fn) {
+    // if (this.isPresent()) {
+    //   return this.then(fn);
+    // }
+    // return this
     return this.then(fn)
   }
 
@@ -186,12 +199,13 @@ class NoneDef extends MaybeDef {
 }
 
 // Prevent avoiding aliases in case of leaking.
+MaybeDef.prototype.just = MaybeDef.prototype.of;
+MaybeDef.prototype.chain = MaybeDef.prototype.flatMap;
+MaybeDef.prototype.bind = MaybeDef.prototype.then;
+MaybeDef.prototype.map = MaybeDef.prototype.then;
+
 [MaybeDef, NoneDef].forEach((classInstance) => {
-  classInstance.prototype.chain = classInstance.prototype.flatMap
-  classInstance.prototype.just = classInstance.prototype.of
   classInstance.prototype.alt = classInstance.prototype.or
-  classInstance.prototype.bind = classInstance.prototype.then
-  classInstance.prototype.map = classInstance.prototype.then
   classInstance.prototype.extend = classInstance.prototype.letDo
   classInstance.prototype.extract = classInstance.prototype.unwrap
 })
