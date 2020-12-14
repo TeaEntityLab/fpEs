@@ -23,6 +23,9 @@ class Publisher {
   unsubscribe(fn) {
     this.subscribers = this.subscribers.filter((item)=>item!==fn);
   }
+  clear() {
+    this.subscribers = []
+  }
   publish(result,asynchronized) {
     this.subscribers.forEach((fn)=>asynchronized ? Promise.resolve(result).then(fn) : fn(result));
   }

@@ -7,8 +7,12 @@ describe('Publisher', function () {
 
       v = 0;
       p.subscribe((i)=>v=i);
-      p.publish(1);
 
+      p.publish(1);
+      v.should.equal(1)
+      // Clear
+      p.clear()
+      p.publish(2);
       v.should.equal(1)
 	});
   it('async', function (done) {
