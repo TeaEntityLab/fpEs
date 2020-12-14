@@ -154,8 +154,7 @@ class MaybeDef {
 }
 
 // Expectable cases of Null
-var None = new MaybeDef()
-Object.assign(None, {
+var None = Object.assign(new MaybeDef(), {
   isNull: function() {
     return true
   },
