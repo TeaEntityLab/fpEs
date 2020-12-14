@@ -112,45 +112,6 @@ class MaybeDef {
     return isMaybe(m) && m.unwrap() === this.ref
   }
 
-  ['fantasy-land/of'](value) {
-    return this.of(value)
-  }
-  ['fantasy-land/empty']() {
-    return this.empty()
-  }
-  ['fantasy-land/zero']() {
-    return this.zero()
-  }
-  ['fantasy-land/extract']() {
-    return this.extract()
-  }
-  ['fantasy-land/equals']() {
-    return this.equals(...arguments)
-  }
-  ['fantasy-land/map']() {
-    return this.map(...arguments)
-  }
-  ['fantasy-land/ap']() {
-    return this.ap(...arguments)
-  }
-  ['fantasy-land/alt']() {
-    return this.alt(...arguments)
-  }
-  ['fantasy-land/chain']() {
-    return this.chain(...arguments)
-  }
-  ['fantasy-land/join']() {
-    return this.join(...arguments)
-  }
-  ['fantasy-land/extend']() {
-    return this.extend(...arguments)
-  }
-  ['fantasy-land/reduce']() {
-    return this.reduce(...arguments)
-  }
-  ['fantasy-land/filter']() {
-    return this.filter(...arguments)
-  }
 }
 
 // Expectable cases of Null
@@ -199,10 +160,34 @@ var None = Object.assign(new MaybeDef(), {
 })
 
 // Prevent avoiding aliases in case of leaking.
-MaybeDef.prototype.just = MaybeDef.prototype.of;
-MaybeDef.prototype.chain = MaybeDef.prototype.flatMap;
-MaybeDef.prototype.bind = MaybeDef.prototype.then;
-MaybeDef.prototype.map = MaybeDef.prototype.then;
+const aliases = {
+  'just': 'of',
+  'chain': 'flatMap',
+  'bind': 'then',
+  'map': 'then',
+
+  'alt': 'or',
+  'extend': 'letDo',
+  'extract': 'unwrap',
+
+  'fantasy-land/of': 'of',
+  'fantasy-land/empty': 'empty',
+  'fantasy-land/zero': 'zero',
+  'fantasy-land/extract': 'extract',
+  'fantasy-land/equals': 'equals',
+  'fantasy-land/map': 'map',
+  'fantasy-land/ap': 'ap',
+  'fantasy-land/alt': 'alt',
+  'fantasy-land/chain': 'chain',
+  'fantasy-land/join': 'join',
+  'fantasy-land/extend': 'extend',
+  'fantasy-land/reduce': 'reduce',
+  'fantasy-land/filter': 'filter',
+}
+Object.keys(aliases).forEach((key) => {
+  MaybeDef.prototype[key] = MaybeDef.prototype[aliases[key]]
+});
+
 
 // [MaybeDef].forEach((classInstance) => {
 //   classInstance.prototype.alt = classInstance.prototype.or
@@ -210,9 +195,6 @@ MaybeDef.prototype.map = MaybeDef.prototype.then;
 //   classInstance.prototype.extract = classInstance.prototype.unwrap
 // })
 // NOTE: There's only one class for speed-up purposes (ES5 code-gen & .js file size)
-MaybeDef.prototype.alt = MaybeDef.prototype.or
-MaybeDef.prototype.extend = MaybeDef.prototype.letDo
-MaybeDef.prototype.extract = MaybeDef.prototype.unwrap
 
 
 var Maybe = new MaybeDef({})
