@@ -5,7 +5,7 @@ function isMaybe(m) {
   return m instanceof MaybeDef
 }
 function isNone(m) {
-  return m instanceof NoneDef
+  return m === None
 }
 
 class MaybeDef {
@@ -154,49 +154,50 @@ class MaybeDef {
 }
 
 // Expectable cases of Null
-class NoneDef extends MaybeDef {
-  isNull() {
+var None = new MaybeDef()
+Object.assign(None, {
+  isNull: function() {
     return true
-  }
-  isPresent() {
+  },
+  isPresent: function() {
     return false
-  }
-  unwrap() {
+  },
+  unwrap: function() {
     return null
-  }
-  toString() {
+  },
+  toString: function() {
     return 'None'
-  }
-  toList() {
+  },
+  toList: function() {
     return []
-  }
+  },
 
-  or(ref) {
+  or: function(ref) {
     return this.of(ref)
-  }
-  orDo(fn) {
+  },
+  orDo: function(fn) {
     return this.of(fn())
-  }
-  letDo(fn) {
+  },
+  letDo: function(fn) {
     return this
-  }
+  },
 
-  join() {
+  join: function() {
     return None
-  }
-  reduce(reducer, initVal) {
+  },
+  reduce: function(reducer, initVal) {
     return initVal
-  }
-  filter() {
+  },
+  filter: function() {
     return None
-  }
-  ap(fnM) {
+  },
+  ap: function(fnM) {
     return None
-  }
-  equals(m) {
+  },
+  equals: function(m) {
     return isNone(m)
-  }
-}
+  },
+})
 
 // Prevent avoiding aliases in case of leaking.
 MaybeDef.prototype.just = MaybeDef.prototype.of;
@@ -204,14 +205,17 @@ MaybeDef.prototype.chain = MaybeDef.prototype.flatMap;
 MaybeDef.prototype.bind = MaybeDef.prototype.then;
 MaybeDef.prototype.map = MaybeDef.prototype.then;
 
-[MaybeDef, NoneDef].forEach((classInstance) => {
-  classInstance.prototype.alt = classInstance.prototype.or
-  classInstance.prototype.extend = classInstance.prototype.letDo
-  classInstance.prototype.extract = classInstance.prototype.unwrap
-})
+// [MaybeDef].forEach((classInstance) => {
+//   classInstance.prototype.alt = classInstance.prototype.or
+//   classInstance.prototype.extend = classInstance.prototype.letDo
+//   classInstance.prototype.extract = classInstance.prototype.unwrap
+// })
+// NOTE: There's only one class for speed-up purposes (ES5 code-gen & .js file size)
+MaybeDef.prototype.alt = MaybeDef.prototype.or
+MaybeDef.prototype.extend = MaybeDef.prototype.letDo
+MaybeDef.prototype.extract = MaybeDef.prototype.unwrap
 
 
 var Maybe = new MaybeDef({})
-var None = new NoneDef()
 
 module.exports = Maybe
