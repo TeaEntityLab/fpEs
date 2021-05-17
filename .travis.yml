@@ -14,8 +14,9 @@ before_install:
   - npm install -g nyc
   - npm install -g codecov
 scripts:
-  - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
-  - codecov
+  - nyc --reporter=lcov mocha && codecov
+  # - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
+  # - codecov
 # after_success:
 
 
