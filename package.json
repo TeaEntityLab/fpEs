@@ -59,7 +59,7 @@
     "@gfx/zopfli": "^1.0.15",
     "babel-loader": "^8.2.1",
     "brotli-webpack-plugin": "^1.1.0",
-    "compression-webpack-plugin": "^7.0.0",
+    "compression-webpack-plugin": "^8.0.0",
     "mocha": "^8.2.1",
     "serialize-javascript": "^5.0.1",
     "should": "^13.2.3",
