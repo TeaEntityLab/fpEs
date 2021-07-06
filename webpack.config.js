@@ -26,6 +26,7 @@ module.exports = (env, argv) => {
     output: {
         filename: argv.mode === 'production' ? './bundle.min.js' : './bundle.js',
         library: 'fpEs',
+        chunkFormat: 'array-push',
     },
     mode: argv.mode === 'production' ? 'production' : 'development',
     module: {

@@ -30,6 +30,7 @@ module.exports = (env, argv) => {
     output: {
         filename: './' + targetFilename + (argv.mode === 'production' ? '.min' : '') + '.js',
         library: targetFilename,
+        chunkFormat: 'array-push',
     },
     mode: argv.mode === 'production' ? 'production' : 'development',
     module: {
