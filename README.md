@@ -3,7 +3,7 @@
 [![npm download](https://img.shields.io/npm/dt/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![npm version](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![codecov](https://codecov.io/gh/TeaEntityLab/fpEs/branch/master/graph/badge.svg)](https://codecov.io/gh/TeaEntityLab/fpEs)
-[![Travis CI Build Status](https://api.travis-ci.org/TeaEntityLab/fpEs.svg?branch=master)](https://travis-ci.org/TeaEntityLab/fpEs)
+[![Travis CI Build Status](https://travis-ci.com/TeaEntityLab/fpEs.svg?branch=master)](https://travis-ci.org/TeaEntityLab/fpEs)
 
 [![license](https://img.shields.io/github/license/TeaEntityLab/fpEs.svg?style=social&label=License)](https://github.com/TeaEntityLab/fpEs)
 [![stars](https://img.shields.io/github/stars/TeaEntityLab/fpEs.svg?style=social&label=Stars)](https://github.com/TeaEntityLab/fpEs)
