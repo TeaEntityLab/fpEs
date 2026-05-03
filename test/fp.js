@@ -2,7 +2,7 @@ import {
   compose, curry, trampoline,
   chunk, range, tail, shift, unique, snooze,
   clone, propEq, get, matches, memoize,
-  flatten, flattenMap, unary, foldl, foldr, take,
+  flatten, flattenMap, unary, pipe, debounce, schedule, ifelse, not, spread, gather, partial, partialRight, partialProps, when, prop, foldl, foldr, take,
   compact, concat, contains, difference, differenceWithDup,
   reverse, map, reduce, filter, drop, fill,
   join, intersection, find, findLast, findIndex, findLastIndex, head, fromPairs, initial, nth,
@@ -405,5 +405,300 @@ describe('Fp', function () {
 
 	it ('should unzip arrays into one array', () => {
 		JSON.stringify(unzip([["a",1,true],["b",2,false]])).should.equal('[["a","b"],[1,2],[true,false]]')
+	});
+
+	it ('range', function () {
+		JSON.stringify(range(0)).should.equal('[]');
+		JSON.stringify(range(5)).should.equal('[0,1,2,3,4]');
+	});
+
+	it ('pipe', function () {
+		pipe((x)=>x*10, (x)=>x+10, (x)=>x-8)(4).should.equal(42);
+		pipe((x,y)=>x*y, (x)=>x+2)(4,10).should.equal(42);
+	});
+
+	it ('debounce', function () {
+		var r = debounce(()=>{}, 100);
+		(typeof r.ref).should.not.equal('undefined');
+		(typeof r.cancel).should.equal('function');
+		clearTimeout(r.ref);
+	});
+
+	it ('schedule', function () {
+		var r = schedule(()=>{}, 1000);
+		(typeof r.ref).should.not.equal('undefined');
+		(typeof r.cancel).should.equal('function');
+		r.cancel();
+	});
+
+	it ('ifelse', function () {
+		ifelse(()=>true, ()=>'was_else', ()=>'was_fn').should.equal('was_fn');
+		ifelse(()=>false, ()=>'was_else', ()=>'was_fn').should.equal('was_else');
+	});
+
+	it ('not', function () {
+		not(x=>true, 1).should.equal(false);
+		not(x=>false, 1).should.equal(true);
+	});
+
+	it ('spread', function () {
+		spread((a,b)=>a+b)([1,2]).should.equal(3);
+	});
+
+	it ('gather', function () {
+		JSON.stringify(gather(x=>x, 1,2,3)).should.equal('[1,2,3]');
+	});
+
+	it ('partial', function () {
+		partial((a,b,c)=>a+b+c, 1,2)(3).should.equal(6);
+	});
+
+	it ('partialRight', function () {
+		partialRight((a,b,c)=>a+b+c, 3)(1,2).should.equal(6);
+	});
+
+	it ('partialProps', function () {
+		partialProps(({a,b,c})=>a+b+c, {a:1})({b:2,c:3}).should.equal(6);
+	});
+
+	it ('when', function () {
+		when(()=>true, ()=>'fn').should.equal('fn');
+		(when(()=>false, ()=>'fn') === undefined).should.equal(true);
+	});
+
+	it ('prop', function () {
+		prop('a')({a:1}).should.equal(1);
+		(prop('b')({a:1}) === undefined).should.equal(true);
+	});
+
+	it ('unary', function () {
+		unary(parseInt)('10', 0, 3).should.equal(10);
+	});
+
+	it ('memoize', function () {
+		var callCount = 0;
+		var fn = memoize(function(x) { callCount++; return x * 2; });
+		fn(5).should.equal(10);
+		callCount.should.equal(1);
+		fn(5).should.equal(10);
+		callCount.should.equal(1);
+		fn(6).should.equal(12);
+		callCount.should.equal(2);
+	});
+
+	it('curry empty invocation', function () {
+		(()=>curry(()=>{})()).should.throw();
+	});
+
+	it('debounce cancel', function () {
+		var r = debounce(()=>{}, 100);
+		r.cancel();
+	});
+
+	it('schedule cancel', function () {
+		var r = schedule(()=>{}, 1000);
+		(typeof r.ref).should.not.equal('undefined');
+		r.cancel();
+	});
+
+	it('find not found', function () {
+		should(find(x=>false, [1,2,3])).equal(undefined);
+	});
+
+	it('findIndex not found', function () {
+		findIndex(x=>false, [1,2,3]).should.equal(-1);
+	});
+
+	it('findLast not found', function () {
+		should(findLast(x=>false, [1,2,3])).equal(undefined);
+	});
+
+	it('findLastIndex not found', function () {
+		findLastIndex(x=>false, [1,2,3]).should.equal(-1);
+	});
+
+	it('trampoline immediate', function () {
+		trampoline(function(x) { return x + 1; })(5).should.equal(6);
+	});
+
+	it('tail single element', function () {
+		JSON.stringify(tail([1])).should.equal('[]');
+	});
+
+	it('shift empty', function () {
+		(shift([]) === undefined).should.equal(true);
+	});
+
+	it('take zero', function () {
+		JSON.stringify(take(0, [1,2,3])).should.equal('[]');
+	});
+
+	it('head returns first element', function () {
+		head([42, 1, 2]).should.equal(42);
+	});
+
+	it('reverse string', function () {
+		reverse('abc').should.equal('cba');
+	});
+
+	it('reverse single element', function () {
+		JSON.stringify(reverse([1])).should.equal('[1]');
+	});
+
+	it('flatten already flat', function () {
+		JSON.stringify(flatten([1,2,3])).should.equal('[1,2,3]');
+	});
+
+	it('flatten empty array', function () {
+		JSON.stringify(flatten([])).should.equal('[]');
+	});
+
+	it('map on empty array', function () {
+		JSON.stringify(map(x=>x*2)([])).should.equal('[]');
+	});
+
+	it('filter on empty array', function () {
+		JSON.stringify(filter(x=>true)([])).should.equal('[]');
+	});
+
+	it('foldl foldr with empty', function () {
+		foldl((x,y)=>x+y, 0)([]).should.equal(0);
+		foldr((x,y)=>x+y, 0)([]).should.equal(0);
+	});
+
+	it('fromPairs empty', function () {
+		JSON.stringify(fromPairs([])).should.equal('{}');
+	});
+
+	it('initial single element', function () {
+		JSON.stringify(initial([1])).should.equal('[]');
+	});
+
+	it('head empty array', function () {
+		JSON.stringify(head([])).should.equal('[]');
+	});
+
+	it('tail empty', function () {
+		JSON.stringify(tail([])).should.equal('[]');
+	});
+
+	it('unique empty', function () {
+		JSON.stringify(unique([])).should.equal('[]');
+	});
+
+	it('unique single', function () {
+		JSON.stringify(unique([42])).should.equal('[42]');
+	});
+
+	it('reverse empty string', function () {
+		reverse('').should.equal('');
+	});
+
+	it('drop right zero with filter', function () {
+		JSON.stringify(drop([1,2,3], 0, "right", x=>x>1)).should.equal('[2,3]');
+	});
+
+	it('snooze zero', function () {
+		return snooze(0).then(()=>'ok').then((x)=>x.should.equal('ok'));
+	});
+
+	it('nth out of bounds', function () {
+		(nth([1,2,3], 10) === undefined).should.equal(true);
+	});
+
+	it('initial empty', function () {
+		JSON.stringify(initial([])).should.equal('[]');
+	});
+
+	it('contains empty', function () {
+		contains([], 1).should.equal(false);
+	});
+
+	it('matches empty rule', function () {
+		matches({})({a:1}).should.equal(true);
+	});
+
+	it('fill with object', function () {
+		JSON.stringify(fill([1,2], {a:1})).should.equal('[{"a":1},{"a":1}]');
+	});
+
+	it('zip single array', function () {
+		JSON.stringify(zip(['a','b','c'])).should.equal('[["a"],["b"],["c"]]');
+	});
+
+	it('take positive n empty list', function () {
+		JSON.stringify(take(4, [])).should.equal('[]');
+	});
+
+	it('curry extra args', function () {
+		curry((x, y) => x + y)(1, 2, 3).should.equal(3);
+	});
+
+	it('curry single call', function () {
+		curry((x, y, z) => x + y + z)(1, 2, 3).should.equal(6);
+	});
+
+	it('clone NaN', function () {
+		(clone(NaN) === null).should.equal(true);
+	});
+
+	it('clone number', function () {
+		clone(0).should.equal(0);
+	});
+
+	it('compact empty with type', function () {
+		JSON.stringify(compact([], '')).should.equal('[]');
+	});
+
+	it('compose single', function () {
+		compose((x)=>x+1)(5).should.equal(6);
+	});
+
+	it('not direct', function () {
+		not(x=>x>3, 5).should.equal(false);
+		not(x=>x>3, 1).should.equal(true);
+	});
+
+	it('compose identity', function () {
+		(()=>compose()(42)).should.throw();
+	});
+
+	it('reduce empty with init', function () {
+		reduce((a,b)=>a+b, 0)([]).should.equal(0);
+	});
+
+	it('reduce direct', function () {
+		reduce((a,b)=>a+b, 0, [1,2,3]).should.equal(6);
+	});
+
+	it('curry progressive', function () {
+		var f = curry((x, y, z) => x + y + z);
+		f(1)(2)(3).should.equal(6);
+	});
+
+	it('debounce cancel returns', function () {
+		var r = debounce(()=>{}, 100);
+		var result = r.cancel();
+		(typeof r.cancel).should.equal('function');
+		r.cancel.should.not.throw();
+	});
+
+	it('schedule cancel returns', function () {
+		var r = schedule(()=>{}, 1000);
+		var result = r.cancel();
+		(typeof r.cancel).should.equal('function');
+		r.cancel.should.not.throw();
+	});
+
+	it('pull values not found', function () {
+		JSON.stringify(pull([1,2,3], 4,5)).should.equal('[1,2,3]');
+	});
+
+	it('differenceWithDup no difference', function () {
+		JSON.stringify(differenceWithDup([1,2,3], [1,2,3])).should.equal('[]');
+	});
+
+	it('intersection no match', function () {
+		JSON.stringify(intersection([1,2], [3,4])).should.equal('[]');
 	});
 })

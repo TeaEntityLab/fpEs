@@ -292,6 +292,7 @@ function TypeCompTypeMatchesWithSpread(theCompType) {
 module.exports = {
   either,
   Pattern,
+  Matchable,
   PatternMatching,
   inCaseOfEqual,
   inCaseOfNumber,

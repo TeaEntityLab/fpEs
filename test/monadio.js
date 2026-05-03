@@ -62,4 +62,48 @@ describe('MonadIO', function () {
 
       return p.then((v)=>v.should.equal(25));
 	});
+  it('ap', function () {
+      MonadIO.just(1).ap(MonadIO.of(x=>x+1)).subscribe(v=>v.should.equal(2));
+  });
+  it('fromPromise', function () {
+      return MonadIO.fromPromise(Promise.resolve(5)).subscribe(v=>v.should.equal(5), true);
+  });
+  it('promiseof', function () {
+      return MonadIO.promiseof(42).then(v=>v.should.equal(42));
+  });
+  it('wrapGenerator', function () {
+      var fn = MonadIO.wrapGenerator(function*(){return 42});
+      fn().should.equal(42);
+  });
+  it('doM empty', function () {
+      return Promise.resolve(doM(function*(){return 0})).then(v=>v.should.equal(0));
+  });
+  it('doM with MonadIO', function () {
+      return doM(function*(){var v = yield MonadIO.just(5); return v+3}).then(v=>v.should.equal(8));
+  });
+  it('subscribe with callback', function () {
+      MonadIO.just(1).subscribe((v)=>{v.should.equal(1)});
+  });
+  it('just/of', function () {
+      MonadIO.just(10).subscribe(v=>v.should.equal(10));
+  });
+  it('fromPromise chained', function () {
+      return doM(function*() {
+          var v = yield MonadIO.fromPromise(Promise.resolve(3));
+          return v * 2;
+      }).then(v=>v.should.equal(6));
+  });
+  it('wrapGenerator empty', function () {
+      var fn = MonadIO.wrapGenerator(function*(){});
+      (fn() === undefined).should.equal(true);
+  });
+  it('doM async with MonadIO', function () {
+      return doM(function*(){
+          var v = yield MonadIO.just(Promise.resolve(5));
+          return v;
+      }).then(v=>v.should.equal(5));
+  });
+  it('fromPromise immediate', function () {
+      return MonadIO.fromPromise(Promise.resolve(99)).subscribe(v=>v.should.equal(99), true);
+  });
 })

@@ -165,4 +165,73 @@ describe('Maybe', function () {
       y = 1;
       Maybe.of(y).ap(u).unwrap().should.equal(u.ap(Maybe.of(f => f(y))).unwrap());
 	});
+  it('zero', function () {
+      Maybe.zero().should.equal(Maybe.empty());
+	});
+  it('extract alias', function () {
+      Maybe.just(5).extract().should.equal(5);
+      should(Maybe.empty().extract()).equal(undefined);
+	});
+  it('extend alias', function () {
+      Maybe.just(1).extend(x => x + 2).unwrap().should.equal(3);
+      Maybe.empty().extend(x => x).isNull().should.equal(true);
+	});
+  it('alt alias', function () {
+      Maybe.just(1).alt(Maybe.just(3)).unwrap().should.equal(1);
+      Maybe.empty().alt(Maybe.just(3)).isNull().should.equal(true);
+	});
+  it('then method', function () {
+      Maybe.just(1).then(x => x + 2).unwrap().should.equal(3);
+      Maybe.empty().then(x => null).isNull().should.equal(true);
+	});
+  it('None identity', function () {
+      Maybe.empty().should.equal(Maybe.empty());
+	});
+  it('just null/undefined', function () {
+      Maybe.just(null).isNull().should.equal(true);
+      Maybe.just(undefined).isNull().should.equal(true);
+	});
+  it('fantasy-land aliases', function () {
+      Maybe['fantasy-land/of'](1).unwrap().should.equal(1);
+      Maybe['fantasy-land/empty']().should.equal(Maybe.empty());
+      Maybe['fantasy-land/zero']().should.equal(Maybe.empty());
+      Maybe.just(1)['fantasy-land/map'](x => x + 1).unwrap().should.equal(2);
+      Maybe.just(1)['fantasy-land/chain'](x => Maybe.just(x + 1)).unwrap().should.equal(2);
+      Maybe.just(1)['fantasy-land/extract']().should.equal(1);
+      Maybe.just(1)['fantasy-land/extend'](x => x + 1).unwrap().should.equal(2);
+      Maybe.empty()['fantasy-land/alt'](Maybe.just(1)).isNull().should.equal(true);
+	});
+  it('multiple chaining', function () {
+      Maybe.just(3).map(x => x * 2).flatMap(x => Maybe.just(x + 1)).map(x => x / 7).unwrap().should.equal(1);
+  });
+  it('None unwrap', function () {
+      (Maybe.empty().unwrap() === null).should.equal(true);
+  });
+  it('None filter', function () {
+      Maybe.empty().filter(()=>true).isNull().should.equal(true);
+  });
+  it('None ap', function () {
+      Maybe.empty().ap(Maybe.of(x=>x)).isNull().should.equal(true);
+  });
+  it('None equals', function () {
+      Maybe.empty().equals(Maybe.empty()).should.equal(true);
+      Maybe.empty().equals(Maybe.just(1)).should.equal(false);
+  });
+  it('None orDo', function () {
+      Maybe.empty().orDo(()=>42).unwrap().should.equal(42);
+  });
+  it('None reduce', function () {
+      Maybe.empty().reduce((acc,x)=>acc+x, 99).should.equal(99);
+  });
+  it('None join', function () {
+      Maybe.empty().join().isNull().should.equal(true);
+  });
+  it('just preserves 0', function () {
+      Maybe.just(0).isPresent().should.equal(true);
+      Maybe.just(0).unwrap().should.equal(0);
+  });
+  it('fromFalsy truthy', function () {
+      Maybe.fromFalsy(1).isPresent().should.equal(true);
+      Maybe.fromFalsy(1).unwrap().should.equal(1);
+  });
 })
