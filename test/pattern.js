@@ -451,3 +451,218 @@ describe('pattern', function () {
       either(1, inCaseOfEqual(1, ()=>'first'), inCaseOfEqual(1, ()=>'second')).should.equal('first');
   });
 })
+
+describe('pattern - extended coverage', function () {
+	// Type* default thunks fire their ()=>true effect when used directly in either()
+	it('TypeNumber as effect-pattern returns true', function () {
+		either(5, TypeNumber).should.equal(true);
+		either('42', TypeNumber).should.equal(true);
+	});
+	it('TypeString as effect-pattern returns true', function () {
+		either('x', TypeString).should.equal(true);
+	});
+	it('TypeNaN as effect-pattern returns true', function () {
+		either(NaN, TypeNaN).should.equal(true);
+		either('', TypeNaN).should.equal(true);
+	});
+	it('TypeObject as effect-pattern returns true', function () {
+		either({a:1}, TypeObject).should.equal(true);
+	});
+	it('TypeArray as effect-pattern returns true', function () {
+		either([1,2], TypeArray).should.equal(true);
+	});
+	it('TypeNull as effect-pattern returns true', function () {
+		either(null, TypeNull).should.equal(true);
+		either(undefined, TypeNull).should.equal(true);
+	});
+	it('TypeFunction as effect-pattern returns true', function () {
+		either(()=>1, TypeFunction).should.equal(true);
+	});
+	it('TypePattern as effect-pattern returns true', function () {
+		either(new Pattern(()=>true, ()=>1), TypePattern).should.equal(true);
+	});
+	it('TypePatternMatching as effect-pattern returns true', function () {
+		either(new PatternMatching(otherwise(()=>1)), TypePatternMatching).should.equal(true);
+	});
+	it('TypeCompType as effect-pattern returns true', function () {
+		either(new SumType(new ProductType(TypeString)), TypeCompType).should.equal(true);
+	});
+	it('TypeEqualTo as effect-pattern returns true on match', function () {
+		either(7, TypeEqualTo(7)).should.equal(true);
+	});
+	it('TypeClassOf as effect-pattern returns true on instance', function () {
+		either(new Number(1), TypeClassOf(Number)).should.equal(true);
+	});
+	it('TypeRegexMatches as effect-pattern returns true on match', function () {
+		either('ccc', TypeRegexMatches('c+')).should.equal(true);
+	});
+
+	// TypeADT primary type mappings
+	it('TypeADT(String) constructs type matching strings', function () {
+		var t = new SumType(new ProductType(TypeADT(String)));
+		(t.apply('hi') !== undefined).should.equal(true);
+		(t.apply(5) !== undefined).should.equal(false);
+	});
+	it('TypeADT(Number) constructs type matching numbers', function () {
+		var t = new SumType(new ProductType(TypeADT(Number)));
+		(t.apply(5) !== undefined).should.equal(true);
+	});
+	it('TypeADT(TypeNumber instance) maps to number type', function () {
+		var t = new SumType(new ProductType(TypeADT(TypeNumber)));
+		(t.apply(5) !== undefined).should.equal(true);
+	});
+	it('TypeADT(TypeString instance) maps to string type', function () {
+		var t = new SumType(new ProductType(TypeADT(TypeString)));
+		(t.apply('a') !== undefined).should.equal(true);
+	});
+	it('TypeADT(undefined) maps to TypeNull', function () {
+		TypeADT(undefined).should.equal(TypeNull);
+		TypeADT(undefined).matches(null).should.equal(true);
+	});
+	it('TypeADT(TypeNaN) maps to NaN type', function () {
+		var t = new SumType(new ProductType(TypeADT(TypeNaN)));
+		(t.apply(NaN) !== undefined).should.equal(true);
+		(t.apply(5) !== undefined).should.equal(false);
+	});
+	it('TypeADT(Pattern rule) reuses the pattern', function () {
+		var t = new SumType(new ProductType(TypeADT(new Pattern(v=>v>3, ()=>true))));
+		(t.apply(5) !== undefined).should.equal(true);
+		(t.apply(1) !== undefined).should.equal(false);
+	});
+	it('TypeADT(function rule) wraps as TypeInCaseOf', function () {
+		var t = new SumType(new ProductType(TypeADT(v=>v === 'ok')));
+		(t.apply('ok') !== undefined).should.equal(true);
+		(t.apply('no') !== undefined).should.equal(false);
+	});
+	it('TypeADT(PatternMatching) wraps as matchFor', function () {
+		var pm = new PatternMatching(inCaseOfEqual(1, ()=>true), otherwise(()=>false));
+		var t = new SumType(new ProductType(TypeADT(pm)));
+		(t.apply(1) !== undefined).should.equal(true);
+	});
+	it('TypeADT(CompType) reuses the comp type', function () {
+		var inner = new SumType(new ProductType(TypeString));
+		var t = new SumType(new ProductType(TypeADT(inner)));
+		(t.apply('hello') !== undefined).should.equal(true);
+	});
+
+	// CompData constructed directly with only a type (no values)
+	it('CompData with only type has empty values', function () {
+		var pt = new ProductType(TypeString);
+		var sample = pt.effect('x');
+		var CompData = sample.constructor;
+		var cd = new CompData(pt);
+		cd.type.should.equal(pt);
+		JSON.stringify(cd.values).should.equal('[]');
+	});
+	it('CompData stores spread values as a single values array', function () {
+		var pt = new ProductType(TypeString, TypeNumber);
+		var cd = pt.effect('a', 1);
+		// CompType.effect calls new CompData(this, values) -> values nested once
+		cd.values.length.should.equal(1);
+		JSON.stringify(cd.values[0]).should.equal('["a",1]');
+	});
+
+	// ProductType element mismatch (equal length, an element fails)
+	it('ProductType rejects when an element type fails', function () {
+		new ProductType(TypeString, TypeNumber).matches('a', 'notnum').should.equal(false);
+	});
+	it('ProductType accepts when all element types pass', function () {
+		new ProductType(TypeString, TypeNumber).matches('a', 5).should.equal(true);
+	});
+
+	// inCaseOf effect coercion (+v)
+	it('inCaseOfString effect receives coerced number', function () {
+		either('42', inCaseOfString(x=>x), otherwise(()=>0)).should.equal(42);
+	});
+	it('inCaseOfNumber effect receives coerced number', function () {
+		either('3.5', inCaseOfNumber(x=>x), otherwise(()=>0)).should.equal(3.5);
+	});
+
+	// either fall-through & ordering
+	it('either throws when nothing matches', function () {
+		(()=>either(99, inCaseOfEqual(1, ()=>true), inCaseOfEqual(2, ()=>true))).should.throw();
+	});
+	it('either returns first matching effect', function () {
+		either('x', inCaseOfString(()=>'str'), otherwise(()=>'other')).should.equal('str');
+	});
+	it('otherwise catches anything', function () {
+		either(Symbol('z'), otherwise(()=>'caught')).should.equal('caught');
+	});
+
+	// SumType / ProductType structural composition
+	it('SumType matches any member ProductType', function () {
+		var s = new SumType(new ProductType(TypeString), new ProductType(TypeNumber));
+		s.matches('a').should.equal(true);
+		s.matches(1).should.equal(true);
+		// {} coerces to NaN -> neither string nor number member matches
+		s.matches({}).should.equal(false);
+	});
+	it('SumType with no matching member returns false', function () {
+		var s = new SumType(new ProductType(TypeString));
+		s.matches(1).should.equal(false);
+	});
+	it('nested SumType-of-SumType matches', function () {
+		var inner = new SumType(new ProductType(TypeNumber));
+		var outer = new SumType(new ProductType(TypeString), inner);
+		outer.matches(5).should.equal(true);
+		outer.matches('s').should.equal(true);
+	});
+
+	// TypeMatchesAllPatterns conjunction
+	it('TypeMatchesAllPatterns requires every pattern', function () {
+		var t = TypeMatchesAllPatterns(TypeString, TypeInCaseOf(v=>v.length===3));
+		t.matches('abc').should.equal(true);
+		t.matches('ab').should.equal(false);
+		t.matches(123).should.equal(false);
+	});
+
+	// inCaseOfCompTypeMatchesWithSpread on a plain (non-array) value
+	it('inCaseOfCompTypeMatchesWithSpread matches non-spread value', function () {
+		var st = new SumType(new ProductType(TypeString));
+		either('hi', inCaseOfCompTypeMatchesWithSpread(st, ()=>true), otherwise(()=>false)).should.equal(true);
+	});
+	it('inCaseOfCompTypeMatchesWithSpread matches spread array', function () {
+		var st = new SumType(new ProductType(TypeString, TypeNumber));
+		either(['hi', 1], inCaseOfCompTypeMatchesWithSpread(st, ()=>true), otherwise(()=>false)).should.equal(true);
+	});
+
+	// PatternMatching.matchFor delegates to either
+	it('PatternMatching.matchFor returns matched effect', function () {
+		var pm = new PatternMatching(inCaseOfEqual(1, ()=>'one'), otherwise(()=>'other'));
+		pm.matchFor(1).should.equal('one');
+		pm.matchFor(2).should.equal('other');
+	});
+});
+
+describe('pattern - null safety (regression)', function () {
+	// Regression: TypeNumber.matches(null/undefined) used to throw on null.toString()
+	it('TypeNumber.matches(null) returns false without throwing', function () {
+		TypeNumber.matches(null).should.equal(false);
+	});
+	it('TypeNumber.matches(undefined) returns false without throwing', function () {
+		TypeNumber.matches(undefined).should.equal(false);
+	});
+	it('TypeNumber still matches real numbers and numeric strings', function () {
+		TypeNumber.matches(5).should.equal(true);
+		TypeNumber.matches('5').should.equal(true);
+	});
+	it('TypeNaN.matches(null) returns true without throwing', function () {
+		TypeNaN.matches(null).should.equal(true);
+	});
+
+	// Regression: TypeADT(null) used to crash; now maps to TypeNull
+	it('TypeADT(null) maps to TypeNull', function () {
+		TypeADT(null).should.equal(TypeNull);
+		TypeADT(null).matches(null).should.equal(true);
+	});
+	it('TypeADT(null) inside a ProductType matches null, rejects numbers', function () {
+		var t = new SumType(new ProductType(TypeADT(null)));
+		(t.apply(null) !== undefined).should.equal(true);
+		(t.apply(5) !== undefined).should.equal(false);
+	});
+	it('TypeADT object with a null field no longer crashes', function () {
+		var t = new SumType(new ProductType(TypeADT({ id: Number, parent: null })));
+		(t.apply({ id: 1, parent: null }) !== undefined).should.equal(true);
+		(t.apply({ id: 1, parent: 5 }) !== undefined).should.equal(false);
+	});
+});

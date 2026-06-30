@@ -702,3 +702,275 @@ describe('Fp', function () {
 		JSON.stringify(intersection([1,2], [3,4])).should.equal('[]');
 	});
 })
+
+describe('Fp - extended coverage', function () {
+	// compose / pipe arity & composition
+	it('compose 3 fns left-to-right inside-out', function () {
+		compose(x=>x+1, x=>x*2, x=>x-3)(10).should.equal(15);
+	});
+	it('pipe 3 fns left-to-right', function () {
+		pipe(x=>x-3, x=>x*2, x=>x+1)(10).should.equal(15);
+	});
+	it('compose preserves multi-arg innermost fn', function () {
+		compose(x=>x+1, (a,b)=>a*b)(4,5).should.equal(21);
+	});
+	it('pipe single fn is identity-like', function () {
+		pipe(x=>x*3)(7).should.equal(21);
+	});
+
+	// curry boundaries
+	it('curry 4-arity fully progressive', function () {
+		curry((a,b,c,d)=>a+b+c+d)(1)(2)(3)(4).should.equal(10);
+	});
+	it('curry 4-arity mixed grouping', function () {
+		curry((a,b,c,d)=>a+b+c+d)(1,2)(3)(4).should.equal(10);
+		curry((a,b,c,d)=>a+b+c+d)(1)(2,3)(4).should.equal(10);
+		curry((a,b,c,d)=>a+b+c+d)(1,2,3)(4).should.equal(10);
+	});
+	it('curry exact arity single shot', function () {
+		curry((a,b,c,d)=>a+b+c+d)(1,2,3,4).should.equal(10);
+	});
+
+	// chunk variants
+	it('chunk uneven leaves remainder', function () {
+		JSON.stringify(chunk([1,2,3,4,5],2)).should.equal('[[1,2],[3,4],[5]]');
+	});
+	it('chunk size 1 wraps each element', function () {
+		JSON.stringify(chunk([1,2,3],1)).should.equal('[[1],[2],[3]]');
+	});
+	it('chunk size >= length yields single chunk', function () {
+		JSON.stringify(chunk([1,2,3],10)).should.equal('[[1,2,3]]');
+	});
+
+	// memoize collisions / distinct
+	it('memoize object args collide via stringify', function () {
+		var calls = 0;
+		var fn = memoize(function (o) { calls++; return o.x; });
+		fn({x:1}); fn({x:2});
+		calls.should.equal(1); // both -> '[object Object]'
+	});
+	it('memoize distinct primitive keys', function () {
+		var calls = 0;
+		var fn = memoize(function (a,b) { calls++; return a+b; });
+		fn(1,2).should.equal(3);
+		fn(1,2).should.equal(3);
+		fn(2,3).should.equal(5);
+		calls.should.equal(2);
+	});
+
+	// take currying & bounds
+	it('take curried form', function () {
+		JSON.stringify(take(2)([9,8,7,6])).should.equal('[9,8]');
+	});
+	it('take more than length returns all', function () {
+		JSON.stringify(take(99, [1,2])).should.equal('[1,2]');
+	});
+
+	// nth negative behavior (documented quirk)
+	it('nth -3 returns last of length-3', function () {
+		nth([10,20,30],-3).should.equal(30);
+	});
+	it('nth zero index', function () {
+		nth([10,20,30],0).should.equal(10);
+	});
+	it('nth curried negative', function () {
+		nth(-3)([10,20,30]).should.equal(30);
+	});
+
+	// drop left + filter
+	it('drop left then filter even', function () {
+		JSON.stringify(drop([1,2,3,4,5,6],2,'left',x=>x%2===0)).should.equal('[4,6]');
+	});
+	it('drop default direction equals left', function () {
+		JSON.stringify(drop([1,2,3,4],2)).should.equal('[3,4]');
+	});
+
+	// concat with function filter on multiple arrays
+	it('concat multiple arrays then filter', function () {
+		JSON.stringify(concat([1,2,3],[4,5,6],x=>x>3)).should.equal('[4,5,6]');
+	});
+	it('concat empty values returns curried fn', function () {
+		(typeof concat([1,2,3])).should.equal('function');
+		JSON.stringify(concat([1,2,3])(4,5)).should.equal('[1,2,3,4,5]');
+	});
+
+	// join currying & multi
+	it('join curried with two arrays', function () {
+		join('-')([1,2],[3]).should.equal('1-2-3');
+	});
+	it('join single array', function () {
+		join('+', [1,2,3]).should.equal('1+2+3');
+	});
+
+	// union curry forms
+	it('union dup curried (list,true)(other)', function () {
+		JSON.stringify(union([1,2],true)([2,3])).should.equal('[2,3,1,2]');
+	});
+	it('union no-dup default', function () {
+		JSON.stringify(union([1,2],[2,3])).should.equal('[1,2,3]');
+	});
+
+	// intersection with explicit indices
+	it('intersection 1st vs 3rd by index', function () {
+		JSON.stringify(intersection(['a','b'],['x'],['b','a'],1,3)).should.equal('["a","b"]');
+	});
+
+	// sortedUniq strings
+	it('sortedUniq sorts and dedups strings', function () {
+		JSON.stringify(sortedUniq(['b','a','b','c'])).should.equal('["a","b","c"]');
+	});
+
+	// sortedIndex last for numbers with duplicates
+	it('sortedIndex last among duplicates', function () {
+		sortedIndex([1,2,2,2,3],2,'last').should.equal(4);
+	});
+
+	// unzip round-trips zip
+	it('unzip transposes pairs', function () {
+		JSON.stringify(unzip([[1,2],[3,4]])).should.equal('[[1,3],[2,4]]');
+	});
+	it('zip/unzip round trip', function () {
+		var z = zip([1,2,3],[4,5,6]);
+		JSON.stringify(unzip(z)).should.equal('[[1,2,3],[4,5,6]]');
+	});
+
+	// not curry single-arg path (no extra args)
+	it('not with no extra args negates nullary fn', function () {
+		not(()=>false).should.equal(true);
+		not(()=>true).should.equal(false);
+	});
+
+	// gather single-arg path -> empty gather
+	it('gather with only fn passes empty array', function () {
+		gather(x=>x.length).should.equal(0);
+		JSON.stringify(gather(x=>x)).should.equal('[]');
+	});
+
+	// partial / partialRight single-arg (no preset args)
+	it('partial with no preset args forwards later args', function () {
+		partial((a,b,c)=>a+b+c)(1,2,3).should.equal(6);
+	});
+	it('partialRight with no preset args forwards later args', function () {
+		partialRight((a,b,c)=>a+b+c)(1,2,3).should.equal(6);
+	});
+	it('partial presets then later', function () {
+		partial((a,b,c,d)=>`${a}${b}${c}${d}`, 'a','b')('c','d').should.equal('abcd');
+	});
+	it('partialRight presets appended last', function () {
+		partialRight((a,b,c,d)=>`${a}${b}${c}${d}`, 'c','d')('a','b').should.equal('abcd');
+	});
+
+	// pull with only list (no values to remove)
+	it('pull with no values returns list unchanged', function () {
+		JSON.stringify(pull([1,2,3])).should.equal('[1,2,3]');
+	});
+	it('pull removes all occurrences', function () {
+		JSON.stringify(pull([1,2,1,3,1],1)).should.equal('[2,3]');
+	});
+
+	// clone deep independence
+	it('clone deep object is independent', function () {
+		var orig = {a:{b:1}};
+		var cl = clone(orig);
+		cl.a.b = 99;
+		orig.a.b.should.equal(1);
+	});
+	it('clone array is independent', function () {
+		var orig = [[1],[2]];
+		var cl = clone(orig);
+		cl[0][0] = 42;
+		orig[0][0].should.equal(1);
+	});
+
+	// compact with numeric type filter
+	it('compact keeps only numbers when typ is number', function () {
+		JSON.stringify(compact([1,'a',2,null,3,undefined],0)).should.equal('[1,2,3]');
+	});
+	it('compact keeps only strings when typ is string', function () {
+		JSON.stringify(compact([1,'a',2,'b'],'')).should.equal('["a","b"]');
+	});
+
+	// fold direction sensitivity
+	it('foldr folds right-to-left', function () {
+		foldr((acc,x)=>acc+'-'+x, 'i')([1,2,3]).should.equal('i-3-2-1');
+	});
+	it('foldl folds left-to-right', function () {
+		foldl((acc,x)=>acc+'-'+x, 'i')([1,2,3]).should.equal('i-1-2-3');
+	});
+
+	// flattenMap
+	it('flattenMap maps then flattens', function () {
+		JSON.stringify(flattenMap(x=>[x,x*10])([1,2])).should.equal('[1,10,2,20]');
+	});
+
+	// fill inclusive range
+	it('fill within explicit index range (inclusive end)', function () {
+		JSON.stringify(fill([0,0,0,0,0],9,1,3)).should.equal('[0,9,9,9,0]');
+	});
+
+	// reverse immutability
+	it('reverse does not mutate source array', function () {
+		var a = [1,2,3];
+		reverse(a);
+		JSON.stringify(a).should.equal('[1,2,3]');
+	});
+
+	// difference with explicit indices (1st vs 3rd)
+	it('difference 1st vs 3rd by index', function () {
+		JSON.stringify(difference(['a','b','c'],['z'],['b','x'],1,3)).should.equal('["x"]');
+	});
+
+	// trampoline returns immediately for non-function
+	it('trampoline returns non-function result directly', function () {
+		trampoline(x=>x*2)(21).should.equal(42);
+	});
+
+	// unary ignores extra args
+	it('unary applies only first arg', function () {
+		unary((a,b)=>b===undefined)(1).should.equal(true);
+	});
+
+	// spread / gather inverse-ish
+	it('spread applies array as args', function () {
+		spread((a,b,c)=>a+b+c)([1,2,3]).should.equal(6);
+	});
+
+	// when truthy/falsy
+	it('when returns undefined for false test', function () {
+		(when(()=>false, ()=>'x') === undefined).should.equal(true);
+	});
+	it('when runs fn for true test', function () {
+		when(()=>true, ()=>'x').should.equal('x');
+	});
+
+	// ifelse both branches
+	it('ifelse picks fn branch when test true', function () {
+		ifelse(()=>true, ()=>'else', ()=>'fn').should.equal('fn');
+	});
+	it('ifelse picks else branch when test false', function () {
+		ifelse(()=>false, ()=>'else', ()=>'fn').should.equal('else');
+	});
+
+	// propEq / get / matches combos
+	it('propEq false on mismatch', function () {
+		propEq(1)('a')({a:2}).should.equal(false);
+	});
+	it('matches partial rule subset', function () {
+		matches({a:1})({a:1,b:2}).should.equal(true);
+		matches({a:1,c:3})({a:1,b:2}).should.equal(false);
+	});
+
+	// head / tail / initial / shift interplay
+	it('head/tail decompose list', function () {
+		head([1,2,3]).should.equal(1);
+		JSON.stringify(tail([1,2,3])).should.equal('[2,3]');
+	});
+	it('initial drops last', function () {
+		JSON.stringify(initial([1,2,3])).should.equal('[1,2]');
+	});
+
+	// fromPairs round trips with object
+	it('fromPairs builds object from entries', function () {
+		JSON.stringify(fromPairs([['x',1],['y',2]])).should.equal('{"x":1,"y":2}');
+	});
+});

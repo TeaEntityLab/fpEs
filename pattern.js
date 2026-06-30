@@ -12,6 +12,9 @@ class Matchable {
 }
 
 function isNotNumber(v) {
+  if (v === null || v === undefined) {
+    return true;
+  }
   return isNaN(v) || v.toString().trim() === '';
 }
 

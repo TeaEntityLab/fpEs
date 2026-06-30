@@ -235,3 +235,233 @@ describe('Maybe', function () {
       Maybe.fromFalsy(1).unwrap().should.equal(1);
   });
 })
+
+describe('Maybe - extended coverage', function () {
+	// Functor laws
+	it('functor identity', function () {
+		Maybe.of(5).map(x=>x).unwrap().should.equal(5);
+	});
+	it('functor composition', function () {
+		var f = x=>x+1, g = x=>x*2;
+		Maybe.of(5).map(x=>g(f(x))).unwrap()
+			.should.equal(Maybe.of(5).map(f).map(g).unwrap());
+	});
+
+	// Monad laws
+	it('monad left identity', function () {
+		var f = x=>Maybe.of(x+1);
+		Maybe.of(5).chain(f).unwrap().should.equal(f(5).unwrap());
+	});
+	it('monad right identity', function () {
+		Maybe.of(5).chain(Maybe.of).unwrap().should.equal(5);
+	});
+	it('monad associativity', function () {
+		var f = x=>Maybe.of(x+1), g = x=>Maybe.of(x*2);
+		Maybe.of(5).chain(f).chain(g).unwrap()
+			.should.equal(Maybe.of(5).chain(x=>f(x).chain(g)).unwrap());
+	});
+
+	// toList
+	it('Just.toList wraps value', function () {
+		JSON.stringify(Maybe.of(7).toList()).should.equal('[7]');
+	});
+	it('None.toList is empty', function () {
+		JSON.stringify(Maybe.empty().toList()).should.equal('[]');
+	});
+
+	// reduce
+	it('Just.reduce applies reducer with init', function () {
+		Maybe.of(5).reduce((acc,x)=>acc+x, 10).should.equal(15);
+	});
+	it('None.reduce returns init untouched', function () {
+		Maybe.empty().reduce((acc,x)=>acc+x, 10).should.equal(10);
+	});
+
+	// or / orDo
+	it('Just.or keeps original value', function () {
+		Maybe.of(1).or(9).unwrap().should.equal(1);
+	});
+	it('None.or substitutes fallback', function () {
+		Maybe.empty().or(9).unwrap().should.equal(9);
+	});
+	it('Just.orDo keeps original value', function () {
+		Maybe.of(1).orDo(()=>9).unwrap().should.equal(1);
+	});
+	it('None.orDo runs fallback fn', function () {
+		Maybe.empty().orDo(()=>9).unwrap().should.equal(9);
+	});
+
+	// equals matrix
+	it('equals true for same wrapped value', function () {
+		Maybe.of(3).equals(Maybe.of(3)).should.equal(true);
+	});
+	it('equals false for different wrapped values', function () {
+		Maybe.of(3).equals(Maybe.of(4)).should.equal(false);
+	});
+	it('equals false against non-Maybe', function () {
+		Maybe.of(3).equals(3).should.equal(false);
+	});
+	it('None.equals true vs None, false vs Just', function () {
+		Maybe.empty().equals(Maybe.empty()).should.equal(true);
+		Maybe.empty().equals(Maybe.of(1)).should.equal(false);
+	});
+
+	// fromFalsy
+	it('fromFalsy 0 is None', function () {
+		Maybe.fromFalsy(0).isNull().should.equal(true);
+	});
+	it('fromFalsy truthy wraps value', function () {
+		Maybe.fromFalsy('hi').unwrap().should.equal('hi');
+	});
+
+	// fromPredicate forms
+	it('fromPredicate pass (2-arg)', function () {
+		Maybe.fromPredicate(x=>x>0, 5).unwrap().should.equal(5);
+	});
+	it('fromPredicate fail (2-arg)', function () {
+		Maybe.fromPredicate(x=>x>0, -1).isNull().should.equal(true);
+	});
+	it('fromPredicate curried', function () {
+		Maybe.fromPredicate(x=>x>0)(5).unwrap().should.equal(5);
+		Maybe.fromPredicate(x=>x>0)(-1).isNull().should.equal(true);
+	});
+
+	// then on Just
+	it('Just.then maps and rewraps', function () {
+		Maybe.of(1).then(x=>x+5).unwrap().should.equal(6);
+	});
+
+	// join depth
+	it('join collapses triple-nested Maybe', function () {
+		Maybe.of(Maybe.of(Maybe.of(8))).join().unwrap().should.equal(8);
+	});
+	it('None.join stays None', function () {
+		Maybe.empty().join().isNull().should.equal(true);
+	});
+
+	// filter
+	it('Just.filter keeps when predicate true', function () {
+		Maybe.of(5).filter(x=>x>3).unwrap().should.equal(5);
+	});
+	it('Just.filter drops to None when predicate false', function () {
+		Maybe.of(1).filter(x=>x>3).isNull().should.equal(true);
+	});
+	it('None.filter stays None', function () {
+		Maybe.empty().filter(()=>true).isNull().should.equal(true);
+	});
+
+	// ap
+	it('Just.ap applies wrapped fn', function () {
+		Maybe.of(5).ap(Maybe.of(x=>x*2)).unwrap().should.equal(10);
+	});
+	it('None.ap stays None', function () {
+		Maybe.empty().ap(Maybe.of(x=>x)).isNull().should.equal(true);
+	});
+
+	// presence with falsy-but-present 0
+	it('Just(0) is present (not null)', function () {
+		Maybe.of(0).isPresent().should.equal(true);
+		Maybe.of(0).isNull().should.equal(false);
+		Maybe.of(0).unwrap().should.equal(0);
+	});
+	it('None is absent', function () {
+		Maybe.empty().isPresent().should.equal(false);
+		Maybe.empty().isNull().should.equal(true);
+	});
+
+	// toString
+	it('Just.toString shows Some(...)', function () {
+		Maybe.of([1,2]).toString().should.equal('Some([1,2])');
+		Maybe.of('a').toString().should.equal('Some("a")');
+	});
+	it('None.toString shows None', function () {
+		Maybe.empty().toString().should.equal('None');
+	});
+
+	// aliases consistency
+	it('just/of are equivalent', function () {
+		Maybe.just(1).unwrap().should.equal(Maybe.of(1).unwrap());
+	});
+	it('chain/flatMap equivalent', function () {
+		Maybe.of(1).chain(x=>Maybe.of(x+1)).unwrap()
+			.should.equal(Maybe.of(1).flatMap(x=>Maybe.of(x+1)).unwrap());
+	});
+	it('map/bind/then aliases agree on Just', function () {
+		Maybe.of(1).map(x=>x+1).unwrap().should.equal(2);
+		Maybe.of(1).bind(x=>x+1).unwrap().should.equal(2);
+		Maybe.of(1).then(x=>x+1).unwrap().should.equal(2);
+	});
+	it('extract alias unwraps', function () {
+		Maybe.of(42).extract().should.equal(42);
+	});
+	it('alt alias keeps present', function () {
+		Maybe.of(1).alt(Maybe.of(2)).unwrap().should.equal(1);
+	});
+	it('extend alias maps over present', function () {
+		Maybe.of(1).extend(x=>x+2).unwrap().should.equal(3);
+	});
+
+	// empty/zero point to None singleton
+	it('empty and zero are the None singleton', function () {
+		Maybe.empty().should.equal(Maybe.zero());
+		Maybe.empty().should.equal(Maybe.empty());
+	});
+
+	// chaining pipeline
+	it('multi-step Just pipeline', function () {
+		Maybe.of(3).map(x=>x*2).chain(x=>Maybe.of(x+1)).map(x=>x/7).unwrap().should.equal(1);
+	});
+});
+
+describe('Maybe - None short-circuit (regression)', function () {
+	// Regression: None.map/then/chain/flatMap used to call fn(undefined) and
+	// leak a Some(NaN); they must short-circuit and stay None.
+	it('None.map stays None and does not call fn', function () {
+		var called = false;
+		var result = Maybe.empty().map(function (x) { called = true; return x + 1; });
+		result.isNull().should.equal(true);
+		called.should.equal(false);
+	});
+	it('None.then stays None and does not call fn', function () {
+		var called = false;
+		var result = Maybe.empty().then(function (x) { called = true; return x + 1; });
+		result.isNull().should.equal(true);
+		called.should.equal(false);
+	});
+	it('None.chain stays None and does not call fn', function () {
+		var called = false;
+		var result = Maybe.empty().chain(function (x) { called = true; return Maybe.of(x + 1); });
+		result.isNull().should.equal(true);
+		called.should.equal(false);
+	});
+	it('None.flatMap stays None and does not call fn', function () {
+		var called = false;
+		var result = Maybe.empty().flatMap(function (x) { called = true; return Maybe.of(x + 1); });
+		result.isNull().should.equal(true);
+		called.should.equal(false);
+	});
+	it('None.bind stays None', function () {
+		Maybe.empty().bind(function (x) { return x + 1; }).isNull().should.equal(true);
+	});
+	it('None short-circuit holds across a chain', function () {
+		Maybe.empty().map(x=>x+1).chain(x=>Maybe.of(x*2)).then(x=>x-3).isNull().should.equal(true);
+	});
+
+	// Just must still apply fn (no over-short-circuit)
+	it('Just.map still applies fn after the fix', function () {
+		Maybe.of(1).map(x=>x+1).unwrap().should.equal(2);
+	});
+	it('Just.chain still applies fn after the fix', function () {
+		Maybe.of(1).chain(x=>Maybe.of(x+1)).unwrap().should.equal(2);
+	});
+	it('Just.flatMap returns the inner value the fn produces', function () {
+		Maybe.of(1).flatMap(x=>Maybe.of(x+1)).unwrap().should.equal(2);
+	});
+	it('monad laws still hold for Just after the fix', function () {
+		// left identity
+		var f = x=>Maybe.of(x+1);
+		Maybe.of(5).chain(f).unwrap().should.equal(f(5).unwrap());
+		// right identity
+		Maybe.of(5).chain(Maybe.of).unwrap().should.equal(5);
+	});
+});

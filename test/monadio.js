@@ -107,3 +107,124 @@ describe('MonadIO', function () {
       return MonadIO.fromPromise(Promise.resolve(99)).subscribe(v=>v.should.equal(99), true);
   });
 })
+
+describe('MonadIO - extended coverage', function () {
+	// Laziness: effect runs only on subscribe
+	it('is lazy until subscribed', function () {
+		var ran = false;
+		var m = MonadIO.just(0).map(()=>{ ran = true; return 1; });
+		ran.should.equal(false);
+		m.subscribe(()=>{});
+		ran.should.equal(true);
+	});
+
+	// sync subscribe returns the callback
+	it('sync subscribe returns its callback', function () {
+		var fn = v=>v;
+		(MonadIO.just(1).subscribe(fn) === fn).should.equal(true);
+	});
+
+	// chain === flatMap
+	it('chain and flatMap are equivalent', function () {
+		var a, b;
+		MonadIO.just(2).chain(x=>MonadIO.just(x+1)).subscribe(v=>a=v);
+		MonadIO.just(2).flatMap(x=>MonadIO.just(x+1)).subscribe(v=>b=v);
+		a.should.equal(b);
+		a.should.equal(3);
+	});
+
+	// bind === then === map
+	it('bind, then, map aliases agree', function () {
+		var m1, m2, m3;
+		MonadIO.just(3).bind(x=>x+1).subscribe(v=>m1=v);
+		MonadIO.just(3).then(x=>x+1).subscribe(v=>m2=v);
+		MonadIO.just(3).map(x=>x+1).subscribe(v=>m3=v);
+		m1.should.equal(4);
+		m2.should.equal(4);
+		m3.should.equal(4);
+	});
+
+	// map chaining
+	it('chained maps accumulate', function () {
+		var v;
+		MonadIO.just(1).map(x=>x+1).map(x=>x*3).map(x=>x-2).subscribe(r=>v=r);
+		v.should.equal(4);
+	});
+
+	// wrapGenerator on plain generator
+	it('wrapGenerator runs a plain generator to its return', function () {
+		MonadIO.wrapGenerator(function*(){ return 99; })().should.equal(99);
+	});
+	it('wrapGenerator on empty generator returns undefined', function () {
+		(MonadIO.wrapGenerator(function*(){})() === undefined).should.equal(true);
+	});
+
+	// async subscribe defers callback
+	it('async subscribe defers callback to microtask', function () {
+		var order = [];
+		var m = MonadIO.just(0).map(()=>{ order.push('eff'); return 5; });
+		return m.subscribe(v=>order.push('sub'+v), true).then(()=>{
+			order.join(',').should.equal('eff,sub5');
+		});
+	});
+
+	// doM mixing all yieldable kinds
+	it('doM mixes promise, Maybe, MonadIO, fromPromise', function () {
+		return doM(function*(){
+			var a = yield promiseof(5);
+			var b = yield Maybe.just(11);
+			var c = yield MonadIO.just(3);
+			var d = yield MonadIO.fromPromise(Promise.resolve(3));
+			return a + b + c + d;
+		}).then(v=>v.should.equal(22));
+	});
+
+	// generatorToPromise resolves through a Promise boundary
+	it('generatorToPromise resolves yields', function () {
+		return generatorToPromise(function*(){
+			var a = yield promiseof(2);
+			var b = yield MonadIO.just(3);
+			return a + b;
+		}).then(v=>v.should.equal(5));
+	});
+
+	// fromPromise via async subscribe
+	it('fromPromise delivers resolved value via async subscribe', function () {
+		return MonadIO.fromPromise(Promise.resolve(7)).subscribe(v=>v, true).then(v=>v.should.equal(7));
+	});
+
+	// promiseof wraps in resolved promise
+	it('promiseof yields a resolved promise', function () {
+		return MonadIO.promiseof(42).then(v=>v.should.equal(42));
+	});
+
+	// ap applies wrapped fn
+	it('ap applies a wrapped function', function () {
+		var v;
+		MonadIO.just(5).ap(MonadIO.of(x=>x*2)).subscribe(r=>v=r);
+		v.should.equal(10);
+	});
+
+	// of/just construct constant effect
+	it('of and just wrap a constant', function () {
+		var a, b;
+		MonadIO.of(8).subscribe(v=>a=v);
+		MonadIO.just(8).subscribe(v=>b=v);
+		a.should.equal(8);
+		b.should.equal(8);
+	});
+
+	// doM returning immediately
+	it('doM with no yields returns the value', function () {
+		return Promise.resolve(doM(function*(){ return 13; })).then(v=>v.should.equal(13));
+	});
+
+	// nested doM
+	it('doM nested generator composition', function () {
+		return doM(function*(){
+			var a = yield MonadIO.fromPromise(Promise.resolve(4));
+			var b = yield promiseof(a * 2);
+			return b + 1;
+		}).then(v=>v.should.equal(9));
+	});
+});

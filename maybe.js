@@ -80,6 +80,9 @@ class MaybeDef {
     return this.of(this.flatMap(fn))
   }
   flatMap(fn) {
+    if (this.isNull()) {
+      return this
+    }
     return fn(this.ref)
   }
   join() {
