@@ -718,3 +718,31 @@ describe('pattern - TypeNumber coercion boundaries (regression)', function () {
 	});
 });
 
+describe('pattern - risk/edge regressions', function () {
+	it('either with no match and no otherwise throws', function () {
+		(() => either(5, inCaseOfString(() => 's'))).should.throw();
+	});
+	it('either first matching pattern wins', function () {
+		either(5, inCaseOfNumber(() => 'num'), inCaseOfEqual(5, () => 'five')).should.equal('num');
+	});
+	it('inCaseOfNumber accepts numeric strings', function () {
+		either('42', inCaseOfNumber(n => n), otherwise(() => 'no')).should.equal(42);
+	});
+	it('inCaseOfNumber rejects booleans', function () {
+		either(true, inCaseOfNumber(n => n), otherwise(() => 'no')).should.equal('no');
+	});
+	it('ProductType requires all positional types to match', function () {
+		new ProductType(TypeString, TypeNumber).matches('a', 1).should.equal(true);
+		new ProductType(TypeString, TypeNumber).matches('a', 'b').should.equal(false);
+	});
+	it('SumType matches when any member type matches', function () {
+		new SumType(TypeString, TypeNumber).matches('a').should.equal(true);
+		new SumType(TypeString, TypeNumber).matches(1).should.equal(true);
+		new SumType(TypeString, TypeNumber).matches(true).should.equal(false);
+	});
+	it('TypeADT requires all keys to be present and match', function () {
+		TypeADT({a: TypeNumber, b: TypeString}).matches({a: 1, b: 'x'}).should.equal(true);
+		TypeADT({a: TypeNumber, b: TypeString}).matches({a: 1}).should.equal(false);
+	});
+});
+

@@ -1043,3 +1043,49 @@ describe('Fp - bug-fix regressions', function () {
 		JSON.stringify(pull([1,2,3], 9)).should.equal('[1,2,3]');
 	});
 });
+
+describe('Fp - risk/edge regressions', function () {
+	it('contains throws TypeError on string arg (no array-like support)', function () {
+		(() => contains('abc', 'b')).should.throw();
+	});
+	it('chunk(list, 0) throws RangeError', function () {
+		(() => chunk([1, 2, 3], 0)).should.throw();
+	});
+	it('chunk(list, -1) throws RangeError', function () {
+		(() => chunk([1, 2, 3], -1)).should.throw();
+	});
+	it('range(-2) throws RangeError', function () {
+		(() => range(-2)).should.throw();
+	});
+	it('sortedUniq on mixed types sorts numerically then trailing strings', function () {
+		JSON.stringify(sortedUniq([3, 1, 'a', 2])).should.equal('[1,2,3,"a"]');
+	});
+	it('zip pads missing pairs with null when first array is longer', function () {
+		JSON.stringify(zip([1, 2, 3], [4, 5])).should.equal('[[1,4],[2,5],[3,null]]');
+	});
+	it('compact(list, typ) keeps elements whose typeof matches typ', function () {
+		JSON.stringify(compact([1, 'a', 2, 'b'], 0)).should.equal('[1,2]');
+	});
+	it('difference with explicit trailing numeric positions selects main/follower by index', function () {
+		JSON.stringify(difference([9, 9], [1, 2], [3, 4], 2, 3)).should.equal('[3,4]');
+	});
+	it('union(a, b, true) keeps duplicates', function () {
+		JSON.stringify(union([1, 2], [2, 3], true)).should.equal('[1,2,2,3]');
+	});
+	it('take with n greater than length or zero', function () {
+		JSON.stringify(take(10, [1, 2, 3])).should.equal('[1,2,3]');
+		JSON.stringify(take(0, [1, 2, 3])).should.equal('[]');
+	});
+	it('nth out of bounds returns undefined', function () {
+		(nth([1, 2, 3], 10) === undefined).should.equal(true);
+	});
+	it('clone deep-copies so mutation does not affect the original', function () {
+		var original = {a: {b: 1}};
+		var copy = clone(original);
+		copy.a.b = 99;
+		original.a.b.should.equal(1);
+		copy.a.b.should.equal(99);
+		(original !== copy).should.equal(true);
+	});
+});
+

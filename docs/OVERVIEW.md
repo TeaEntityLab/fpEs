@@ -91,8 +91,9 @@ export at the top level. Subpath imports (`fpes/fp`, `fpes/pattern`) return that
 
 ## Gotchas & boundaries
 
-All six are **intended behavior or locked-by-tests quirks** — none are open bugs. Document and
-work with them; do not expect them to change.
+All nine are **intended behavior, locked-by-tests quirks, or design limitations** — none are open
+bugs (the genuine wrong-result bugs were fixed in v1.2.0). Items 1–6 are quirks/design; items 7–9
+are footguns to avoid. Work with them; do not expect them to change.
 
 1. **`Maybe.ap` uses Fantasy Land argument order.** The receiver holds the *value*, the argument
    holds the *wrapped function*:
@@ -116,6 +117,28 @@ work with them; do not expect them to change.
    and became `1` only after `subscribe`. Pass `subscribe(fn, true)` for async execution.
 6. **Fantasy Land aliases are Maybe-scoped.** `fantasy-land/map`, `.../chain`, `.../ap`,
    `.../of`, `.../equals`, etc. exist on `Maybe` only.
+7. **`MonadIO.fromPromise(p).map(fn)` does NOT await — it maps over the Promise object.**
+   `MonadIO` is a *synchronous* IO monad; `map`/`then` apply `fn` to the raw effect result. For a
+   `fromPromise` monad that result is a Promise, so `fn` receives the Promise, not the value:
+   ```js
+   MonadIO.fromPromise(Promise.resolve(10)).map(x => x + 1).subscribe(v => v, true);
+   // → "[object Promise]1"  (NOT 11) — silent wrong result
+   ```
+   Bridge async through `doM` instead, which awaits each `yield`:
+   ```js
+   MonadIO.doM(function* () { const v = yield MonadIO.fromPromise(Promise.resolve(10)); return v + 1; });
+   // → Promise resolving to 11
+   ```
+   Use `fromPromise` only (a) `yield`ed inside `doM`, or (b) via `subscribe(fn, true)` with no
+   intervening `.map`. Locked by characterization tests.
+8. **`flatMap`/`chain` callbacks MUST return the same monad.** `Maybe.of(5).flatMap(x => x*2)`
+   returns the raw number `10`, not a `Maybe` (so `.unwrap()` throws); `MonadIO.flatMap` with a
+   scalar callback throws (`fn(result).effect is not a function`). Use `map`/`then` for scalar
+   transforms, `flatMap`/`chain` only when your callback returns a `Maybe`/`MonadIO`.
+9. **Some `fp` helpers throw on out-of-domain input rather than coercing.** `chunk(list, 0)` and
+   `chunk(list, -1)` throw `RangeError`; `range(-2)` throws `RangeError` (though `range(0)` → `[]`);
+   `contains(str, x)` throws `TypeError` (it uses `Array.prototype.reduce`, so pass an array, not a
+   string). Guard these inputs at the call site.
 
 ## Scenarios cookbook
 

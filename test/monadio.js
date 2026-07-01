@@ -264,3 +264,34 @@ describe('MonadIO - extended coverage', function () {
 		result.join().unwrap().should.equal(11);
 	});
 });
+
+describe('MonadIO - risk/edge regressions', function () {
+	it('ap applies wrapped function in fantasy-land order', function () {
+		var v = 0;
+		MonadIO.of(10).ap(MonadIO.of(x => x + 1)).subscribe(x => v = x);
+		v.should.equal(11);
+	});
+	it('doM propagates rejected promise', function () {
+		return doM(function* () {
+			yield Promise.reject(new Error('boom'));
+		}).then(() => {
+			throw new Error('expected rejection');
+		}, e => e.message.should.equal('boom'));
+	});
+	it('sync subscribe runs effect immediately and returns callback', function () {
+		var fn = function (v) { v; };
+		(MonadIO.of(5).subscribe(fn) === fn).should.equal(true);
+	});
+	it('fromPromise+map does not await (limitation lock)', function () {
+		return MonadIO.fromPromise(Promise.resolve(10)).map(x => x + 1).subscribe(v => {
+			v.should.equal('[object Promise]1');
+		}, true);
+	});
+	it('doM with fromPromise yields resolved value for arithmetic', function () {
+		return doM(function* () {
+			const v = yield MonadIO.fromPromise(Promise.resolve(10));
+			return v + 1;
+		}).then(v => v.should.equal(11));
+	});
+});
+

@@ -542,3 +542,39 @@ describe('Maybe equals NaN', function () {
 	});
 });
 
+describe('Maybe - risk/edge regressions', function () {
+	it('equals returns false for raw non-Maybe value', function () {
+		Maybe.of(5).equals(5).should.equal(false);
+	});
+	it('None equals None', function () {
+		Maybe.of(null).equals(Maybe.of(null)).should.equal(true);
+	});
+	it('Some does not equal None', function () {
+		Maybe.of(5).equals(Maybe.of(null)).should.equal(false);
+	});
+	it('ap short-circuits when receiver is None', function () {
+		(Maybe.of(null).ap(Maybe.of(x => x + 1)).unwrap() === null).should.equal(true);
+	});
+	it('ap short-circuits when function is None', function () {
+		(Maybe.of(5).ap(Maybe.of(null)).unwrap() === null).should.equal(true);
+	});
+	it('ap applies wrapped function in fantasy-land order', function () {
+		Maybe.of(5).ap(Maybe.of(x => x + 1)).unwrap().should.equal(6);
+	});
+	it('None propagates through map chain', function () {
+		(Maybe.of(5).map(() => null).map(x => x + 1).unwrap() === null).should.equal(true);
+	});
+	it('join flattens one level of nesting', function () {
+		Maybe.of(Maybe.of(7)).join().unwrap().should.equal(7);
+	});
+	it('chainRec trampolines recursion to a final value', function () {
+		Maybe.of(0).chainRec((next, done, x) => x < 3 ? Maybe.of(next(x + 1)) : Maybe.of(done(x)), 0).unwrap().should.equal(3);
+	});
+	it('flatMap requires a Maybe-returning callback (misuse lock)', function () {
+		var result = Maybe.of(5).flatMap(x => x * 2);
+		(typeof result).should.equal('number');
+		result.should.equal(10);
+		(result.unwrap === undefined).should.equal(true);
+	});
+});
+

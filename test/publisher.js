@@ -303,3 +303,36 @@ describe('Publisher - extended coverage', function () {
 		v.should.equal(10);
 	});
 });
+
+describe('Publisher - risk/edge regressions', function () {
+	it('duplicate subscribe of same function reference is deduped', function () {
+		var p = new Publisher();
+		var count = 0;
+		var fn = () => count++;
+		p.subscribe(fn);
+		p.subscribe(fn);
+		p.publish(1);
+		count.should.equal(1);
+		p.subscribers.length.should.equal(1);
+	});
+	it('async publish then sync publish delivers sync value first', function (done) {
+		var p = new Publisher();
+		var order = [];
+		p.subscribe(i => order.push(i));
+		p.publish(1, true);
+		p.publish(2);
+		setTimeout(() => {
+			JSON.stringify(order).should.equal('[2,1]');
+			done();
+		}, 30);
+	});
+	it('derived publisher clear does not detach from parent', function () {
+		var p = new Publisher();
+		var d = p.map(x => x * 2);
+		d.subscribe(() => {});
+		d.clear();
+		p.publish(99);
+		p.subscribers.length.should.equal(1);
+	});
+});
+
