@@ -666,3 +666,33 @@ describe('pattern - null safety (regression)', function () {
 		(t.apply({ id: 1, parent: 5 }) !== undefined).should.equal(false);
 	});
 });
+
+
+describe('pattern - string and regex regressions', function () {
+	// Regression: inCaseOfString used effect(+v), coercing non-numeric strings to NaN
+	it('inCaseOfString passes non-numeric strings through unchanged', function () {
+		either('abc', inCaseOfString((x) => x), otherwise(() => false)).should.equal('abc');
+	});
+	it('inCaseOfString keeps numeric-looking strings as strings', function () {
+		var result = either('42', inCaseOfString((x) => x), otherwise(() => false));
+		result.should.equal('42');
+		(typeof result).should.equal('string');
+	});
+
+	// Regression: inCaseOfRegex regex.test mutated lastIndex on /g patterns
+	it('TypeRegexMatches with global regex matches consistently on reuse', function () {
+		var t = TypeRegexMatches(/a/g);
+		[t.matches('a'), t.matches('a'), t.matches('a')].should.eql([true, true, true]);
+	});
+	it('inCaseOfRegex with global regex matches consistently via either', function () {
+		var pattern = inCaseOfRegex(/a/g, () => 'hit');
+		[either('a', pattern), either('a', pattern), either('a', pattern)].should.eql(['hit', 'hit', 'hit']);
+	});
+	it('TypeRegexMatches preserves caller regex.lastIndex after matching', function () {
+		var regex = /a/g;
+		regex.lastIndex = 3;
+		var t = TypeRegexMatches(regex);
+		t.matches('a');
+		regex.lastIndex.should.equal(3);
+	});
+});
