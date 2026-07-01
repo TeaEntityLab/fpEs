@@ -12,7 +12,8 @@
     "publisher.js",
     "_helpers/",
     "dist/",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "docs/"
   ],
   "engines": {
     "node": ">=8.3.0"
