@@ -28,13 +28,3 @@ jobs:
       - run: npm ci
 
       - run: npm test
-
-      - name: Coverage
-        run: npx nyc --reporter=lcov npm test
-        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 'node'
-
-      - name: Upload coverage to Codecov
-        uses: codecov/codecov-action@v4
-        if: matrix.os == 'ubuntu-latest' && matrix.node-version == 'node'
-        with:
-          files: ./coverage/lcov.info

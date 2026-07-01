@@ -2,8 +2,7 @@
 
 [![npm download](https://img.shields.io/npm/dt/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![npm version](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
-[![codecov](https://codecov.io/gh/TeaEntityLab/fpEs/branch/master/graph/badge.svg)](https://codecov.io/gh/TeaEntityLab/fpEs)
-<!-- CI: Travis inactive; test workflow pending migration to GitHub Actions -->
+[![CI](https://github.com/TeaEntityLab/fpEs/actions/workflows/ci.yml/badge.svg)](https://github.com/TeaEntityLab/fpEs/actions/workflows/ci.yml)
 
 [![license](https://img.shields.io/github/license/TeaEntityLab/fpEs.svg?style=social&label=License)](https://github.com/TeaEntityLab/fpEs)
 [![stars](https://img.shields.io/github/stars/TeaEntityLab/fpEs.svg?style=social&label=Stars)](https://github.com/TeaEntityLab/fpEs)

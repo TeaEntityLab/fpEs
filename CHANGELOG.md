@@ -10,15 +10,13 @@
 - Fixed `dev` script: `webpack -d --watch` → `webpack --mode development --watch`
 - Fixed `clean` script: removed no-op `sed` pipe, use `find dist -name '*.js*' -delete`
 - Added test gate to `release` script: `npm test && npm publish && git push --follow-tags`
-- Added `exports` field to `package.json` for formal subpath imports
-- Updated Travis CI Node matrix to `22.18`, `24.11`, `node` (Babel 8 dev floor)
+- Migrated CI from Travis to GitHub Actions: added `.github/workflows/ci.yml` test matrix (Node `22.18`/`24.11`/`node` × Ubuntu/Windows/macOS); removed `.travis.yml`
 - Added GitHub Actions CodeQL workflow
 - Added Dependabot config for npm and github-actions ecosystems
 
 ### Package Hygiene
 - Added `files` allowlist to prevent test/config/.omx leakage in npm tarball
 - Cleaned `.gitignore`: replaced contradictory `dist/*.js*` negation with clean `dist/`
-- Fixed `.travis.yml` typo: `scripts:` → `script:`
 - Corrected runtime `engines.node` to `>=8.3.0` (separate from dev/build floor)
 
 ### Bug Fixes
@@ -40,7 +38,7 @@
 - Fixed all README import specifiers: `fpEs` → `fpes` (package name is lowercase; `fpEs` failed on case-sensitive filesystems)
 - Corrected README Node requirement: `>= 6.0` → `>= 8.3.0`
 - Pinned unpkg links to `@1.2.0`
-- Removed dead Travis CI badge
+- Replaced dead Travis badge and unconfigured codecov badge with a GitHub Actions CI status badge
 - Added browser-global vs npm-package naming note
 - Added Development section with dev/build Node floor
 - Added Release Checklist section

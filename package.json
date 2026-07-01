@@ -3,14 +3,6 @@
   "version": "1.2.0",
   "description": "Functional Programming for EcmaScript(Javascript)",
   "main": "index.js",
-  "exports": {
-    ".": "./index.js",
-    "./fp": "./fp.js",
-    "./maybe": "./maybe.js",
-    "./monadio": "./monadio.js",
-    "./pattern": "./pattern.js",
-    "./publisher": "./publisher.js"
-  },
   "files": [
     "index.js",
     "fp.js",
