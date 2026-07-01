@@ -1,15 +1,28 @@
 {
   "name": "fpes",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "Functional Programming for EcmaScript(Javascript)",
   "main": "index.js",
+  "files": [
+    "index.js",
+    "fp.js",
+    "maybe.js",
+    "monadio.js",
+    "pattern.js",
+    "publisher.js",
+    "_helpers/",
+    "dist/"
+  ],
+  "engines": {
+    "node": ">=18.20.0"
+  },
   "scripts": {
     "test": "mocha --require @babel/register --require should test/**/*.js",
-    "dev": "webpack -d --watch",
+    "dev": "webpack --mode development --watch",
     "build": "webpack --mode production && bash build-custom.sh",
     "build-custom": "webpack --mode production --config webpack.custom.config.js",
     "clean": "find dist -name '*.js*' | sed 's/^src\\///' | xargs rm -f",
-    "release": "npm version patch; npm publish; git push; git push --tags",
+    "release": "npm publish && git push --follow-tags",
     "prepare": "npm run build",
     "postpublish": "npm run clean"
   },
@@ -50,27 +63,26 @@
   },
   "homepage": "https://github.com/TeaEntityLab/fpEs#readme",
   "devDependencies": {
-    "@babel/cli": "^7.16.8",
-    "@babel/core": "^7.16.12",
-    "@babel/plugin-transform-runtime": "^7.16.10",
-    "@babel/preset-env": "^7.16.11",
-    "@babel/register": "^7.16.9",
-    "@babel/runtime": "^7.16.7",
+    "@babel/cli": "^7.29.7",
+    "@babel/core": "^7.29.7",
+    "@babel/plugin-transform-runtime": "^7.29.7",
+    "@babel/preset-env": "^7.29.7",
+    "@babel/register": "^7.29.7",
+    "@babel/runtime": "^7.29.7",
     "@gfx/zopfli": "^1.0.15",
     "ansi-regex": ">=6.0.1",
-    "babel-loader": "^9.1.0",
-    "brotli-webpack-plugin": "^1.1.0",
-    "compression-webpack-plugin": "^10.0.0",
+    "babel-loader": "^10.1.1",
+    "compression-webpack-plugin": "^11.1.0",
     "glob-parent": ">=6.0.2",
-    "minimatch": ">=3.0.5",
-    "mocha": "^10.0.0",
-    "nanoid": ">=3.2.0",
+    "minimatch": ">=9.0.7",
+    "mocha": "^11.7.6",
+    "nanoid": ">=5.1.16",
     "path-parse": ">=1.0.7",
-    "serialize-javascript": "^6.0.0",
+    "serialize-javascript": "^7.0.7",
     "set-value": ">=4.1.0",
     "simple-get": ">=4.0.1",
     "should": "^13.2.3",
-    "webpack": "^5.67.0",
-    "webpack-cli": "^5.0.0"
+    "webpack": "^5.108.3",
+    "webpack-cli": "^6.0.1"
   }
 }

@@ -1,10 +1,11 @@
 const CompressionWebpackPlugin = require('compression-webpack-plugin')
+const zlib = require('zlib')
 const productionGzipExtensions = /\.(js|css|json|txt|html|ico|svg)(\?.*)?$/i
 const zopfli = require('@gfx/zopfli')
-const BrotliPlugin = require('brotli-webpack-plugin')
 
 const dynamicPluginList = [
   new CompressionWebpackPlugin({
+    filename: '[path][base].gz',
     algorithm(input, compressionOptions, callback) {
       return zopfli.gzip(input, compressionOptions, callback)
     },
@@ -14,9 +15,16 @@ const dynamicPluginList = [
     minRatio: 0.99,
     test: productionGzipExtensions
   }),
-  new BrotliPlugin({
-    test: productionGzipExtensions,
-    minRatio: 0.99
+  new CompressionWebpackPlugin({
+    filename: '[path][base].br',
+    algorithm: 'brotliCompress',
+    compressionOptions: {
+      params: {
+        [zlib.constants.BROTLI_PARAM_QUALITY]: 11
+      }
+    },
+    minRatio: 0.99,
+    test: productionGzipExtensions
   })
 ]
 

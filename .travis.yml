@@ -3,17 +3,14 @@ language: node_js
 
 node_js:
   - "node"
-  - "10"
-  - "11"
-  - "12"
-  - "13"
-  - "14"
-  - "15"
+  - "18"
+  - "20"
+  - "22"
 
 before_install:
   - npm install -g nyc
   - npm install -g codecov
-scripts:
+script:
   - nyc --reporter=lcov mocha && codecov
   # - istanbul cover ./node_modules/mocha/bin/_mocha --reporter lcovonly -- -R spec
   # - codecov

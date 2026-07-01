@@ -227,4 +227,40 @@ describe('MonadIO - extended coverage', function () {
 			return b + 1;
 		}).then(v=>v.should.equal(9));
 	});
+
+	// Regression: a None yielded inside doM must short-circuit the generator
+	// (the Maybe monad transformer aborts), not resume it with undefined.
+	it('doM short-circuits when a None is yielded', function () {
+		var reached = false;
+		var result = doM(function*(){
+			var a = yield Maybe.just(1);
+			var b = yield Maybe.empty();   // None
+			reached = true;
+			return Maybe.just(a + b);
+		});
+		result.isNull().should.equal(true);
+		reached.should.equal(false);
+	});
+	it('doM short-circuits when the first yield is None', function () {
+		var reached = false;
+		var result = doM(function*(){
+			var a = yield Maybe.empty();   // None at the very first step
+			reached = true;
+			return Maybe.just(a);
+		});
+		result.isNull().should.equal(true);
+		reached.should.equal(false);
+	});
+	it('doM still threads through when every yielded Maybe is Just', function () {
+		var reached = false;
+		var result = doM(function*(){
+			var a = yield Maybe.just(4);
+			var b = yield Maybe.just(7);
+			reached = true;
+			return Maybe.just(a + b);
+		});
+		reached.should.equal(true);
+		result.isNull().should.equal(false);
+		result.join().unwrap().should.equal(11);
+	});
 });
