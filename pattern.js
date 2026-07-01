@@ -28,7 +28,7 @@ function inCaseOfNaN (effect) {
   return new Pattern(isNotNumber, (v)=>effect(+v));
 }
 function inCaseOfString (effect) {
-  return new Pattern((v)=> typeof v === 'string', (v)=>effect(+v));
+  return new Pattern((v)=> typeof v === 'string', (v)=>effect(v));
 }
 function inCaseOfObject (effect) {
   return new Pattern((v)=> v && typeof v === "object" && (!Array.isArray(v)), effect);
@@ -63,7 +63,11 @@ function inCaseOfRegex (regex, effect) {
       regex = new RegExp(regex);
     }
 
-    return regex.test(v);
+    let lastIndex = regex.lastIndex;
+    regex.lastIndex = 0;
+    let matched = regex.test(v);
+    regex.lastIndex = lastIndex;
+    return matched;
   }, effect);
 }
 

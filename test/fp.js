@@ -1024,4 +1024,22 @@ describe('Fp - bug-fix regressions', function () {
 		JSON.stringify(intersection([0,1,2],[0,1,2])).should.equal('[0,1,2]');
 		JSON.stringify(intersection([1,0],[1,0])).should.equal('[1,0]');
 	});
+
+	// getMainAndFollower: last two args are index selectors only when both are
+	// plain numbers; a single-element array like [9] is the main list, not index 9.
+	describe('getMainAndFollower numeric array indices', function () {
+		it('difference treats single-element numeric array as main not index', function () {
+			JSON.stringify(difference([9], [1,2,3])).should.equal('[1,2,3]');
+		});
+		it('differenceWithDup treats single-element numeric array as main not index', function () {
+			JSON.stringify(differenceWithDup([9], [1,2,3])).should.equal('[1,2,3]');
+		});
+		it('difference still honors explicit main/follower index selectors', function () {
+			JSON.stringify(difference(['a','b','c'], ['z'], ['b','x'], 1, 3)).should.equal('["x"]');
+		});
+	});
+
+	it('pull missing value does not throw when value is numeric', function () {
+		JSON.stringify(pull([1,2,3], 9)).should.equal('[1,2,3]');
+	});
 });

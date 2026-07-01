@@ -103,6 +103,9 @@ class MaybeDef {
     return fnM.chain(f => this.map(f))
   }
   chainRec (f, i) {
+    if (this.isNull()) {
+      return this
+    }
     let result
     let x = i
     do {
@@ -190,6 +193,12 @@ const aliases = {
 Object.keys(aliases).forEach((key) => {
   MaybeDef.prototype[key] = MaybeDef.prototype[aliases[key]]
 });
+
+// Preserve None-specific Fantasy Land behavior where prototype aliases would
+// otherwise bypass the singleton overrides above.
+None['fantasy-land/equals'] = None.equals
+None['fantasy-land/reduce'] = None.reduce
+None['fantasy-land/filter'] = None.filter
 
 
 // [MaybeDef].forEach((classInstance) => {

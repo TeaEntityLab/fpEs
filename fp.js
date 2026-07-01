@@ -32,7 +32,7 @@ function difference(...values) {
 
   let concatWithoutDuplicate = [...new Set(main.concat(follower))];
 
-  return Array.prototype.slice.call(concatWithoutDuplicate, main.length, concatWithoutDuplicate.length)
+  return Array.prototype.slice.call(concatWithoutDuplicate, new Set(main).size, concatWithoutDuplicate.length)
 }
 
 function differenceWithDup (...values) {
@@ -150,8 +150,8 @@ module.exports = {
   shift: function (list) {return Array.prototype.slice.call(list, 0).shift()},
   take: curry(function take(n, list) {
     if (n > 0 && list.length > 0) {
-      var val = list.shift();
-      return [].concat(val, take(n - 1, Array.prototype.slice.call(list, 0)))
+      var val = list[0];
+      return [].concat(val, take(n - 1, Array.prototype.slice.call(list, 1)))
     }
     return [];
   }),
@@ -279,7 +279,7 @@ module.exports = {
       return (list) => fill(list, ...args);
     }
 
-    return Array(...list).map((x,i)=> {
+    return Array.from(list).map((x,i)=> {
       if(i>= startIndex && i <= endIndex) {
         return x=value;
       } else {
@@ -367,7 +367,8 @@ module.exports = {
     main.forEach(x=>{
       if(list.indexOf(x) ==-1) {
         if(follower.indexOf(x) >=0) {
-          if(list[x] ==undefined) list.push(x) }
+          list.push(x)
+        }
       }
     })
     return list;

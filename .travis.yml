@@ -3,9 +3,8 @@ language: node_js
 
 node_js:
   - "node"
-  - "18"
-  - "20"
-  - "22"
+  - "22.18"
+  - "24.11"
 
 before_install:
   - npm install -g nyc

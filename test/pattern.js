@@ -437,8 +437,8 @@ describe('pattern', function () {
       var pt = new ProductType();
       pt.matches().should.equal(true);
   });
-  it('inCaseOfString effect', function () {
-      either("42", inCaseOfString((x)=>x), otherwise(()=>0)).should.equal(42);
+  it('inCaseOfString effect preserves string values', function () {
+      either("42", inCaseOfString((x)=>x), otherwise(()=>0)).should.equal("42");
   });
   it('inCaseOfNumber effect', function () {
       either("3.14", inCaseOfNumber((x)=>x), otherwise(()=>0)).should.equal(3.14);
@@ -570,9 +570,9 @@ describe('pattern - extended coverage', function () {
 		new ProductType(TypeString, TypeNumber).matches('a', 5).should.equal(true);
 	});
 
-	// inCaseOf effect coercion (+v)
-	it('inCaseOfString effect receives coerced number', function () {
-		either('42', inCaseOfString(x=>x), otherwise(()=>0)).should.equal(42);
+	// inCaseOf effect coercion: numbers coerce; strings preserve the matched string.
+	it('inCaseOfString effect receives original string', function () {
+		either('42', inCaseOfString(x=>x), otherwise(()=>0)).should.equal('42');
 	});
 	it('inCaseOfNumber effect receives coerced number', function () {
 		either('3.5', inCaseOfNumber(x=>x), otherwise(()=>0)).should.equal(3.5);

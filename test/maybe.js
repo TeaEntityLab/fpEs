@@ -465,3 +465,31 @@ describe('Maybe - None short-circuit (regression)', function () {
 		Maybe.of(5).chain(Maybe.of).unwrap().should.equal(5);
 	});
 });
+
+describe('Maybe - chainRec None regression', function () {
+	it('None.chainRec short-circuits, returns None, and does not call fn', function () {
+		var called = false;
+		var result = Maybe.empty().chainRec(function (next, done, x) {
+			called = true;
+			return Maybe.of(done(x));
+		}, 0);
+		result.isNull().should.equal(true);
+		called.should.equal(false);
+	});
+});
+
+describe('Maybe - None fantasy-land regressions', function () {
+	it('fantasy-land/reduce returns init', function () {
+		Maybe.empty()['fantasy-land/reduce'](function (acc, x) { return acc + x; }, 99).should.equal(99);
+	});
+	it('fantasy-land/filter returns None and does not call predicate', function () {
+		var called = false;
+		var result = Maybe.empty()['fantasy-land/filter'](function (x) { called = true; return true; });
+		result.isNull().should.equal(true);
+		called.should.equal(false);
+	});
+	it('fantasy-land/equals is true for None and false for Some', function () {
+		Maybe.empty()['fantasy-land/equals'](Maybe.empty()).should.equal(true);
+		Maybe.empty()['fantasy-land/equals'](Maybe.just(1)).should.equal(false);
+	});
+});
