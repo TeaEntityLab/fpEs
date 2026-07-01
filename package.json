@@ -3,6 +3,14 @@
   "version": "1.2.0",
   "description": "Functional Programming for EcmaScript(Javascript)",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./fp": "./fp.js",
+    "./maybe": "./maybe.js",
+    "./monadio": "./monadio.js",
+    "./pattern": "./pattern.js",
+    "./publisher": "./publisher.js"
+  },
   "files": [
     "index.js",
     "fp.js",
@@ -11,7 +19,8 @@
     "pattern.js",
     "publisher.js",
     "_helpers/",
-    "dist/"
+    "dist/",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=8.3.0"
@@ -21,8 +30,8 @@
     "dev": "webpack --mode development --watch",
     "build": "webpack --mode production && bash build-custom.sh",
     "build-custom": "webpack --mode production --config webpack.custom.config.js",
-    "clean": "find dist -name '*.js*' | sed 's/^src\\///' | xargs rm -f",
-    "release": "npm publish && git push --follow-tags",
+    "clean": "find dist -name '*.js*' -delete",
+    "release": "npm test && npm publish && git push --follow-tags",
     "prepare": "npm run build",
     "postpublish": "npm run clean"
   },

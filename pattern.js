@@ -22,7 +22,7 @@ function inCaseOfEqual (value, effect) {
   return new Pattern((v)=>value === v, effect);
 }
 function inCaseOfNumber (effect) {
-  return new Pattern((v)=>!isNotNumber(v), (v)=>effect(+v));
+  return new Pattern((v)=> typeof v !== 'boolean' && !Array.isArray(v) && !isNotNumber(v), (v)=>effect(+v));
 }
 function inCaseOfNaN (effect) {
   return new Pattern(isNotNumber, (v)=>effect(+v));

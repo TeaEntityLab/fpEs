@@ -696,3 +696,25 @@ describe('pattern - string and regex regressions', function () {
 		regex.lastIndex.should.equal(3);
 	});
 });
+
+describe('pattern - TypeNumber coercion boundaries (regression)', function () {
+	// Regression: booleans coerced via +v produced 1/0 instead of falling through
+	it('either(true, inCaseOfNumber(...), otherwise(...)) falls through, not 1', function () {
+		either(true, inCaseOfNumber((x) => x), otherwise(() => 'fallback')).should.equal('fallback');
+	});
+	it('either(false, inCaseOfNumber(...), otherwise(...)) falls through, not 0', function () {
+		either(false, inCaseOfNumber((x) => x), otherwise(() => 'fallback')).should.equal('fallback');
+	});
+	// Regression: arrays coerced via +v produced NaN/1 instead of falling through
+	it('either([1], inCaseOfNumber(...), otherwise(...)) falls through, not 1', function () {
+		either([1], inCaseOfNumber((x) => x), otherwise(() => 'fallback')).should.equal('fallback');
+	});
+	it('TypeADT([TypeString, TypeNumber]).matches([\'a\', true]) is false', function () {
+		TypeADT([TypeString, TypeNumber]).matches(['a', true]).should.equal(false);
+	});
+	it('numeric string \'1\' still matches and coerces to number 1', function () {
+		either('1', inCaseOfNumber((x) => x), otherwise(() => 'fallback')).should.equal(1);
+		TypeNumber.matches('1').should.equal(true);
+	});
+});
+

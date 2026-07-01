@@ -109,13 +109,17 @@ class MaybeDef {
     let result
     let x = i
     do {
-      result = f((x) => {return {value: x, done: false}}, (x) => {return {value: x, done: true}}, x).unwrap()
+      let step = f((x) => {return {value: x, done: false}}, (x) => {return {value: x, done: true}}, x)
+      if (step.isNull()) {
+        return step
+      }
+      result = step.unwrap()
       x = result.value
     } while (!result.done)
     return this.of(result.value)
   }
   equals(m) {
-    return isMaybe(m) && m.unwrap() === this.ref
+    return isMaybe(m) && (m.unwrap() === this.ref || (m.unwrap() !== m.unwrap() && this.ref !== this.ref))
   }
 
 }

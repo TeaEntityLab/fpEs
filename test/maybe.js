@@ -476,6 +476,42 @@ describe('Maybe - chainRec None regression', function () {
 		result.isNull().should.equal(true);
 		called.should.equal(false);
 	});
+	it('chainRec step None short-circuits via Maybe.chainRec', function () {
+		var calls = 0;
+		var result = Maybe.chainRec(function (next, done, x) {
+			calls++;
+			if (x === 3) {
+				return Maybe.empty();
+			}
+			return Maybe.of(next(x + 1));
+		}, 0);
+		result.should.equal(Maybe.empty());
+		calls.should.equal(4);
+	});
+	it('chainRec step None short-circuits via Maybe.of(0).chainRec', function () {
+		var calls = 0;
+		var result = Maybe.of(0).chainRec(function (next, done, x) {
+			calls++;
+			if (x === 2) {
+				return Maybe.empty();
+			}
+			return Maybe.of(next(x + 1));
+		}, 0);
+		result.should.equal(Maybe.empty());
+		calls.should.equal(3);
+	});
+	it('chainRec step None does not invoke callback after short-circuit', function () {
+		var calls = 0;
+		var result = Maybe.chainRec(function (next, done, x) {
+			calls++;
+			if (x === 1) {
+				return Maybe.empty();
+			}
+			return Maybe.of(next(x + 1));
+		}, 0);
+		result.should.equal(Maybe.empty());
+		calls.should.equal(2);
+	});
 });
 
 describe('Maybe - None fantasy-land regressions', function () {
@@ -493,3 +529,16 @@ describe('Maybe - None fantasy-land regressions', function () {
 		Maybe.empty()['fantasy-land/equals'](Maybe.just(1)).should.equal(false);
 	});
 });
+
+describe('Maybe equals NaN', function () {
+	it('Maybe.of(NaN).equals(Maybe.of(NaN)) is true', function () {
+		Maybe.of(NaN).equals(Maybe.of(NaN)).should.equal(true);
+	});
+	it('Maybe.of(0).equals(Maybe.of(-0)) remains true', function () {
+		Maybe.of(0).equals(Maybe.of(-0)).should.equal(true);
+	});
+	it('fantasy-land/equals treats NaN as equal to NaN', function () {
+		Maybe.of(NaN)['fantasy-land/equals'](Maybe.of(NaN)).should.equal(true);
+	});
+});
+

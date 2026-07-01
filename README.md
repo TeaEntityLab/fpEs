@@ -3,7 +3,7 @@
 [![npm download](https://img.shields.io/npm/dt/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![npm version](https://img.shields.io/npm/v/fpes.svg)](https://www.npmjs.com/package/fpes)
 [![codecov](https://codecov.io/gh/TeaEntityLab/fpEs/branch/master/graph/badge.svg)](https://codecov.io/gh/TeaEntityLab/fpEs)
-[![Travis CI Build Status](https://travis-ci.com/TeaEntityLab/fpEs.svg?branch=master)](https://travis-ci.com/TeaEntityLab/fpEs)
+<!-- CI: Travis inactive; test workflow pending migration to GitHub Actions -->
 
 [![license](https://img.shields.io/github/license/TeaEntityLab/fpEs.svg?style=social&label=License)](https://github.com/TeaEntityLab/fpEs)
 [![stars](https://img.shields.io/github/stars/TeaEntityLab/fpEs.svg?style=social&label=Stars)](https://github.com/TeaEntityLab/fpEs)
@@ -27,7 +27,7 @@ Thus the implementation just includes the core functions, and more clear to use.
 
 ## Node.js
 
-node >= 6.0
+node >= 8.3.0
 
 * Installation:
 
@@ -39,28 +39,30 @@ npm i fpes
 
 bundled files for web/browser usages:
 
-[all](https://unpkg.com/fpes/dist/bundle.min.js)
+[all](https://unpkg.com/fpes@1.2.0/dist/bundle.min.js)
 
 ---
 
-[fp](https://unpkg.com/fpes/dist/fp.min.js)
+[fp](https://unpkg.com/fpes@1.2.0/dist/fp.min.js)
 
-[maybe](https://unpkg.com/fpes/dist/maybe.min.js)
+[maybe](https://unpkg.com/fpes@1.2.0/dist/maybe.min.js)
 
-[monadio](https://unpkg.com/fpes/dist/monadio.min.js)
+[monadio](https://unpkg.com/fpes@1.2.0/dist/monadio.min.js)
 
-[pattern](https://unpkg.com/fpes/dist/pattern.min.js)
+[pattern](https://unpkg.com/fpes@1.2.0/dist/pattern.min.js)
 
-[publisher](https://unpkg.com/fpes/dist/publisher.min.js)
+[publisher](https://unpkg.com/fpes@1.2.0/dist/publisher.min.js)
 
 # Usage
 
 ## Import
 
+In the browser bundle, the global name is `fpEs` (see webpack `library` setting). In Node/npm, install and import the package as `fpes` (all lowercase).
+
 * You can include the entire library:
 
 ```javascript
-import fpEs from 'fpEs';
+import fpEs from 'fpes';
 ```
 
 * There are 5 modules in this library, you can include them individually:
@@ -75,10 +77,10 @@ import fpEs from 'fpEs';
 Just include things you need:
 
 ```javascript
-import {Maybe} from "fpEs";
+import {Maybe} from "fpes";
 // or this one:
 /*
-import Maybe from "fpEs/maybe";
+import Maybe from "fpes/maybe";
 */
 
 var m = Maybe.just(1); // It works
@@ -89,7 +91,7 @@ or
 ```javascript
 import {
   compose, curry,
-} from "fpEs";
+} from "fpes";
 ```
 
 or
@@ -97,7 +99,7 @@ or
 ```javascript
 import {
   compose, curry,
-} from "fpEs/fp";
+} from "fpes/fp";
 ```
 
 ## Common FP (Compose, Curry)
@@ -108,7 +110,7 @@ Example:
 
 import {
   compose, curry,
-} from "fpEs/fp";
+} from "fpes/fp";
 
 // compose
 
@@ -144,7 +146,7 @@ import {
   TypeEqualTo,
   TypeClassOf,
   TypeRegexMatches,
-} from "fpEs/pattern";
+} from "fpes/pattern";
 
 // PatternMatching
 
@@ -197,7 +199,7 @@ Example:
 
 ```javascript
 
-import Maybe from "fpEs/maybe";
+import Maybe from "fpes/maybe";
 
 var m;
 
@@ -275,8 +277,8 @@ Example:
 
 ```javascript
 
-import Maybe from "fpEs/maybe";
-import MonadIO from "fpEs/monadio";
+import Maybe from "fpes/maybe";
+import MonadIO from "fpes/monadio";
 var {promiseof, doM} = MonadIO;
 
 
@@ -333,7 +335,7 @@ Example:
 
 ```javascript
 
-import Publisher from "fpEs/publisher";
+import Publisher from "fpes/publisher";
 
 var p = new Publisher();
 var v = 0;
@@ -388,3 +390,21 @@ p.publish(1);
 console.log(v); // 0
 
 ```
+
+# Development
+
+## Prerequisites
+
+* Node `^22.18.0 || >=24.11.0` (required by Babel 8 dev toolchain)
+* Consumer runtime: `>= 8.3.0` (see `engines` in `package.json`)
+
+## Release Checklist
+
+1. `npm test` — all tests pass
+2. `npm run build` — webpack bundles compiled
+3. `npm pack --dry-run --json` — verify tarball contents (no test/config leak)
+4. `git tag -a v<version> -m "Release <version>"` — create version tag
+5. `npm login` — authenticate to npm
+6. `npm publish` (add `--otp=<code>` if 2FA enabled)
+7. `git push --follow-tags` — push commits and tags
+8. Verify unpkg: `https://unpkg.com/fpes@<version>/dist/bundle.min.js`
