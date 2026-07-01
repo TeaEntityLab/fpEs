@@ -974,3 +974,54 @@ describe('Fp - extended coverage', function () {
 		JSON.stringify(fromPairs([['x',1],['y',2]])).should.equal('{"x":1,"y":2}');
 	});
 });
+
+describe('Fp - bug-fix regressions', function () {
+	// difference: dedup offset must use the deduped main size, not raw
+	// main.length, otherwise internal duplicates in `main` shift the slice.
+	it('difference handles internal duplicates in main', function () {
+		JSON.stringify(difference([1,1,2],[2,3])).should.equal('[3]');
+		JSON.stringify(difference([1,1],[1,2,3])).should.equal('[2,3]');
+	});
+	it('difference unchanged when main has no duplicates', function () {
+		JSON.stringify(difference([1,2],[2,3])).should.equal('[3]');
+		JSON.stringify(difference(['a','b','c'],['z'],['b','x'],1,3)).should.equal('["x"]');
+	});
+	// difference keeps string / array-like generality: main.concat(follower)
+	// is preserved so a string follower is split char-wise, not appended whole.
+	it('difference preserves string (array-like) inputs', function () {
+		JSON.stringify(difference('ab','bc')).should.equal('["c"]');
+		// dup chars in main used to overshoot the slice — now also fixed
+		JSON.stringify(difference('aab','bc')).should.equal('["c"]');
+	});
+
+
+	// take must not mutate its input array (it used list.shift()).
+	it('take does not mutate its input', function () {
+		var src = [1,2,3,4];
+		JSON.stringify(take(2, src)).should.equal('[1,2]');
+		JSON.stringify(src).should.equal('[1,2,3,4]');
+	});
+	// take is now array-like-safe: it slices instead of Array#shift, so
+	// strings and arguments objects work (they threw on list.shift before).
+	it('take accepts string and arguments (array-like) inputs', function () {
+		JSON.stringify(take(2, 'abcd')).should.equal('["a","b"]');
+		var argsFix = function () { return take(2, arguments); };
+		JSON.stringify(argsFix('a','b','c','d')).should.equal('["a","b"]');
+	});
+
+
+	// fill: Array(...list) hit the single-numeric Array(len) trap; a
+	// one-element numeric array produced sparse nulls instead of a fill.
+	it('fill handles a single-element numeric array', function () {
+		JSON.stringify(fill([5], 9)).should.equal('[9]');
+		JSON.stringify(fill([7], '*')).should.equal('["*"]');
+	});
+
+	// intersection: the inner `list[x] == undefined` guard indexed by value,
+	// dropping elements whose value collided with an already-filled index.
+	it('intersection keeps elements colliding with array indices', function () {
+		JSON.stringify(intersection([2,0],[2,0])).should.equal('[2,0]');
+		JSON.stringify(intersection([0,1,2],[0,1,2])).should.equal('[0,1,2]');
+		JSON.stringify(intersection([1,0],[1,0])).should.equal('[1,0]');
+	});
+});
