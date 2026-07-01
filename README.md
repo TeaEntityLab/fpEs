@@ -403,11 +403,11 @@ console.log(v); // 0
 
 ## Release Checklist
 
-1. `npm test` — all tests pass
-2. `npm run build` — webpack bundles compiled
-3. `npm pack --dry-run --json` — verify tarball contents (no test/config leak)
-4. `git tag -a v<version> -m "Release <version>"` — create version tag
-5. `npm login` — authenticate to npm
-6. `npm publish` (add `--otp=<code>` if 2FA enabled)
-7. `git push --follow-tags` — push commits and tags
+1. `npm run release:check` — run tests, run the `prepare` build through `npm pack`, and verify tarball contents
+2. Inspect the `npm pack --dry-run --json` file list (no test/config leak; docs links included)
+3. `git tag -a v<version> -m "Release <version>"` — create version tag at the final release commit
+4. `npm login` — authenticate to npm
+5. `npm publish` (add `--otp=<code>` if 2FA enabled)
+6. `git push origin master` — push the release commit explicitly
+7. `git push origin v<version>` — push only the release tag explicitly
 8. Verify unpkg: `https://unpkg.com/fpes@<version>/dist/bundle.min.js`

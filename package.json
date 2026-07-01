@@ -24,7 +24,8 @@
     "build": "webpack --mode production && bash build-custom.sh",
     "build-custom": "webpack --mode production --config webpack.custom.config.js",
     "clean": "find dist -name '*.js*' -delete",
-    "release": "npm test && npm publish && git push --follow-tags",
+    "release:check": "npm test && npm pack --dry-run --json",
+    "release": "npm run release:check && npm publish",
     "prepare": "npm run build",
     "postpublish": "npm run clean"
   },

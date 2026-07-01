@@ -9,13 +9,14 @@
 - Upgraded `webpack-cli` to `^6`, `compression-webpack-plugin` to `^11`, `babel-loader` to `^10`
 - Fixed `dev` script: `webpack -d --watch` → `webpack --mode development --watch`
 - Fixed `clean` script: removed no-op `sed` pipe, use `find dist -name '*.js*' -delete`
-- Added test gate to `release` script: `npm test && npm publish && git push --follow-tags`
+- Added `release:check` (`npm test && npm pack --dry-run --json`; `npm pack` runs the `prepare` build) and made `release` stop at `npm publish`; branch/tag pushes are documented as explicit manual steps
 - Migrated CI from Travis to GitHub Actions: added `.github/workflows/ci.yml` test matrix (Node `22.18`/`24.11`/`node` × Ubuntu/Windows/macOS); removed `.travis.yml`
 - Added GitHub Actions CodeQL workflow
 - Added Dependabot config for npm and github-actions ecosystems
 
 ### Package Hygiene
 - Added `files` allowlist to prevent test/config/.omx leakage in npm tarball
+- Included `docs/` in the npm package allowlist so README links to `docs/OVERVIEW.md` and `docs/API.md` resolve for package consumers
 - Cleaned `.gitignore`: replaced contradictory `dist/*.js*` negation with clean `dist/`
 - Corrected runtime `engines.node` to `>=8.3.0` (separate from dev/build floor)
 
