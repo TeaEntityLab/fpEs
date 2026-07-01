@@ -11,6 +11,10 @@
 
 Functional Programming for EcmaScript(Javascript)
 
+> **Documentation:** see [`docs/OVERVIEW.md`](docs/OVERVIEW.md) for the module map, non-obvious
+> behaviors, and a scenarios cookbook, and [`docs/API.md`](docs/API.md) for the full export
+> reference. The README below only covers a small subset of the API.
+
 # Why
 
 Originally I would like to have some features of Optional & Rx-like & PubSub functions;
