@@ -75,7 +75,7 @@
     "@gfx/zopfli": "^1.0.15",
     "ansi-regex": ">=6.2.2",
     "babel-loader": "^10.1.1",
-    "compression-webpack-plugin": "^11.1.0",
+    "compression-webpack-plugin": "^12.0.0",
     "glob-parent": ">=6.0.2",
     "minimatch": ">=9.0.7",
     "mocha": "^11.7.6",
