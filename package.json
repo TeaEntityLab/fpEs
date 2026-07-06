@@ -85,7 +85,7 @@
     "set-value": ">=4.1.0",
     "simple-get": ">=4.0.1",
     "should": "^13.2.3",
-    "webpack": "^5.108.3",
+    "webpack": "^5.108.4",
     "webpack-cli": "^6.0.1"
   }
 }
